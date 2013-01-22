@@ -1,0 +1,50 @@
+\chapter{\scshape Vertical convective mixing}
+\label{chapter:cvmix_convection}
+
+\minitoc
+\vspace{.5cm}
+
+The purpose of this chapter is to present the vertical convective
+mixing scheme available in CVMix.  The following CVMix Fortran module
+is directly connected to the material in this chapter:
+\begin{align*} 
+ &  {\tt cvmix\_convection.F90}.
+\end{align*}
+
+
+\section{Introduction to convective mixing}
+\label{section:intro}
+
+The hydrostatic approximation necessitates the use of a
+parameterization of vertical overturning processes.  The original
+parameterization used by Bryan in the 1960's was motivated largely
+from ideas then used for modeling convection in stars
+(\cite{Bryan1969}).  Work by Marshall and collaborators
+(\cite{KlingerConvection}, \cite{MITmodel}) have largely supported the
+basic ideas of vertical adjustment for purposes of large-scale ocean
+circulation.
+
+The \cite{CoxModel} implementation of convective adjustment (the
+``NCON" scheme) may leave columns unstable after completing the code's
+adjustment loop.  Various full convective schemes have come on-line,
+with that from \cite{Rahmstorf1993} implemented in MOM.  An
+alternative to the traditional form of convective adjustment is to
+increase the vertical mixing coefficient to some large value (say $\ge
+10 \mbox{m}^{2} \, \mbox{s}^{-1}$) in order to quickly diffuse
+vertically unstable water columns.  Indeed, it is this form
+recommended from the study of \cite{KlingerConvection}, and it is the
+approach commonly used in boundary layer schemes such as \cite{PPvmix}
+and \cite{LargeKPP}.  It is this vertical convective mixing approach
+that is supported in CVMix.  
+
+
+\section{Time-implicit vertical mixing}
+\label{section:time-implicit-vmix}
+
+An explicit treatment, especially with fine vertical grid resolution,
+places an unreasonable limitation on the size of the time step
+associated with vertical mixing processes.  The use of fine vertical
+resolution with sophisticated mixed layer and/or neutral physics
+schemes has prompted the near universal time-implicit treatment of
+vertical mixing in ocean climate models.
+

@@ -1,0 +1,94 @@
+% make table of contents have a bit better spacing
+% Adjust the numbers at the end as needed. 
+\renewcommand*{\l@section}{\@dottedtocline{1}{1.5em}{4.0em}}
+
+
+% some useful commands 
+
+% From Tim Leslie chapter on neutral physics 
+\newcommand{\A}{$\mathbb{A}$}
+\newcommand{\B}{$\mathbb{B}$}
+\newcommand{\C}{$\mathbb{C}$}
+\newcommand{\smax}{S_{\text{max}}}
+\newcommand{\absslope}{\left|\mathbf{S}\right|}
+\newcommand{\U}{\mathbf{\Upsilon}}
+\newcommand{\dz}{\mathrm{d}z}
+
+
+\newcommand{\dvu}{\mathrm{d}V^{(\mbox{\tiny U})}}
+\newcommand{\dvt}{\mathrm{d}V^{(\mbox{\tiny T})}}
+
+
+
+\newcommand{\be}{\begin{eqnarray}}
+\newcommand{\ee}{\end{eqnarray}}
+\newcommand{\itemm}{\item \mbox{}}
+
+\newcommand{\bftau}{\mbox{\boldmath $\tau$}}
+\newcommand{\bfphi}{\mbox{\boldmath $\phi$ }}
+\newcommand{\bflambda}{\mbox{\boldmath $\lambda$ }}
+\newcommand{\bfxi}{\mbox{\boldmath $\xi$}}
+\newcommand{\bfomega}{\mbox{\boldmath $\omega$}}
+\newcommand{\bfgamma}{\mbox{\boldmath $\gamma$}}
+\newcommand{\bfcapomega}{\mbox{\boldmath $\Omega$}} 
+\newcommand{\bfrho}{\mbox{\boldmath $\rho$}}
+\newcommand{\bfpsi}{\mbox{\boldmath $\psi$}}
+\newcommand{\bfzeta}{\mbox{\boldmath $\zeta$}}
+\newcommand{\bfOmega}{\mbox{\boldmath $\Omega$}} 
+\newcommand{\tbsize} {\scriptsize}
+
+\newcommand{\Sm}{S_{\mbox{\scriptsize m}}}
+\newcommand{\Thetam}{\Theta_{\mbox{\scriptsize m}}}
+\newcommand{\thetam}{\theta_{\mbox{\scriptsize m}}}
+\newcommand{\Qw}{Q_{\mbox{\scriptsize w}}}
+\newcommand{\Qm}{Q_{\mbox{\scriptsize m}}}
+\newcommand{\qw}{q_{\mbox{\scriptsize w}}}
+\newcommand{\sw}{s_{\mbox{\scriptsize w}}}
+\newcommand{\rhow}{\rho_{\mbox{\scriptsize w}}}
+\newcommand{\Cw}{C_{\mbox{\scriptsize w}}}
+\newcommand{\pa}{p_{\mbox{\scriptsize a}}}
+\newcommand{\pb}{p_{\mbox{\scriptsize b}}}
+\newcommand{\ps}{p_{\mbox{\scriptsize s}}}
+\newcommand{\Fh}{{\bf F}^{\mbox{\scriptsize h}}}
+\newcommand{\scriptw}{{\mbox{\scriptsize w}}}
+\newcommand{\sgs}{{\mbox{\scriptsize sgs}}}
+\newcommand{\eff}{{\mbox{\scriptsize eff}}}
+\newcommand{\const}{{\mbox{\scriptsize const}}}
+\newcommand{\aniso}{{\mbox{\scriptsize aniso}}}
+
+%\newcommand{\A}{{\mbox{\scriptsize A}}}
+%\newcommand{\B}{{\mbox{\scriptsize B}}}
+\newcommand{\Sc}{{\mbox{\scriptsize S}}}
+\newcommand{\T}{{\mbox{\scriptsize T}}}
+
+
+% redefined Part command for allowing text on same page as part. 
+\def\endofpart{\thispagestyle{empty}%\newpage????
+             % \if@twoside
+             %   \null
+             %   \thispagestyle{empty}%
+                %\newpage
+              %\fi
+              \if@tempswa
+                \twocolumn
+              \fi\@openrightfalse\normalfont}
+
+\long\def\@part[#1]#2{%
+    \ifnum \c@secnumdepth >-2\relax
+      \refstepcounter{part}%
+      \addcontentsline{toc}{part}{\thepart.\hspace{1em}#1}%
+    \else
+      \addcontentsline{toc}{part}{#1}%
+    \fi
+    \markboth{}{}%
+    {\parindent0pt\advance\leftskip18pt\fontsize{10}{12pt}\selectfont\vspace*{\partdrop}
+     \interlinepenalty \@M
+       \ifnum \c@secnumdepth >-2\relax
+       \sffamily\fontsize{14}{24pt}\selectfont \expandafter\MakeUppercase{\partname}~\thepart\rule{0pt}{5.67pc}
+       \par
+       \vskip -4\p@
+     \fi
+     \sffamily\fontsize{18}{28pt}\selectfont  #2\par\vskip36pt \normalsize\normalfont}%
+    %\@endpart
+}
+

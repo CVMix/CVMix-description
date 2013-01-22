@@ -1,0 +1,208 @@
+\documentclass[10pt]{book}
+
+\usepackage{bm,amsmath}
+\usepackage{makeidx}
+\usepackage{color}
+\usepackage{natbib}
+\usepackage{mfpic}
+\usepackage{pxfonts}
+\usepackage{lastpage}
+\usepackage{graphicx}
+\usepackage{verbatim} 
+
+\usepackage{minitoc} 
+\usepackage[Lenny]{./styles/fncychap}
+
+\evensidemargin -.2in
+\oddsidemargin .2in
+\topmargin -0.50in
+\textheight 9.0in
+\renewcommand{\baselinestretch}{1.0}
+\textwidth 6.5in
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\leftmark}
+\rhead{Section \thesection}
+\lfoot{{\sc CVMix theory and numerics}}
+\cfoot{\today}
+\rfoot{Page \thepage}
+\renewcommand{\footrulewidth}{1pt}
+\usepackage{kpfonts}
+\fancyhead[LE,LO]{\textsc{\textbf{\nouppercase{\leftmark}}}}
+
+\usepackage{titlesec,titletoc} 
+\titleclass{\part}{top}
+\titleformat{\part}
+{\centering\normalfont\Huge\bfseries}{}{0pt}{}
+
+\usepackage{./styles/Griffies_style}
+
+\usepackage{hyperref}  % must be used last in the list of packages 
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,urlcolor=blue} 
+
+
+\setcounter{tocdepth}{1}
+\setcounter{minitocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+\makeindex 
+\citeindextrue
+
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\thispagestyle{empty}
+\vspace{2cm}
+\begin{center}
+  {\LARGE \sc Community Ocean Vertical Mixing (CVMix)
+    Parameterizations: theory and numerics} 
+  \\
+\end{center}
+\vspace{0.5cm}
+
+\begin{center}
+  Stephen Grif\/f\/ies, Alistair Adcroft, Robert Hallberg \\
+  NOAA/GFDL \\
+  Princeton, USA \\
+ 
+ \vspace{.5cm}
+
+ Gokhan Danabasoglu, William Large, Michael Levy \\
+ NCAR \\
+ Boulder, USA \\
+
+ \vspace{.5cm}
+
+ Doug Jacobsen,  Phil Jones, Mark Peterson, Todd Ringler \\
+ LANL \\
+ Los Alamos, USA \\
+
+
+ \vspace{.5cm}
+
+ Many others...as the project evolves
+
+ \vspace{.5cm}
+
+ Draft from \today
+\end{center}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[ht]
+\begin{center}
+\vspace{1cm}
+{\includegraphics[angle=0,width=14cm]{./figs/OceanProcSchem_revision3.png}}
+\end{center}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\thispagestyle{empty}
+\newpage 
+
+\begin{center}
+{\scshape \Large The CVMix Parameterizations Project} 
+\end{center}
+
+{\sc Community Ocean Vertical Mixing (CVMix) Parameterizations} is a
+software package that aims to provide transparent, robust, flexible,
+well documented, shared Fortran source code for use in parameterizing
+vertical mixing processes in numerical ocean models.  The project is
+focused on developing software for a consensus of first-order closures
+that return a vertical diffusivity, viscosity, and possibly a
+non-local transport, with each quantity dependent on the tracer or
+velocity being mixed.  CVMix modules are written as kernals designed
+for use in a variety of Fortran ocean model codes such as MPAS-ocean,
+MOM, and POP.  CVMix modules use MKS units and expect the same for
+input and output.  Code development occurs within a community of
+scientists and engineers who make use of CVMix modules for a variety
+of ocean codes.  When mature, CVMix modules will be freely distributed
+to the open source community under GPLv2 using an open source
+methodology.
+
+As of January 2013, the CVMix project remains in a very early stage,
+with most of the algorithms listed in this document uncoded.  Hence,
+this document largely summarizes aspirations of its authors, and it
+serves to help develop software design documents.
+
+
+\vspace{2cm}
+
+\noindent
+This document is freely distributed and should be referenced as the
+following. \vspace{.25cm}
+
+\noindent
+{\bf 
+{\scshape{Community Ocean Vertical Mixing (CVMix) Parameterizations}}
+\\
+Many authors...
+\\
+\pageref{LastPage} + v pages\\
+}
+\vspace{.4cm}
+
+\noindent Information about how to download the source code can be
+found at...
+
+\vspace{.4cm}
+
+\noindent
+This document was prepared using \LaTeX \hspace{.1cm} as described by
+\cite{Latex} and \cite{LatexCompanion}.
+
+
+
+
+
+\newpage 
+
+\dominitoc
+\tableofcontents
+\listoffigures
+
+\newpage 
+\pagenumbering{arabic}
+
+\input{cvmix_intro}
+\input{cvmix_elements}
+\input{cvmix_background}
+\input{cvmix_shear}
+\input{cvmix_tidal}
+\input{cvmix_ddiff}
+\input{cvmix_kpp}
+\input{cvmix_convection}
+\input{cvmix_dissipation}
+
+
+%%%%%%%%%%%%%%%%%%%%%      References     %%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage 
+
+\bibliographystyle{./references/elsarticle-harv.bst}
+\addcontentsline{toc}{chapter}{\scshape Bibliography} 
+\markboth{\scshape BIBLIOGRAPHY}{\scshape BIBLIOGRAPHY}
+\gdef\rightmark{\scshape BIBLIOGRAPHY}
+\bibliography{./references/Griffies_refs}
+%\bibliography{/Users/smg/Documents/TEX/bibtex/Griffies_refs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\printindex
+
+\end{document}
+
+
+
+
+
+
+
+

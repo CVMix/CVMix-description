@@ -1,0 +1,115 @@
+\chapter{\scshape Double diffusion}
+\label{chapter:cvmix_ddiffusion}
+
+\minitoc
+\vspace{.5cm}
+
+This chapter details the parameterization of mixing from double
+diffusive processes.  The following CVMix Fortran module is directly
+connected to the material in this chapter:
+\begin{align*} 
+ &{\tt cvmix\_ddiff.F90}
+\end{align*}
+
+\color{red} Elements of this chapter should be rewritten to
+incorporate the Turner angle as in the presentation of
+\cite{Large2012} (see his Figure 6.8) \color{black}
+
+
+\section{Introduction to mixing from double diffusive processes}
+
+Double diffusion processes \citep{Schmitt1994} have the potential to
+significantly enhance vertical diffusivities.  The key stratification
+parameter of use for double diffusive processes is
+\begin{equation}
+ R_{\rho} = \frac{\alpha}{\beta} \left( \frac{\partial\Theta/\partial
+     z}{\partial S / \partial z} \right),  
+\label{eq:stratification-parameter-ddiffuse}
+\end{equation}
+ where the thermal expansion coefficient is given by 
+\begin{equation}
+ \alpha = -\frac{1}{\rho} \, \left( \frac{\partial \rho}{\partial  \Theta} \right),
+\end{equation}
+ and the haline contraction coefficient is 
+\begin{equation}
+ \beta = \frac{1}{\rho} \, \left( \frac{\partial \rho}{\partial  S} \right).
+\end{equation}
+Note that the effects from double diffusive processes on viscosity are
+ignored in CVMix for two reasons:
+\begin{itemize}
+ \item The effects on viscosity are not well known.
+ \item For most applications, the vertical Prandtl number is larger
+   than unity (often 10) for background viscosities (Chapter
+   \ref{chapter:cvmix_background}), so that modifying the vertical
+   viscosity according to double diffusion will not represent a
+   sizable relative impact.
+\end{itemize}
+
+
+There are two regimes of double diffusive processes, with the
+parameterization different in the regimes.  We now detail how CVMix
+parameterizes vertical mixing in these two regimes.  
+
+
+\section{Salt fingering regime}
+\label{section:salt-fingering-param}
+
+The salt fingering regime occurs when salinity is destabilizing the
+water column (salty above fresh water) and when the stratification
+parameter $ R_{\rho}$ is within a particular range:
+\begin{align}
+  &\frac{\partial S}{\partial z} > 0 
+ \\
+  &1 < R_{\rho} < R_{\rho}^0    = 2.55.
+\end{align}
+The parameterized vertical diffusivity in this regime is fit to
+observational estimates given by \cite{StLaurentSchmitt1999}, who
+propose the following form 
+\begin{equation}
+\kappa_d = \kappa_d^0 \left[1-\frac{{R_{\rho}-1}}{{R_{\rho}^0 -1}}\right]^3.
+\label{eq:kappadsf}
+\end{equation}
+The default values for the parameter $\kappa_d^0$ are set to
+\begin{equation}
+   \kappa_d^0   = \left\{  \begin{array}{lll} 
+    &1 \times 10^{-4}~\mbox{m}^{2}~\mbox{s}^{-1} &\mbox{for salinity and other tracers} 
+  \\
+    &0.7 \times 10^{-4}~\mbox{m}^{2}~\mbox{s}^{-1} &\mbox{for temperature.} 
+  \end{array}
+ \right. 
+\end{equation}
+
+
+\section{Diffusive convective regime}
+\label{section:diffusive-convective-param}
+
+Diffusive convective instability occurs where the temperature is
+destabilizing (cold above warm) and with $0 < R_{\rho} < 1$
+\begin{align}
+  &\frac{\partial \Theta}{\partial z} < 0 
+ \\
+  &0 < R_{\rho} < 1.
+\end{align}
+For temperature, the vertical diffusivity used in \cite{LargeKPP} is
+given by
+\begin{eqnarray}
+\kappa_d = \nu_{\mbox{\tiny molecular}} \times 0.909
+     \exp\left(4.6\exp\left[-.54\left(R_{\rho}^{-1} - 1\right)\right]\right),
+\label{eq:kappaddd}
+\end{eqnarray}
+where 
+\begin{equation}
+  \nu_{\mbox{\tiny molecular}} = 1.5 \, \times \, 10^{-6}~\mbox{m}^{2}~\mbox{s}^{-1}
+\end{equation}
+is the molecular viscosity of water.  Multiplying the diffusivity
+(\ref{eq:kappaddd}) by the factor
+\begin{equation}
+\mathrm{factor} = 
+\begin{cases}
+\left(1.85 - 0.85R_{\rho}^{-1}\right) R_{\rho} & 0.5\leq R_{\rho}<1 \\
+0.15  R_{\rho}                                 & R_{\rho} < 0.5, 
+\end{cases}
+\label{schmitdd}
+\end{equation}
+gives the diffusivity for salinity and other tracers.
+

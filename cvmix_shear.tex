@@ -1,0 +1,137 @@
+\chapter{\scshape Parameterized shear induced mixing}
+\label{chapter:cvmix_shear}
+
+\minitoc
+\vspace{.5cm}
+
+In this chapter we detail the CVMix implementations of
+parameterizations arising from shear induced mixing in stratified
+flows.  The following CVMix Fortran module is directly connected to
+the material in this chapter:
+\begin{align*} 
+ &{\tt cvmix\_shear.F90}
+\end{align*}
+
+
+\section{Mixing from shear instability}
+\label{section:shear-instability-mixing}
+
+Shear induced mixing occurs when vertical shears in the horizontal
+velocity overcome the stabilizing effects from vertical buoyancy
+stratification.  Shear instability is governed by the local or
+gradient Richardson number discussed in Section
+\ref{section:gradient-richardson-number-elements}
+\begin{equation}
+ \mbox{Ri} = \frac{N^{2}}{|\partial_{z} \, {\bf u}|^{2} }.
+\label{eq:richardson-number}
+\end{equation}
+In this expression, $N^{2}$ is the squared buoyancy frequency (Section
+\ref{section:buoyancy-frequency-elements}), with a linear
+approximation given by
+\begin{equation}
+ N^{2}_{\mbox{\scriptsize linear}} 
+ = g \, \left( \alpha \, \frac{\partial \Theta}{\partial z} 
+                         - \beta  \, \frac{\partial S}{\partial z} \right).
+\label{eq:buoyancy-frequency-shear}
+\end{equation}
+We assume throughout that the water is stably stratified, so that
+$N^{2} > 0$.  With $N^{2} < 0$, one should set the diffusivity and
+viscosity to a large value to parameterize mixing associated with the
+gravitational instability (see Chapter
+\ref{chapter:cvmix_convection}).
+
+The denominator in the Richardson number in equation
+(\ref{eq:richardson-number}) is the squared vertical shear of the
+horizontal velocity vector resolved by the model grid
+\begin{equation}
+ |\partial_{z} \, {\bf u}|^{2}  =
+  \left( \frac{\partial u}{\partial z} \right)^{2} 
+ +
+ \left( \frac{\partial V}{\partial z} \right)^{2}. 
+\end{equation}
+When the Richardson number is below a critical value, $\mbox{Ri} <
+\mbox{Ri}_{c}$, shear instabilities can grow to initiate turbulence,
+which in turn leads to enhanced mixing.
+
+The canonical value of the critical gradient Richardson number is
+\begin{equation}
+ \mbox{Ri}_{c} =1/4   \qquad \mbox{analytical value from shear layer instability.} 
+\end{equation}
+This value corresponds to the critical value for initiation of a
+Kelvin-Helmholz instability in a shear layer \citep{miles1961}.
+However, as reviewed in Section 4b of \cite{Jacksonetal2008}, there
+are many reasons that 1/4 is not always the optimal value to use in
+numerical simulations.  Thus, most schemes choose noticeably larger
+values, which allows for shear-induced mixing to be intiated in less
+unstable regions of the model's resolved flow.
+
+
+
+
+\section{Richardson number mixing from \cite{PPvmix}}
+\label{section:shear-instability-parameterized-ppvmix}
+
+An early form for parameterized shear mixing is that proposed by
+\cite{PPvmix}, where their application focused on equatorial dynamics.
+They used a different viscosity, $\nu_{\mbox{\tiny pp shear}}$, and
+diffusivity, $\kappa_{\mbox{\tiny pp shear}}$.  For gravitationally
+stable profiles (i.e., $N^{2} > 0$), they chose
+\begin{align}
+ \nu_{\mbox{\tiny pp shear}}&= \frac{\nu_{0}}{(1 + a  \, \mbox{Ri})^{n}} 
+\\
+ \kappa_{\mbox{\tiny pp shear}}&= \frac{\nu_{0}}{(1 + a  \, \mbox{Ri})^{n+1}}, 
+\end{align}
+where $\nu_{0}$, $a$ and $n$ are adjustable parameters.  Common
+settings used in POP are $a=5$ and $n=2$.  Note that the Prandtl
+number is not constant using this prescription
+\begin{subequations}
+\begin{align}
+  \mbox{Pr}_{\mbox{\scriptsize pp}} &= \frac{\nu_{\mbox{\tiny pp shear}}}{\kappa_{\mbox{\tiny pp  shear}}} 
+ \\
+ &= 1 + a  \, \mbox{Ri}.
+\end{align}
+\end{subequations}
+
+
+\section{Richardson number mixing from \cite{LargeKPP}}
+\label{section:shear-instability-parameterized-kpp}
+
+For regions beneath the KPP boundary layer (see Figure
+\ref{fig:boundary-layer-schematic-kpp}), \cite{LargeKPP} and
+\cite{Large_Gent1999} parameterized shear induced mixing using the
+following diffusivities
+\begin{equation}
+  \kappa_{\mbox{\tiny kpp shear}}= \left\{
+\begin{array}{llll}
+&\kappa_{0}  &\mbox{Ri} < 0  &\mbox{gravitational instability regime} 
+ \\
+   &\kappa_{0} \left[1- \left(\frac{\mbox{Ri}}{\mbox{Ri}_0}\right)^2 \right]^3
+   &0 < \mbox{Ri}  <  \mbox{Ri}_0   &\mbox{shear instability regime}
+\\
+ &0 &\mbox{Ri} \ge \mbox{Ri}_{0} &\mbox{stable regime.} 
+\end{array}
+ \right.
+\label{eq:kappa-shear-kpp}
+\end{equation}
+The form in the shear instability regime falls most rapidly near
+$\mbox{Ri} = 0.4 \, \mbox{Ri}_{0}$, which aims to parameterize the
+onset of shear instability. In this neighborhood, rapid changes in
+$\mbox{Ri}$ can cause gravitational instabilities to develop in the
+vertical, but these are largely controlled by vertically smoothing
+$\mbox{Ri}$ profiles with a $1-2-1$ smoother.  Unlike \cite{PPvmix},
+\cite{LargeKPP} chose a unit Prandtl number for shear induced mixing;
+i.e., the shear induced viscosity is the same as the shear induced
+diffusivity
+\begin{subequations}
+\begin{align}
+  \mbox{Pr}_{\mbox{\scriptsize kpp}} &= \frac{\nu_{\mbox{\tiny kpp shear}}}{\kappa_{\mbox{\tiny kpp  shear}}} 
+ \\
+ &= 1.
+\end{align}
+\end{subequations}
+
+
+\section{Richardson number mixing from \cite{Jacksonetal2008}}
+\label{section:shear-instability-parameterized-jackson-etal}
+
+To be completed. 

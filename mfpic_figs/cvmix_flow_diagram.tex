@@ -1,0 +1,101 @@
+\documentclass{/Users/smg/Documents/TEX/elsevier/elsarticle}
+%elsart3p}  
+\journal{Ocean Modelling}
+
+\usepackage{color}
+\usepackage{/Users/smg/Documents/TEX/styles/mystyle}
+\usepackage{bm,amsmath}
+\usepackage{pxfonts}
+\usepackage{xspace}
+
+\usepackage[metapost,truebbox]{mfpic}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+
+\begin{figure*}[h]
+\centering{
+
+  \opengraphsfile{cvmix_flow_diagram}
+     \begin{mfpic}[10][10]{0}{10}{0}{10}
+   \penwd{1.0pt}
+
+   \setlength{\headlen}{5pt}
+
+   \tlabel[cc](14,51){\sc Flow diagram for CVMix Parameterization modules}
+  \tlabel[cc](5,49){\sc algorithmic task}
+   \tlabel[cc](22,49){\tt code}
+
+   \rect{(-2,46),(12,48)}
+   \tlabel[cc](5,47){\sc \small initialization}
+   \arrow \curve{(5,46),(5,45)}
+   \rect{(14,46),(30,48)}
+   \tlabel[cc](21,47){\tt \small driver.F90}
+ 
+   \rect{(-2,43),(12,45)}
+   \tlabel[cc](5,44){\sc \small static background diffusivities}
+  \arrow \curve{(5,43),(5,42)}
+   \rect{(14,43),(30,45)}
+  \tlabel[cc](21,44){\tt \small cvmix\_background.F90}
+ 
+  \rect{(-2,40),(12,42)}
+  \tlabel[cc](5,41.5){\sc \small receive ocean surface fluxes}
+  \tlabel[cc](5,40.5){\sc \small and penetrative radiation}
+ \arrow \curve{(5,40),(5,39)}
+   \rect{(14,40),(30,42)}
+  \tlabel[cc](21,41){\tt \small driver.F90}
+
+   \rect{(-2,37),(12,39)}
+   \tlabel[cc](5,38){\sc \small interior non-convective schemes}
+   \arrow \curve{(5,37),(5,36)}
+   \rect{(14,37),(30,39)}
+   \tlabel[cc](22,37.5){\small \tt \small cvmix\_ddiff.F90}
+   \tlabel[cc](22,38.5){\small \tt  cvmix\_shear.F90, cvmix\_tidal.F90}
+
+   \rect{(-2,33.8),(12,35.8)}
+   \rect{(-2,34),(12,36)}
+  \tlabel[cc](5,35){\sc \small surface boundary layer}
+   \arrow \curve{(5,34),(5,33)}
+   \rect{(14,33.8),(30,35.8)}
+   \rect{(14,34),(30,36)}
+   \tlabel[cc](21,35){\small \tt cvmix\_kpp.F90}
+
+   \rect{(-2,31),(12,33)}
+   \tlabel[cc](5,32){\sc \small convective instability}
+   \arrow \curve{(5,31),(5,30)}
+   \rect{(14,31),(30,33)}
+   \tlabel[cc](21,32){\small \tt cvmix\_convection.F90}
+
+  \rect{(-2,28),(12,30)}
+   \tlabel[cc](5,29.5){\sc \small diffusivities and non-local}
+   \tlabel[cc](5,28.5){\sc \small to the calling ocean model}
+  \arrow \curve{(5,28),(5,27)}
+   \rect{(14,28),(30,30)}
+   \tlabel[cc](21,29){\tt \small driver.F90}
+
+%   \rect{(-2,28),(12,30)}
+%   \tlabel[cc](5,29.5){\sc \small minimum dissipation}
+%   \tlabel[cc](5,28.5){\sc \small (done outside CVMix)}
+%   \arrow \curve{(5,28),(5,27)}
+ %  \rect{(14,28),(30,30)}
+%   \tlabel[cc](21,29){\small \tt dissipation.F90}
+ 
+  \arrow \curve{(5,27),(-5,27)}
+  \arrow \curve{(-5,27),(-5,44)}
+  \arrow \curve{(-5,44),(-2,44)}
+
+
+
+      \end{mfpic}
+  \closegraphsfile
+
+
+}
+\end{figure*}
+
+
+
+
+\end{document}

@@ -1,0 +1,76 @@
+\documentclass{elsart3p}  
+\journal{Ocean Modelling}
+
+\usepackage{color}
+\usepackage{bm,amsmath}
+\usepackage{pxfonts}
+\usepackage{xspace}
+
+\usepackage[metapost]{mfpic}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+
+\begin{figure*}[h]
+\centering{
+
+  \opengraphsfile{cvmix_stabilityA}
+	\begin{mfpic}[10][10]{0}{10}{0}{10}
+
+      \penwd{.75pt}
+       \setlength{\headlen}{4pt} 
+
+
+        % axes 
+       \arrow\polyline{(-23,3),(-23,5)}
+       \tlabel[cc](-23,2.5){ $z$}
+
+     \mfpdefinecolor{DarkerRed}{rgb}{.67,0,0} 
+       \drawcolor{DarkerRed}  
+       \fillcolor[rgb]{0,0,1}
+
+
+\penwd{1.5pt}
+\rect{(-20,0),(-10,10)}  
+\rect{(-20,-10),(-10,0)}  
+\plotsymbol[4pt]{SolidCircle}{(-15,5)}\tlabel[cc](-14.2,5.1){{$z$}}
+\plotsymbol[4pt]{SolidCircle}{(-15,-5)}\tlabel[cc](-13.2,-4.9){{$z-\mathrm{d}z$}}
+\penwd{1.0pt}
+\arrow\arc[s]{(-15,5),(-15,-4.8),45}
+
+
+\penwd{1.5pt}
+\rect{(-5,0),(5,10)}  
+\rect{(-5,-10),(5,0)}  
+\plotsymbol[4pt]{SolidCircle}{(0,5)}\tlabel[cc](1.8,5.1){{$z+\mathrm{d}z$}}
+\plotsymbol[4pt]{SolidCircle}{(-0,-5)}\tlabel[cc](0.8,-4.9){{$z$}}
+\penwd{1.0pt}
+\arrow\arc[s]{(-0,-4.8),(-0,5),45}
+
+
+\penwd{1.5pt}
+\rect{(10,0),(20,10)}  
+\rect{(10,-10),(20,0)}  
+\plotsymbol[4pt]{SolidCircle}{(15,5)}\tlabel[cc](17.2,5.1){{$z+\mathrm{d}z/2$}}
+\plotsymbol[4pt]{SolidCircle}{(15,-5)}\tlabel[cc](17.2,-5.1){{$z-\mathrm{d}z/2$}}
+\plotsymbol[4pt]{SolidCircle}{(15,0)}\tlabel[cc](15.6,0.4){{$z$}}
+\penwd{1.0pt}
+\arrow\arc[s]{(15,-4.8),(15,-.2),45}
+\arrow\arc[s]{(15,4.8),(15,.2),45}
+
+
+
+
+
+       \end{mfpic}
+  \closegraphsfile
+
+}
+\end{figure*}
+
+
+
+
+\end{document}

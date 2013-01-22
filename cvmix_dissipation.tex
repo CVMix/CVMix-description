@@ -1,0 +1,114 @@
+\chapter{\scshape Diffusivity based on a chosen dissipation}
+\label{chapter:cvmix_dissipate}
+
+\minitoc
+\vspace{.5cm}
+
+The purpose of this chapter is to summarize a method that is not
+available in CVMix, yet which may be of interest to modellers using
+CVMix schemes.  This method specifies vertical tracer diffusivities
+based on setting a floor to the power dissipation.  This approach was
+found to be useful in the ESM2G earth system model documented by 
+\cite{Dunne_etal_part1_2012}.
+
+
+\section{Power dissipation from vertical diffusion}
+\label{section:vert_dissipation_formulation}
+
+Vertical tracer diffusion is associated with a dissipation of power.
+Assuming temperature and salinity have the same vertical diffusivities
+leads to the expression for power dissipation
+($\mbox{W}~\mbox{m}^{-3}$)
+\begin{equation}
+\begin{split}
+ \epsilon &= \rho \,  \kappa \, N^{2}
+ \\
+&= -\kappa \, g \, \left( \frac{\partial \rho}{\partial \theta} \, \frac{\partial \theta}{\partial z} 
+                                      +\frac{\partial \rho}{\partial S}         \, \frac{\partial S}{\partial z}
+                                \right).
+\end{split}
+\end{equation}
+In these equations, $\kappa$ is the vertical tracer diffusivity and
+$g$ is the gravitational acceleration. When the temperature and
+salinity diffusivities differ, as occurs with double diffusion
+(Chapter \ref{chapter:cvmix_ddiffusion}), power dissipation is computed
+via
+\begin{equation}
+\begin{split}
+  \epsilon &= 
+ -g \, \kappa{\mbox{\tiny temp}} \,  \left( \frac{\partial \rho}{\partial \theta} \, \frac{\partial \theta}{\partial z} \right)
+-g\, \kappa{\mbox{\tiny salt}}     \, \left(  \frac{\partial \rho}{\partial S}        \, \frac{\partial S}{\partial z} \right).
+\end{split}
+\end{equation}
+
+
+\section{Setting a floor to the dissipation} 
+\label{section:setting-a-floor-to-dissipation}
+
+
+We now compute a floor to the dissipation according to 
+\begin{equation}
+ \epsilon_{\mbox{\tiny floor}} =  \epsilon_{\mbox{\tiny min}} + B \, |N|, 
+\end{equation}
+ where 
+\begin{equation}
+  \epsilon_{\mbox{\tiny min}} \sim 10^{-6}~\mbox{W}~\mbox{m}^{-3}
+\end{equation}
+is a specified minimum power dissipation (set according to a
+namelist), $B$ is another namelist parameter (physical dimensions
+$\mbox{J}~\mbox{m}^{-3}$) further discussed below, and $|N|$ is the
+absolute value of the buoyancy frequency.  As discussed below (see
+equation (\ref{eq:gargett-scaling})), the $B \, |N|$ contribution to
+dissipation is motivated by the stratification dependent diffusivity
+proposed by \cite{Gargett1984}.
+
+We establish a floor to the vertical diffusivity according to
+\begin{equation}
+\begin{split}
+  \kappa_{\mbox{\tiny floor}} &= \frac{ \epsilon_{\mbox{\tiny floor}}  \, \Gamma^{\mbox{\tiny regularized}}}{\rho \, N^{2}} 
+  \\
+ &\approx \frac{\epsilon_{\mbox{\tiny floor}} \, \Gamma_{o}  }{\rho_{o} \, (N^{2} + \Omega^{2})}.
+\end{split}
+\end{equation}
+ In this equation, 
+\begin{equation}
+ \Gamma^{\mbox{\tiny regularized}} = \Gamma_{o} \,  \left( \frac{ N^{2}}{ N^{2} +\Omega^{2}} \right)
+\end{equation}
+is a regularized mixing efficiency introduced by
+\cite{Melet_etal_2012},
+\begin{equation}
+ \Gamma_{o} = 0.2
+\end{equation}
+is a nominal value for stratified water where $N^{2} >> \Omega^{2}$,
+and
+\begin{equation}
+ \Omega = 7.2921 \times 10^{-5} \mbox{s}^{-1}
+\end{equation} 
+is the angular rotation rate of the earth about its axis and around
+the sun (see also equation (\ref{eq:Omega-defined})).  In the special
+case of $N^{2} >> \Omega^{2}$, and $\epsilon_{\mbox{\tiny floor}}
+\approx B \, |N|$, then
+\begin{equation}
+ \kappa_{\mbox{\tiny floor}} \approx \left( \frac{ \Gamma_{o} \,  B }{\rho_{o}} \, \right) \, |N|^{-1}.
+\label{eq:gargett-scaling}
+\end{equation} 
+This scaling with respect to buoyancy frequency was suggested by
+\cite{Gargett1984}, where she recommended in open water to choose
+\begin{equation}
+   \frac{ \Gamma_{o} \,  B }{\rho_{o}} \approx 10^{-7}~\mbox{m}^{2}~\mbox{s}^{-2},
+\end{equation}
+ so that 
+\begin{equation}
+ B \approx 5 \times  10^{-4}~\mbox{J}~\mbox{m}^{-3}.
+\end{equation}
+This value may in fact be quite large, with the value $B \sim 1.5
+\times 10^{-4}~\mbox{J}~\mbox{m}^{-3}$ used in the isopycnal model of
+\cite{Dunne_etal_part1_2012}.
+
+When utilizing this method, the tracer diffusivity used for
+temperature, salinity, and passive tracers is set to be no smaller
+than $\kappa_{\mbox{\tiny floor}}$.  The check should be made at the
+end of the vertical mixing processes for whether the diffusivity
+satisfies this constraint (see Figure
+\ref{fig:vertical_mix_flow_cvmix}).  If too small, then diffusivity is
+increased to meet the constraint.

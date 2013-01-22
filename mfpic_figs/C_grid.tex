@@ -1,0 +1,62 @@
+\documentclass{elsart3p}  
+\journal{Ocean Modelling}
+
+\usepackage{color}
+\usepackage{bm,amsmath}
+\usepackage{pxfonts}
+\usepackage{xspace}
+
+\usepackage[metapost]{mfpic}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+
+\begin{figure*}[h]
+\centering{
+
+  \opengraphsfile{C_grid}
+	\begin{mfpic}[10][10]{0}{10}{0}{10}
+        \penwd{2.0pt}
+
+
+         % axes 
+        \setlength{\headlen}{6pt} 
+        \arrow\polyline{(-17,5),(-17,10)}
+       \arrow\polyline{(-17,5),(-12,5)}
+        \tlabel[cc](-17,11){{\tt j}}
+        \tlabel[cc](-11.5,5){{\tt i}}
+
+
+        % T-cell
+       \mfpdefinecolor{DarkerRed}{rgb}{.67,0,0} 
+       \drawcolor{DarkerRed}  
+       \rect{(-10,0),(0,10)}
+
+        %q-point 
+       \tlabel(-.25,9.7){{\bf X}}
+       \tlabel[cc](2,11){{\tt q(i,j,k)}}
+
+
+       \gfill[DarkerRed]\circle{(-5,5),.45}
+       \tlabel[cc](-5,4.1){{\tt T(i,j,k)}}
+
+       \drawcolor[rgb]{0,0,1}  
+       \penwd{1.5pt}
+       \arrow\polyline{(-1,5),(1,5)}
+       \tlabel[cc](2,5){ $u_{i,j,k}$}
+       \arrow\polyline{(-5,9),(-5,11)}
+       \tlabel[cc](-5,11.5){$v_{i,j,k}$}
+
+
+        \end{mfpic}
+  \closegraphsfile
+
+}
+\end{figure*}
+
+
+
+
+\end{document}

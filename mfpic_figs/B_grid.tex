@@ -1,0 +1,59 @@
+\documentclass{elsart3p}  
+\journal{Ocean Modelling}
+
+\usepackage{color}
+\usepackage{bm,amsmath}
+\usepackage{pxfonts}
+\usepackage{xspace}
+
+\usepackage[metapost]{mfpic}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+
+\begin{figure*}[h]
+\centering{
+
+  \opengraphsfile{B_grid}
+	\begin{mfpic}[10][10]{0}{10}{0}{10}
+
+        \penwd{2.0pt}
+
+       % \tlabel[cc](-25,8){{\Large B-grid}}
+
+         % axes 
+         \setlength{\headlen}{6pt} 
+        \arrow\polyline{(-17,5),(-17,10)}
+        \arrow\polyline{(-17,5),(-12,5)}
+        \tlabel[cc](-17,11){{\tt j}}
+        \tlabel[cc](-11.5,5){{\tt i}}
+
+
+        % T-cell
+       \mfpdefinecolor{DarkerRed}{rgb}{.67,0,0} 
+       \drawcolor{DarkerRed}  
+       \rect{(-10,0),(0,10)}
+
+        %U-cell 
+        \drawcolor[rgb]{0,0,1}  
+        \dashed\rect{(-5,5),(5,15)}
+        \gfill[blue]\circle{(0,10),.45}
+        \tlabel[cc](-0,11){{\tt U(i,j,k)}}
+
+
+      \gfill[DarkerRed]\circle{(-5,5),.45}
+      \tlabel[cc](-5,4.1){{\tt T(i,j,k)}}
+
+
+        \end{mfpic}
+  \closegraphsfile
+
+}
+\end{figure*}
+
+
+
+
+\end{document}

@@ -1,0 +1,122 @@
+\documentclass{elsart3p}  
+\journal{Ocean Modelling}
+
+\usepackage{color}
+\usepackage{/Users/smg/Documents/TEX/styles/mystyle}
+\usepackage{bm,amsmath}
+\usepackage{pxfonts}
+\usepackage{xspace}
+
+\usepackage[metapost]{mfpic}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+
+\begin{figure*}[h]
+\centering{
+
+
+  \opengraphsfile{cvmix_kpp_boundary_layer}
+	\begin{mfpic}[10][10]{0}{10}{0}{10}
+
+%         \rect{(-4,-2),(18.5,11)}
+
+        % sea surface 
+        \tlabel[cc](20,31.8){\sc air-sea or ice-sea interface: $z=\eta$}
+        \penwd{0.5pt}
+        \function{-3.5,29,.1}{31 + .2*sin (1*x)}
+        \penwd{1.0pt}
+
+        % surface flux vectors  
+        \arrow \curve{(2.5,32),(2.5,30)}
+        \arrow \curve{(2.5,30),(2.5,32)}
+        \arrow \curve{(1.5,32),(1.5,30)}
+        \arrow \curve{(1.5,30),(1.5,32)}
+        \arrow \curve{(0.5,32),(0.5,30)}
+        \arrow \curve{(0.5,30),(0.5,32)}
+       \tlabel[cc](1.7,32.8){$B_{R}$, $B_{f}$, $\bftau$, $\Qm$}
+       \tlabel[cc](1.7,34.0){\sc surface fluxes}
+
+        % penetrative radiation
+        \penwd{0.5pt}
+        \rotatepath{(-.40,1.8), 90}\function{1.75,29,.1}{2 + 0.004*sin (5*x)*exp(x/5)}
+        \penwd{1.0pt}
+        \arrow \curve{(-0.4,25),(-0.4,23)}
+        \tlabel[cc](2.5,23.8){\small \sc penetrative \\ \small \sc  shortwave}
+
+        % vertical thickness M-O layer 
+        \tlabel[cc](21.4,30){$\epsilon \, h$}
+        \arrow \curve{(22.2,31),(22.2,29)}
+        \arrow \curve{(22.2,29),(22.2,31)}
+
+        % vertical thickness KPP layer 
+        \tlabel[cc](22.5,22){\small \sc KPP boundary \\ \small  \sc    layer thickness: \large $h$}
+        \arrow \curve{(26.2,31),(26.2,13)}
+        \arrow \curve{(26.2,13),(26.2,31)}
+
+
+      \penwd{1.0pt}
+
+        % surface layer
+        \tlabel[cc](11,30){\footnotesize \sc Monin-Obukhov surface layer}
+        \penwd{0.5pt}
+        \function{-3.5,29,.1}{29 + .2*sin (2*x)}
+        \penwd{1.0pt}
+
+
+        % KPP boundary layer
+%        \tlabel[cc](12,18){\large \sc KPP boundary layer}
+        \penwd{0.5pt}
+        \function{-3.5,29,.1}{12.5 + 0.75*sin (0.5*x)}
+        \penwd{1.0pt}
+
+
+      % bottom 
+        \tlabel[cc](16,2.2){ocean bottom: $z=-H$}
+        \penwd{2pt}
+        \function{-3.5,29,.1}{.5 + sin (x/2)}
+        \penwd{1.0pt}
+        \curve{(-3.1,-.6),(-2.0,-1.8)}
+        \curve{(-1.3,-.3),(0.0,-1.8)}
+       \curve{(0.0,.3),(2.0,-1.8)}
+        \curve{(1.3,1.0),(4.0,-1.8)}
+        \curve{(2.9,1.4),(6.0,-1.8)}
+        \curve{(5.2,1.1),(8.0,-1.8)}
+        \curve{(8.7,-.4),(10.0,-1.8)}
+        \curve{(10.7,-.4),(12.0,-1.8)}
+        \curve{(12.0,.3),(14.0,-1.8)}
+        \curve{(13.5,.8),(16.0,-1.8)}
+        \curve{(15.0,1.3),(18.0,-1.8)}
+        \curve{(16.5,1.5),(20.0,-1.8)}
+        \curve{(19.5,0.2),(22.0,-1.8)}
+        \curve{(22.0,-.5),(23.5,-1.8)}
+        \curve{(23.5,-.4),(25.0,-1.8)}
+        \curve{(25.0,.20),(26.75,-1.8)}
+        \curve{(26.5,.90),(29.0,-1.8)}
+
+        \arrow \curve{(3.5,1),(3.5,2.5)}
+        \arrow \curve{(2.5,1),(2.5,2.5)}
+       \tlabel[cc](3.0,3.25){geothermal}
+
+
+       % x-z-axis 
+%         \penwd{1.250pt}
+%         \arrow \curve{(-2,7),(-2,9)}
+%         \tlabel[cc](-1.5,8.4){$z$}
+%         \arrow \curve{(-2,7),(0,7)}
+%         \tlabel[cc](-.1,6.3){$x,y$}
+%         \penwd{1.0pt}
+
+
+        \end{mfpic}
+  \closegraphsfile
+
+}
+\end{figure*}
+
+
+
+
+\end{document}

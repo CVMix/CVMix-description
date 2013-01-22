@@ -1,0 +1,136 @@
+\documentclass{elsart3p}  
+\journal{Ocean Modelling}
+
+\usepackage{color}
+\usepackage{bm,amsmath}
+\usepackage{pxfonts}
+\usepackage{xspace}
+
+\usepackage[metapost]{mfpic}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+
+\begin{figure*}[h]
+\centering{
+
+  \opengraphsfile{cvmix_discrete_vertical}
+	\begin{mfpic}[10][10]{0}{10}{0}{10}
+
+      \penwd{.75pt}
+       \setlength{\headlen}{4pt} 
+
+%        \tlabel[cc](-15,13){\sc Discrete vertical grid for CVMix modules}
+
+
+        % axes 
+       \arrow\polyline{(-26,3),(-26,5)}
+       \tlabel[cc](-26,2.5){ $z$}
+
+      \arrow\polyline{(-26,-3),(-26,-5)}
+      \tlabel[cc](-26,-2.5){{\tt \small kt,kw}}
+
+      \mfpdefinecolor{DarkerRed}{rgb}{.67,0,0} 
+       \drawcolor{DarkerRed}  
+       \fillcolor[rgb]{0,0,1}
+
+\tlabel[cc](-0.5,10.5){$z=\eta(x,y,t)$}
+\tlabel[cc](-0.5,-18.5){$z=-H(x,y)$}
+\arrow\polyline{(-0,10),(-0,-18)}
+\arrow\polyline{(-0,-18),(-0,10)}
+
+\arrow\polyline{(0,10),(0,-18)}
+\arrow\polyline{(0,-18),(0,10)}
+\tlabel[cc](2.5,-4){{\tiny \tt zw(kw=nlevs+1)}}
+
+\arrow\polyline{(-9,10),(-9,-8)}
+\arrow\polyline{(-9,-8),(-9,10)}
+\tlabel[cc](-7.5,1){{\tiny \tt zw(kw=4)}}
+
+\arrow\polyline{(-19,10),(-19,7.5)}
+\arrow\polyline{(-19,7.5),(-19,10)}
+\tlabel[cc](-20.5,8.75){{\tiny \tt dzw(kw=1)}}
+
+\arrow\polyline{(-19,7.5),(-19,2.5)}
+\arrow\polyline{(-19,2.5),(-19,7.5)}
+\tlabel[cc](-20.5,4.5){{\tiny \tt dzw(kw=2)}}
+
+\arrow\polyline{(-19,2.5),(-19,-4)}
+\arrow\polyline{(-19,-4),(-19,2.5)}
+\tlabel[cc](-20.5,-1){{\tiny \tt dzw(kw=3)}}
+
+\arrow\polyline{(-19,-4),(-19,-14)}
+\arrow\polyline{(-19,-14),(-19,-4)}
+\tlabel[cc](-20.5,-10){{\tiny \tt dzw(kw=4)}}
+
+\arrow\polyline{(-19,-14),(-19,-18)}
+\arrow\polyline{(-19,-18),(-19,-14)}
+\tlabel[cc](-20.5,-16){{\tiny \tt dzw(kw=5)}}
+
+
+
+\arrow\polyline{(-5,10),(-5,-4)}
+\arrow\polyline{(-5,-4),(-5,10)}
+\tlabel[cc](-3.5,2.5){{\tiny \tt zt(kt=3)}}
+
+
+\penwd{.75pt}
+\arrow\polyline{(-13,10),(-13,5)}
+\arrow\polyline{(-13,5),(-13,10)}
+\tlabel[cc](-11.5,7.75){{\tiny \tt dzt(kt=1)}}
+
+\arrow\polyline{(-13,5),(-13,0)}
+\arrow\polyline{(-13,0),(-13,5)}
+\tlabel[cc](-11.5,2.75){{\tiny \tt dzt(kt=2)}}
+
+\arrow\polyline{(-13,0),(-13,-8)}
+\arrow\polyline{(-13,-8),(-13,0)}
+\tlabel[cc](-11.5,-4){{\tiny \tt dzt(kt=3)}}
+
+\arrow\polyline{(-13,-8),(-13,-18)}
+\arrow\polyline{(-13,-18),(-13,-8)}
+\tlabel[cc](-11.5,-13){{\tiny \tt dzt(kt=4)}}
+
+
+
+
+\penwd{1.5pt}
+\rect{(-22,5),(-10,10)}  
+\penwd{1.0pt}
+\plotsymbol[4pt]{Diamond}{(-16,10)}\tlabel[cc](-16.1,10.5){{\tiny \tt kw=1}}
+\plotsymbol[4pt]{SolidCircle}{(-16,7.5)}\tlabel[cc](-15.1,7.5){{\tiny \tt kt=1}} 
+\plotsymbol[4pt]{Diamond}{(-16,5)}\tlabel[cc](-15.1,5.4){{\tiny \tt kw=2}}
+     
+\penwd{1.5pt}
+\rect{(-22,0),(-10,5)}  
+\penwd{1.0pt}
+\plotsymbol[4pt]{SolidCircle}{(-16,2.5)}\tlabel[cc](-15.1,2.5){{\tiny \tt kt=2}} 
+\plotsymbol[4pt]{Diamond}{(-16,0)}\tlabel[cc](-15.1,0.4){{\tiny \tt kw=3}}
+     
+\penwd{1.5pt}
+\rect{(-22,-8),(-10,0)}  
+\penwd{1.0pt}
+\plotsymbol[4pt]{SolidCircle}{(-16,-4)}\tlabel[cc](-15.1,-4){{\tiny \tt kt=3}} 
+\plotsymbol[4pt]{Diamond}{(-16,-8)}\tlabel[cc](-15.1,-7.6){{\tiny \tt kw=4}}
+     
+\penwd{1.5pt}
+\rect{(-22,-18),(-10,-8)}  
+\penwd{1.0pt}
+\plotsymbol[4pt]{SolidCircle}{(-16,-14)}\tlabel[cc](-15.1,-14){{\tiny \tt kt=4}} 
+\plotsymbol[4pt]{Diamond}{(-16,-18)}\tlabel[cc](-15.1,-17.5){{\tiny \tt kw=5}}
+
+\thatch\rect{(-22,-20),(-10,-18)}  
+     
+
+       \end{mfpic}
+  \closegraphsfile
+
+}
+\end{figure*}
+
+
+
+
+\end{document}

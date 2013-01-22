@@ -1,0 +1,796 @@
+\chapter{\scshape Energetically based mixing schemes from tidal dissipation}
+\label{chapter:cvmix_tidal}
+
+\minitoc
+\vspace{.5cm}
+
+This chapter summarizes the CVMix implementation of the parameterized
+vertical mixing associated with tidal dissipation in both the ocean
+interior and near the bottom.  The following CVMix Fortran module is
+directly connected to the material in this chapter:
+\begin{align*} 
+ &{\tt cvmix\_tidal.F90}
+\end{align*}
+
+
+\section{Introduction to tidal induced mixing}
+\label{section:vert_tidal_intro}
+
+Mixing arises when energy dissipates at the small scales in the
+presence of a nonzero gradient of tracer and/or momentum.  There are
+two sources of energy dissipation considered in this chapter.
+\begin{itemize}
+
+\item {\sc Internal waves in ocean interior}: Breaking internal
+  gravity waves arise when barotropic tidal flow is scattered into
+  internal tidal energy. This process occurs when astronomical tides
+  interact with rough bottom topography,
+
+\item {\sc Tidal waves interacting with continental shelves}:
+  Frictional bottom drag is enhanced as tides encounter continental
+  shelves (whose depths are generally 500~m or less).  There is an
+  associated mixing of water masses due to this dissipation.
+
+\end{itemize}
+To resolve both of these dissipation processes explicitly in a
+numerical model requires grid resolution no coarser than meters in the
+vertical (throughout the water column), and 1-10 kilometers in the
+horizontal.  This very fine resolution is not generally accessible to
+global climate models, so it is necessary to consider a
+parameterization.
+
+CVMix has implementations for the following tide mixing
+parameterizations.
+\begin{itemize}
+ 
+\item {\sc baroclinic or internal wave mixing}: \cite{Simmonsetal2004}
+  presented the first implementation in an ocean climate model of an
+  internal tide mixing parameterization.  \cite{Jayne2009} followed
+  with an updated implementation.  A more recent study by
+  \cite{Melet_etal_2013} implemented the ideas from \cite{Polzin2009}
+  to remove the arbitrariness of the vertical deposition function used
+  by \cite{Simmonsetal2004} and \cite{Jayne2009}.  Any of these
+  schemes aim to provide a physically based replacement for the static
+  vertical diffusivity of \cite{BryanLewis1979} (Chapter
+  \ref{chapter:cvmix_background}).
+
+\item {\sc bottom drag induced mixing}: \cite{Legg_eta2006}, in their
+  appendix, present a method to account for the mixing associated with
+  bottom drag dissipation.
+
+\end{itemize}
+Although CVMix provides an optional Prandtl number, it is general
+practice to assume a unit Prandtl number for each of the tide
+parameterization schemes.\footnote{The Prandlt number is the ratio of
+  viscosity to diffusivity.}
+
+
+
+\section{Energetic elements of tide mixing parameterizations}
+\label{section:vert_tidal_formulation}
+
+We now consider some elements of how various of the energetic based
+tide mixing parameterizations are formulated. 
+
+
+\subsection{Bottom drag}
+\label{subsection:bottom-drag-barotropic-tides}
+
+Frictional bottom drag is typically parameterized as
+\begin{equation}
+  {\bf D}_{\mbox{\tiny bottom drag}} = C_{D} \, {\bf u} \, | {\bf u}|
+  \qquad \mbox{(units of $\mbox{m}^{2}~\mbox{s}^{-2}$),}
+\end{equation}
+where $C_{D}$ is a dimensionless drag coefficient with a value on the
+order of
+\begin{equation}
+C_{D} \approx  2 \times 10^{-3}. 
+\end{equation}
+Energy dissipation associated with this bottom drag is given by
+\begin{equation}
+ E_{\mbox{\tiny bottom drag}} =
+  \rho_{o} \, {\bf u} \cdot {\bf D}_{\mbox{\tiny bottom drag}} 
+ = \rho_{o} \, |{\bf u}|^{3}
+\qquad \mbox{(units of $\mbox{W} \; \mbox{m}^{-2}$),}
+\label{eq:energy-dissipation-bottom-drag-general}
+\end{equation}
+where $\rho_{o}$ is a reference ocean density.  
+
+A component to the energy dissipation
+(\ref{eq:energy-dissipation-bottom-drag-general}) is associated with
+barotropic tides as they encounter the ocean bottom, particularly
+continental shelves and other shallow ocean regions.  In an ocean
+model that does not represent the astronomical tides, we may choose to
+enhance the model's bottom velocity through a root-mean-square tidal
+speed,$U_{\mbox{\tiny tide}}$, so that the bottom drag takes the form
+\begin{equation}
+  {\bf D}_{\mbox{\tiny bottom drag}} = 
+  C_{D} \, {\bf u} \, \left( {\bf u}^{2} + U_{\mbox{\tiny tide}}^{2} \right)^{1/2},
+\end{equation}
+where now the velocity ${\bf u}$ refers to the model's resolved bottom
+velocity field.  The modified energy dissipation from bottom drag
+thus takes the form
+\begin{equation}
+ E_{\mbox{\tiny bottom drag}} =  \rho_{o} \, C_{D} \,  {\bf u}^{2} \, \left( {\bf u}^{2} + U_{\mbox{\tiny tide}}^{2} \right)^{1/2}.
+\label{eq:energy-dissipation-bottom-drag-with-tides}
+\end{equation}
+
+Note that the tidal speed $U_{\mbox{\tiny tide}}$ may be a prescribed
+global constant, as in the OCCAM simulations from \cite{Webbetal1998}.
+It may instead be a map determined by an offline tide model, as in
+\cite{Jayne_etal2001}.  Or, it may be computed online by periodically
+running a tide model during the update of the primitive equation ocean
+model.
+
+
+\subsection{Wave drag from breaking internal gravity waves}
+
+A drag associated with breaking internal gravity waves was written by
+\cite{Jayne_etal2001} as
+\begin{equation}
+  {\bf D}_{\mbox{\tiny wave drag}} = (1/2) \, N_{\mbox{\tiny bott}}\,  
+  \kappa_{\mbox{\tiny topo}} \, h_{\mbox{\tiny topo}}^{2} \, {\bf u}
+\qquad \mbox{(units of $\mbox{m}^{2} \; \mbox{s}^{-2}$),}
+\end{equation}
+where $N_{\mbox{\tiny bott}}$ is the buoyancy frequency at the ocean
+bottom, and $(\kappa_{\mbox{\tiny topo}},h_{\mbox{\tiny topo}})$ are
+wavenumber (dimensions of inverse length) and amplitude (dimensions of
+length) scales for the topography.  The product $\kappa_{\mbox{\tiny
+    topo}} \, h_{\mbox{\tiny topo}}^{2}$ has dimensions of length and
+defines a {\em roughness length}
+\begin{equation}
+  L_{\mbox{\tiny rough}} = \kappa_{\mbox{\tiny topo}} \, h_{\mbox{\tiny topo}}^{2}  
+\label{eq:roughness-length}
+\end{equation}
+to be specified according to statistics of the observed ocean bottom
+topography.  The internal wave drag can thus be written as
+\begin{equation}
+  {\bf D}_{\mbox{\tiny wave drag}} = (1/2) \, N_{\mbox{\tiny bott}}  \,  L_{\mbox{\tiny rough}} \, {\bf u}
+\qquad \mbox{(units of $\mbox{m}^{2} \; \mbox{s}^{-2}$).}
+\end{equation}
+
+The energy dissipation associated with breaking internal gravity waves
+is given by
+\begin{equation}
+\begin{split}
+ E_{\mbox{\tiny wave drag}} &=
+  \rho_{o} \, \langle {\bf u} \cdot {\bf D}_{\mbox{\tiny wave drag}} \rangle 
+ \\
+ &=
+   (\rho_{o}/2) \, N_{\mbox{\tiny bott}}  \,  L_{\mbox{\tiny rough}}
+   \,  \langle {\bf u}^{2} \rangle  
+ \qquad \mbox{(units of $\mbox{W} \; \mbox{m}^{-2}$).}
+\end{split}
+\label{eq:wave-energy-flux}
+\end{equation}
+In the \cite{Jayne_etal2001} paper, they emphasize that
+$\kappa_{\mbox{\tiny topo}}$, which sets the roughness length through
+$L_{\mbox{\tiny rough}} = \kappa_{\mbox{\tiny topo}} \, h_{\mbox{\tiny
+    topo}}^{2}$, is used as a tuning parameter, with the tide model
+tuned to give sea level values agreeing with observations.  Then, the
+energy dissipation can be diagnosed from the tide model.
+
+As with the bottom drag (Section
+\ref{subsection:bottom-drag-barotropic-tides}), the wave energy
+dissipation arises from energy removed from the barotropic tides, yet
+here the is transferred into baroclinic tides.  Some of the energy
+transferred into the baroclinic tides dissipates locally due to local
+wave breaking, and this then leads to enhanced mixing locally.  The
+remaining baroclinic energy propogates away (i.e., it is non-local).
+The ratio of local to non-local energy is not well known, and is the
+focus of research.   
+
+
+\subsection{Relating dissipation to mixing via \cite{Osborn1980}}
+
+Mixing occurs when mechanical energy is dissipated in the presence of
+stratification.  The relation between energy dissipation and mixing is
+not known from first principles, so we consider dimensional arguments
+to establish a useful form.  Since we are concerned with vertical
+mixing, we assume that diffusivity is inversely proportional to the
+vertical stratification, with stratification strength measured by the
+buoyancy frequency, with a linearized form given by equation
+(\ref{eq:buoyancy-frequency-elements})
+\begin{equation}
+N^{2} =  -\frac{g}{\rho} \, \left( 
+   \frac{\partial \rho}{\partial \theta} \frac{\partial \theta}{\partial z}  
+  +
+   \frac{\partial \rho}{\partial S} \frac{\partial S}{\partial z}
+\right), 
+\end{equation}
+and a fully nonlinear form detailed in Section
+\ref{subsection:buoyancy-frequency-and-stability}.  Mechanical energy
+per mass has units of $\mbox{m}^{2}~\mbox{s}^{-2} =
+\mbox{J}~\mbox{kg}^{-1}$, and the dissipation of this energy, written
+as $\epsilon$, has units of $\mbox{m}^{2}~\mbox{s}^{-3} =
+\mbox{W}~\mbox{kg}^{-1}$
+\begin{equation}
+\epsilon = \mbox{mechanical energy dissipation in units of
+ $\mbox{m}^{2}~\mbox{s}^{-3} = \mbox{W}~\mbox{kg}^{-1}$.}
+\label{eq:energy-dissipation-epsilon}
+\end{equation}
+Together, the energy dissipation and buoyancy frequency define a
+diffusivity given through the relation \citep{Osborn1980}
+\begin{equation}
+  \kappa_{\mbox{\tiny dissipate}} = \frac{\Gamma \, \epsilon}{N^{2}},
+\label{eq:osborn-relation}
+\end{equation} 
+where the dimensionless parameter $\Gamma$ measures the efficiency
+that mechanical energy dissipation translates into mixing that can be
+parameterized by a diffusivity acting on vertical stratification.
+This relation is used throughout the mixing community for converting
+measurements of mechanical energy dissipation into diffusivity.
+
+The efficiency parameter in equation (\ref{eq:osborn-relation}) is
+often chosen as
+\begin{equation}
+  \Gamma = 0.2
+\end{equation}
+based measurements \citep{Osborn1980,Ivey_Imberger1991}.  However, in
+regions of very weak vertical stratification, where $N^{2} \rightarrow
+0$, we suggest following \cite{Melet_etal_2013}, in which the mixing
+efficiency tends to zero according to
+\begin{equation}
+  \Gamma = 0.2 \left( \frac{N^{2}}{N^{2} + \Omega^{2}} \right)
+\label{eq:gamma-stratification-dependent}
+\end{equation} 
+ where 
+\begin{equation}
+\begin{split}
+ \Omega &=  \left(\frac{2\pi + 2\pi/365.24}{86400 \mbox{s}} \right)
+ \\
+ &=
+ \left( \frac{\pi}{43082} \right) \mbox{s}^{-1} 
+ \\
+ &=
+ 7.2921 \times 10^{-5} \mbox{s}^{-1}.
+\end{split}
+\label{eq:Omega-defined}
+\end{equation}
+is the angular rotation rate of the earth about its axis and about the
+sun.  This modified mixing efficiency reduces the regions where
+spuriously large values of diffusivity may occur, especially next to
+the bottom, where low values of $N^{2}$ may appear.  There is little
+physical reason to believe the huge diffusivities diagnosed from
+regions with $N^{2} < \Omega^{2}$.
+
+
+\subsection{Vertical deposition function}
+\label{subsection:vertical-deposition}
+
+We are generally concerned in this chapter with mixing induced by
+energy dissipation that is largest near the bottom.  This bottom
+intensified dissipation leads to the largest levels of mixing also
+near the bottom.  Yet there are means for dissipation to move upwards
+into the water column, and it is this mixing that generally has far
+more impact on the ocean stratification.  Details of how dissipation
+moves upwards into the column remains a topic of research.  We present
+here a formulation followed by the CVMix implementations of the
+\cite{Simmonsetal2004} and \cite{Melet_etal_2013} schemes.  In this
+case, we write the energy dissipation in the form
+\begin{equation}
+ \epsilon = {\cal E} \, F(z),
+\label{eq:wave-drag-dissipation-form}
+\end{equation}
+where ${\cal E}$ is an energy dissipation times a length scale, and
+$F(z)$ is a vertical deposition function with units of inverse length.
+Both \cite{Simmonsetal2004} and \cite{Melet_etal_2013} chose
+\begin{equation}
+  {\cal E} =  \frac{ q \, E_{\mbox{\tiny wave drag}}(x,y)  }{\rho},
+\label{eq:wave-dissipation-time-length}
+\end{equation}
+where $E_{\mbox{\tiny wave drag}}(x,y)$ is the energy input to wave
+drag originating from the bottom (equation
+(\ref{eq:wave-energy-flux})), $\rho$ is the {\it in situ} density, and
+$q$ is the dimensionless fraction of energy that dissipates locally
+rather than propagating away to dissipate non-locally. We have more to
+say on $q$ in Section
+\ref{subsection:local-or-non-local-energy-waves}.  The vertical
+deposition function is assumed to integrate to unity over an ocean
+column
+\begin{equation}
+  \int\limits_{-H}^{\eta} F(z) \, \mathrm{d}z = 1.  
+\label{eq:normalization-of-Fz}
+\end{equation}
+\cite{Simmonsetal2004} chose an empirical exponential function
+(equation (\ref{eq:simmons-vertical-function})) for $F(z)$, whereas
+\cite{Melet_etal_2013} based their choice on theoretical results from
+\cite{Polzin2009}.  
+
+
+\subsection{Local versus non-local wave energy dissipation}
+\label{subsection:local-or-non-local-energy-waves}
+
+The dimensionless parameter, $q$, introduced in equation
+(\ref{eq:wave-dissipation-time-length}) measures the fraction of wave
+energy dissipated locally, and thus contributes to local mixing.
+\cite{Simmonsetal2004} and \cite{Melet_etal_2013} both chose
+\begin{equation}
+  q = 1/3
+\end{equation}  
+based on the work of \cite{StLaurent_etal2002}.  The remaining 2/3 of
+the wave energy propagates away and is assumed to dissipate
+non-locally.  The non-local dissipation of internal tidal energy, as
+well as the dissipation of internal energy from other sources (e.g.,
+wind energy), are accounted for in an {\em ad hoc} manner via the
+background diffusivity $\kappa_{0}$ (and background viscosity).  A
+value within the range
+\begin{equation}
+  \kappa_{0} = (0.1 - 0.2) \times 10^{-4} \, \mbox{m}^{2} \, \mbox{s}^{-1}
+\end{equation}
+is recommended based on the measurements of \cite{Ledwell1993}.  Other
+choices are considered in Chapter \ref{chapter:cvmix_background}.
+
+Setting $q = 1/3$ globally is strictly incorrect for internal gravity
+wave dissipation. The actual value is related to the modal content of
+the excited internal tide, which is related to the roughness spectrum
+of topography.  The redder the mode/roughness spectrum, the lower $q$.
+For example, Hawaii has been modelled as a knife-edge by
+\citep{StLaurent_etal2003}.  This topography excites predominantly low
+modes, and these modes are stable, propogate quickly, and have long
+interaction times.  That is, they propagate to the far field.
+\cite{Klymak_etal2005} argue that $q=0.1$ for Hawaii from the Hawaiian
+Ocean Mixing Experiment (HOME) data. For the mid-Atlantic ridge, the
+use of $q=1/3$, as in \cite{Simmonsetal2004} and
+\cite{Melet_etal_2013}, may be more suitable.
+
+The bottom mixing scheme from \cite{Legg_eta2006} in effect assume 
+\begin{equation}
+ q=1   \qquad \mbox{bottom mixing scheme},
+\end{equation}
+which is sensible given that the mixing considered in their scheme
+occurs predominantly within a bottom boundary layer.
+
+
+\subsection{Prandtl number}
+
+The Prandtl number is the ratio of viscosity to diffusivity.
+\cite{Simmonsetal2004} do not discuss vertical viscosity in their
+study.  If one considers a non-zero Prandtl number, then vertical
+viscosity is enhanced along with the diffusivity when considering
+internal wave breaking.  The following are examples of the Prandlt
+number chosen for the tide mixing parameterizations.
+\begin{itemize}
+
+\item The earth system models of \cite{Dunne_etal_part1_2012} assume a
+  unit Prandtl number for mixing related to tide mixing.
+
+\item What about \cite{Jayne2009}?  
+
+\end{itemize}
+
+
+\subsection{General form of the vertical diffusivity}
+\label{subsection:general-form-tide-diffusivity}
+
+The previous considerations lead to the following general form for a
+diffusivity arising from mechanical energy dissipation that originates
+from the ocean bottom
+\begin{equation}
+\begin{split}
+ \kappa_{\mbox{\tiny dissipate}} &= 
+ \frac{\Gamma \, \epsilon_{\mbox{\tiny dissipate}}}{N^{2}}
+\\
+ &=\frac{\Gamma \, {\cal E}_{\mbox{\tiny dissipate}} \, F(z) }{N^{2}}
+\\
+ &=
+ \frac{q \, \Gamma \, E_{\mbox{\tiny dissipate}}(x,y) \,  F_{\mbox{\tiny dissipate}}(z)}  {\rho \, N^2}.
+\end{split}
+\label{eq:wave-vert-kappa-general-bottom}
+\end{equation}
+The energy dissipation at the ocean bottom, $ E_{\mbox{\tiny
+    dissipate}}(x,y)$, and the vertical deposition function,
+$F_{\mbox{\tiny dissipate}}(z)$, distinguish the schemes considered by
+\cite{Simmonsetal2004} and \cite{Melet_etal_2013}.
+
+
+\subsection{Energetic balances}
+
+One of the main reasons to formulate diffusivites based on mechanical
+energy input is that this energy is exchanged in a conservative manner
+within the ocean.  This conservation then leads to self-consistency
+tests for the model implementation of various energy-based mixing
+parameterizations.  We consider here in particular the work done
+against stratification by vertical diffusion with a diffusivity
+$\kappa_{\mbox{\tiny dissipate}}$, with this work given by
+\begin{equation}
+ {\cal P} \equiv  \int \kappa_{\mbox{\tiny dissipate}} \, \rho \, N^{2} \, \mathrm{d}V. 
+\end{equation}
+Use of equation (\ref{eq:wave-vert-kappa-simmons}) for the vertical
+diffusivity with a constant mixing efficiency $\Gamma = 0.2$ yields
+\begin{equation}
+\begin{split}
+ {\cal P} &=  \int \kappa_{\mbox{\tiny dissipate}} \, \rho \, N^{2} \, \mathrm{d}V
+ \\
+ &= q \, \Gamma  \int  E_{\mbox{\tiny dissipate}}(x,y) \, \mathrm{d}x \, \mathrm{d}y,
+\end{split}
+\label{eq:energy-conserve-dissipation}
+\end{equation}
+assuming $q \, \Gamma$ constant.  Note that to reach this result, we
+set $\int F_{\mbox{\tiny dissipate}}(z) \, \mathrm{d}z = 1$ (Section
+\ref{subsection:vertical-deposition}), which is a constraint that is
+maintained by the CVMix implementation of the energetic-based mixing
+schemes.  Equation (\ref{eq:energy-conserve-dissipation}) says that
+the energy from some form of dissipation mechanism is deposited in the
+ocean interior and works against stratification.
+
+For the more general case of $q \, \Gamma$ spatially dependent, we
+have the balance
+\begin{equation}
+\begin{split}
+ {\cal P} &=  \int \kappa_{\mbox{\tiny dissipate}}  \, \rho \, N^{2} \, \mathrm{d}V
+ \\
+ &= \int q \, \Gamma \,  E_{\mbox{\tiny dissipate}}(x,y) \, F_{\mbox{\tiny dissipate}}(z) \; \mathrm{d}V,
+\end{split}
+\label{eq:energy-conserve-wave-drag-again}
+\end{equation}
+which again is a statement of energy conservation between wave
+dissipation and mixing of density.  Although equation
+(\ref{eq:energy-conserve-wave-drag-again}) is a trivial identity
+following from the definition of the closure, it is not trivial to
+maintain in the ocean model.  The main reason is that we work with
+diffusivities when integrating the tracer equations in an ocean model,
+and these diffusivities are often subjected to basic numerical
+consistency criteria, such as the following.
+\begin{itemize}
+
+\item We may wish to have the diffusivities monotonically decay
+  upwards in the column.  Given the $N^{-2}$ dependence of the
+  diffusivity in equation (\ref{eq:wave-vert-kappa-general-bottom}),
+  monotonicity is not guaranteed.  Without an added monotonicity
+  constraint, the simulation can be subject to spurious instabilities
+  in which intermediate depths become weakly stratified through some
+  mixing, which in turn produces even larger diffusivities to further
+  reduce the stratification.  \cite{Jayne2009} discovered this
+  behaviour in his simulations with POP.
+
+\item The diffusivities should be bounded by a reasonable number, such
+  as $50-100 \, \mbox{cm}^{2} \, \mbox{sec}^{-1}$.
+\end{itemize}
+Imposing constraints such as these on the diffusivity corrupts the
+identity (\ref{eq:energy-conserve-dissipation}).  In general, the
+constraints remove energy from the interior, so that in practice $\int
+\kappa_{\mbox{\tiny dissipate}} \, \rho \, N^{2} \, \mathrm{d}V < \int
+q \, \Gamma \, E_{\mbox{\tiny dissipate}}(x,y) \, \mathrm{d}V$.
+
+
+\section{The Simmons et al. (2004) scheme}
+\label{section:simmons-etal}
+
+To account for mixing associated with energy dissipation from breaking
+internal gravity waves, \cite{Simmonsetal2004} propose a diffusivity
+given by
+\begin{equation}
+\begin{split}
+ \kappa_{\mbox{\tiny simmons}} &= 
+ \frac{\Gamma \, \epsilon_{\mbox{\tiny wave drag}}}{N^{2}}
+\\
+ &= \frac{\Gamma \, {\cal E}_{\mbox{\tiny wave drag}} \, F_{\mbox{\tiny simmons}}(z)}{N^{2}}
+\\
+ &=
+ \frac{q \, \Gamma \, E_{\mbox{\tiny wave drag}}(x,y) \,  F_{\mbox{\tiny simmons}}(z) }  {\rho \, N^2},
+\end{split}
+\label{eq:wave-vert-kappa-simmons}
+\end{equation}
+which again is the general form introduced in Section
+\ref{subsection:general-form-tide-diffusivity}.  To reach this result,
+we used equation (\ref{eq:wave-drag-dissipation-form}) to introduce
+the vertical deposition function $F_{\mbox{\tiny simmons}}$, and
+equation (\ref{eq:wave-dissipation-time-length}) to introduce the wave
+drag energy dissipation, $E_{\mbox{\tiny wave drag}}$, given by
+equation (\ref{eq:wave-energy-flux}).
+
+
+\subsection{Calculation of the wave energy dissipation} 
+\label{subsection:wave-drag-details-simmons}
+
+The wave energy dissipation, $E_{\mbox{\tiny wave drag}}$, is
+evaluated as follows.
+\begin{itemize}
+
+\item $N_{\mbox{\tiny bott}}$ is computed from the model's evolving
+  buoyancy frequency at the top face of a bottom boundary layer (often
+  just the bottom-most tracer cell).  Note that the buoyancy frequency
+  at the bottom face of the bottom-most cell is zero, by definition.
+
+\item The effective roughness length $L_{\mbox{\tiny rough}} =
+  \kappa_{\mbox{\tiny topo}} \, h_{\mbox{\tiny topo}}^{2}$ requires an
+  algorithm to compute $h_{\mbox{\tiny topo}}$ from observed bottom
+  topography, and tide model to tune $\kappa_{\mbox{\tiny topo}}$.
+  However, in practice what can be done is to take $h_{\mbox{\tiny
+      topo}}$ given some variance of topography within a grid cell,
+  and then tune $E_{\mbox{\tiny wave drag}}$ to be roughly 1TW in
+  ocean deeper than 1000m, with $\kappa_{\mbox{\tiny topo}}$ as the
+  tuning paramter.
+
+\end{itemize}
+
+
+\subsection{Deposition function}
+
+The bottom intensified vertical profile, or deposition function, is
+taken as
+\begin{equation}
+\begin{split}
+  F_{\mbox{\tiny simmons}}(z) &= \frac{e^{-(D-h)/\zeta}}{\zeta \, (1 - e^{-D/\zeta} )}
+  \\
+  &= \frac{e^{h/\zeta}}{\zeta \, (e^{D/\zeta}-1)}.
+\end{split}
+\label{eq:simmons-vertical-function}
+\end{equation}
+ In this expression,
+\begin{equation}
+  D = H + \eta
+\end{equation}
+is the time dependent thickness of water between the free surface at
+$z=\eta$ and the ocean bottom at $z=-H$, and
+\begin{equation}
+  h=-z+\eta
+\end{equation}
+is the time dependent distance from the free surface to a point within
+the water column.\footnote{We emphasize that with a free surface, $D$
+and $h$ are generally time dependent.  Furthermore, with general
+vertical coordinates, $h$ is time dependent for all grid cells.}  The
+chosen form of the deposition function is motivated by the
+microstructure measurements of \cite{StLaurent_etal2001} in the
+abyssal Brazil Basin, and the continental slope measurements of
+\cite{Moum_etal2002}.  This profile respects the observation that
+mixing from breaking internal gravity waves, generated by scattered
+barotropic tidal energy, is exponentially trapped within a distance
+$\zeta$ from the bottom.  An {\em ad hoc} decay scale of
+\begin{equation}
+  \zeta = 500 \, \mbox{m}
+\end{equation}
+is suggested by \cite{Simmonsetal2004} for use with internal gravity
+wave breaking in the abyssal ocean.
+
+
+\subsection{Regularization of the diffusivity}
+
+The diffusivities resulting from this parameterization can reach
+levels upwards of the maximum around $20 \times 10^{-4} \,
+\mbox{m}^{2} \, \mbox{s}^{-1}$ seen in the \cite{Polzinetal97}
+results.  Due to numerical resolution issues, the scheme can in
+practice produce even larger values.  We need to consider the physical
+relevance of these large values.  The following lists some options
+that the modeller may wish to exercise.
+
+\begin{itemize}
+
+\item We may choose to limit the diffusivity to be no larger than a
+  maximum value, defaulted to $50 \times 10^{-4} \, \mbox{m}^{2} \,
+  \mbox{s}^{-1}$ in CVMix.
+
+\item Based on observations, the mechanical energy input from wave
+  drag (equation (\ref{eq:wave-energy-flux})) should not exceed
+  roughly $0.1 \, \mbox{W} \, \mbox{m}^{-2}$ at a grid point (Bob
+  Hallberg, personal communication 2008).  Depending on details of the
+  bottom roughness and tide velocity amplitude, a typical model
+  implementation may easily exceed this bound.  Hence, it may be
+  necessary to cap the mechanical energy input to be no larger than a
+  set bound.
+
+\item Use of the stratification dependent mixing efficiency
+  (\ref{eq:gamma-stratification-dependent}) provides a physically
+  based means to regularize the regions where $N^{2}$ can get
+  extremely small. 
+
+\end{itemize}
+
+
+\subsection{Regarding a shallow depth cutoff}
+
+\cite{Simmonsetal2004} do not apply their scheme in waters with ocean
+bottom shallower than 1000m, whereas \cite{Jayne2009} applies the
+scheme for all depths.  CVMix has a namelist that allows for setting
+a cutoff depth.  In principle, there is nothing wrong with using the
+\cite{Simmonsetal2004} scheme all the way to shallow waters, and
+removing the somewhat arbitrary depth cutoff is more satisfying.  So
+one may wish to naively use $q = 1/3$ without a 1000m depth cutoff.
+
+Likewise, $\zeta = 500$m globally may be a reasonable choice. The
+structure function will properly integrate to unity, whether or not
+the ocean depth $H$ is greater or less than $\zeta$.
+
+\subsection{Further comments} 
+
+Here are some further points to consider when setting some of the
+namelists for this scheme.
+\begin{itemize}
+
+\item One means to ensure that the diffusivities are within a
+  reasonable bound, without capping them after their computation, is
+  to artificially restrict the stratification used in the calculation
+  to be no less than a certain number.  \cite{Simmonsetal2004} chose
+  the floor value $N^{2} \ge 10^{-8} \, \mbox{s}^{-2}$.  There is a
+  great deal of sensitivity to the floor value used.  GFDL practice is
+  to keep the floor value quite low so that $N^{2}_{\mbox{\tiny min}}
+  < \Omega^{2}$.
+
+\item If the maximum diffusivity realized by the scheme is allowed to
+  be very large, say much greater than as $1000 \, \mbox{cm}^{2} \,
+  \mbox{sec}^{-1}$, then the near bottom stratification can become
+  very small.  In this case, $E_{\mbox{\tiny wave drag}}$ can dip
+  below the canonical 1TW value.  This process resembles a negative
+  feedback in some manner, though it has not been explored
+  extensively.
+
+\end{itemize}
+
+
+\section{The Melet et al. (2013) scheme}
+\label{section:melet-etal}
+
+A limitation of the \cite{Simmonsetal2004} scheme is the arbitrary
+choice of their empirical vertical deposition function
+(\ref{eq:simmons-vertical-function}) and the corresponding exponential
+decay length, $\zeta$.  \cite{Melet_etal_2013} build on ideas proposed
+by \cite{Polzin2004,Polzin2009} to overcome these limitations.  In
+their parameterization, they propose a deposition function
+corresponding to finescale internal wave shear producing an energy
+dissipation given by
+\begin{equation}
+ \epsilon_{\mbox{\tiny melet}} = 
+ \left( \frac{\epsilon_{o}}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+ \, \left( \frac{N^{2}(z)}{\overline{N^{2}}^{z}} \right) 
+ \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right).
+\end{equation}
+The corresponding diffusivity is given by the general form
+(\ref{eq:wave-vert-kappa-general-bottom}), so that 
+\begin{equation}
+\begin{split}
+ \kappa_{\mbox{\tiny melet}} &= 
+ \frac{\epsilon_{\mbox{\tiny melet}} \, \Gamma}{N^{2}}
+\\
+ &= 
+ \left( \frac{ {\cal E}_{\mbox{\tiny wave drag}}}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+ \, \left( \frac{\Gamma}{\overline{N^{2}}^{z}} \right) 
+ \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right)
+\\
+ &=
+ \left( \frac{q \, \Gamma \, E_{\mbox{\tiny wave drag}}}{\rho \, \overline{N^{2}}^{z}} \right)
+ \left( \frac{1}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+\, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right),
+\end{split}
+\end{equation}
+ where we set 
+\begin{equation}
+{\cal E}_{\mbox{\tiny wave drag}} = \frac{q \,  E_{\mbox{\tiny wave drag}}}{\rho}
+\end{equation}
+according to equation (\ref{eq:wave-dissipation-time-length}).  
+
+The vertical deposition function
+\begin{equation}
+ F_{\mbox{\tiny melet}} = \frac{N^{2}}{ \overline{N^{2}}^{z}} 
+ \, \left( \frac{1}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+ \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right)
+\end{equation}
+is algebraic, rather than the exponential suggested by
+\cite{Simmonsetal2004} (equation
+(\ref{eq:simmons-vertical-function})).  A fundamental element to the
+deposition function is the scaled vertical distance from the bottom
+\begin{equation}
+ z^{*}( h_{\mbox{\tiny bott}}) = 
+ \frac{1}{\overline{N^{2}}^{z}}
+ \int\limits_{0}^{ h_{\mbox{\tiny bott}}} N^{2}(z')  \, \mathrm{d}z',
+\end{equation}
+where the vertical integral extends from the bottom at $h_{\mbox{\tiny
+    bott}} = 0$ to an arbitrary distance above the bottom.  The depth
+averaged squared buoyancy frequency is given by
+\begin{equation}
+ \overline{N^{2}}^{z} = \frac{1}{H + \eta} \, \int\limits_{-H}^{\eta} N^{2}(z) \, \mathrm{d}z. 
+\end{equation}
+Note that by definition, the rescaled vertical height from the bottom
+satisfies
+\begin{equation}
+  0 \le z^{*} \le H.
+\end{equation}
+We also introduced the rescaled length scale according to 
+\begin{equation}
+ z_{p}^{*}  = z_{p} \, \left( \frac{N^{2}_{\mbox{\tiny bott}}}{ \overline{N^{2}}^{z}} \right),
+\end{equation}
+The bottom buoyancy frequency, $N^{2}_{\mbox{\tiny bott}}$, is
+computed according to the discussion in Section
+\ref{subsection:wave-drag-details-simmons}.
+
+The length scale $z_{p}$ is computed according to
+\cite{Polzin2004,Polzin2009}, and needs to be written here...
+
+
+
+% \section{The Legg, Hallberg, and Girton (2006) scheme}
+% \label{section:legg-hallberg-girton}
+
+% \cite{Legg_eta2006} present a method to introduce mixing associated
+% with bottom drag (Section
+% \ref{subsection:bottom-drag-barotropic-tides}).  We formulate their
+% parameterization in the manner considered in Section
+% \ref{section:vert_tidal_formulation}, so that it follows that used by
+% \cite{Simmonsetal2004} and \cite{Melet_etal_2013}. We thus introduce a
+% diffusivity associated just with bottom drag 
+% \begin{equation}
+% \begin{split}
+%  \kappa_{\mbox{\tiny bottom drag}} &= 
+%  \frac{\Gamma \, \epsilon_{\mbox{\tiny bottom drag}}}{N^{2}}
+% \\
+%  &=
+%  \frac{q \, \Gamma \, E_{\mbox{\tiny bottom drag}}(x,y) \,  F_{\mbox{\tiny lhg}}(z)}  {\rho \, N^2}.
+% \end{split}
+% \label{eq:wave-vert-kappa-legg-bottom}
+% \end{equation}
+% For the bottom drag induced energy dissipation, we take the form
+% (\ref{eq:energy-dissipation-bottom-drag-with-tides}) incorporating an
+% unresolved root-mean-square tide velocity scale, $U_{\mbox{\tiny  tide}}$, so that
+% \begin{equation}
+% E_{\mbox{\tiny bottom drag}} =  \rho_{o} \, C_{D} \,  {\bf u}_{b}^{2}
+% \, \left( {\bf u}_{b}^{2} + U_{\mbox{\tiny tide}}^{2} \right)^{1/2}
+% \qquad \mbox{(units of $\mbox{W} \; \mbox{m}^{-2}$).}
+% \label{eq:energy-dissipation-bottom-drag-with-tides-again}
+% \end{equation}
+% We now detail each piece of this equation.
+% \begin{itemize}
+
+% \item We choose to use a horizontal velocity averaged over the
+%   thickness of a bottom roughness layer as determined by the roughness
+%   length of the topography
+% \begin{equation}
+%  {\bf u}_{b} = \mbox{bottom roughness layer averaged horizontal velocity.}
+% \end{equation}
+% If the roughness layer sits within the bottom grid cell, then ${\bf
+%   u}_{b}$ is merely the horizontal velocity from the model's bottom
+% cell. However, when using bottom partial cells
+% \citep{Adcroftetal1997,PacGnan1998}, it is possible for the roughness
+% layer to extend over more than a single grid cell.  
+
+% \item The fraction of dissipation occurring locally is assumed to be
+%   unity, so that
+% \begin{equation}
+%  q = 1.
+% \end{equation}
+
+% \item The mixing efficiency, $\Gamma$, is computed according to
+%   equation (\ref{eq:gamma-stratification-dependent}) as motivated by
+%   \cite{Melet_etal_2013}
+% \begin{equation}
+%   \Gamma = 0.2 \left( \frac{N^{2}}{N^{2} + \Omega^{2}} \right),
+% \label{eq:gamma-stratification-dependent-again}
+% \end{equation} 
+% where $\Omega$ is the rotation rate of the earth (equation
+% (\ref{eq:Omega-defined})).  
+
+% \item The vertical deposition function, $F_{\mbox{\tiny lhg}}(z)$, is
+%   given by
+% \begin{equation}
+% F_{\mbox{\tiny lhg}}(z) = {\cal N} \, e^{-(2 \, \Omega \, h_{\mbox{\tiny bott}})/(\kappa_{\mbox{\tiny von Karman}} \, u_{*})},
+% \end{equation}
+% where ${\cal N}$ is a normalization coefficient with units of inverse
+% length ensuring that the vertical integral of $F(z)$ over an ocean
+% column is unity
+% \begin{equation}
+%   \int\limits_{-H}^{\eta} F(z) \, \mathrm{d}z = 1.  
+% \label{eq:normalization-of-Fz-again}
+% \end{equation}
+
+% \item The height
+% \begin{equation}
+%  h_{\mbox{\tiny bott}} = z+H
+% \end{equation}
+% measures the distance above the ocean bottom at $z=-H$.  
+
+% \item The semi-empirical Von Karman constant has a value
+% \begin{equation}
+%   \kappa_{\mbox{\tiny von Karman}} = 0.4.
+% \end{equation}
+
+% \item The friction velocity, $u_{*}$, is defined via
+% \begin{equation}
+% u_{*}^{3} \equiv C_{D} \,  {\bf u}^{2} \, \left( {\bf u}^{2} + U_{\mbox{\tiny tide}}^{2} \right)^{1/2}
+% \end{equation}
+%  so that the energy dissipation takes the form 
+% \begin{equation}
+% E_{\mbox{\tiny bottom drag}} =  \rho_{o} \, u_{*}^{3}.
+% \end{equation}
+
+% \end{itemize}
+
+
