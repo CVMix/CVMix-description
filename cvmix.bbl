@@ -1,0 +1,417 @@
+\begin{thebibliography}{80}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+
+\bibitem[{Adcroft et~al.(1999)Adcroft, Hill, and Marshall}]{Adcroftetal1999}
+Adcroft, A., Hill, C., Marshall, J., 1999. A new treatment of the coriolis
+  terms in c-grid models at both high and low resolutions. Monthly Weather
+  Review 127, 1928--1936.
+
+\bibitem[{Axell(2002)}]{Axell_2002}
+Axell, L., 2002. Wind-driven internal waves and {L}angmuir circulations in a
+  numerical ocean model of the southern {Baltic Sea}. Journal of Geophysical
+  Research 107, 107(C11), 3204, doi:10.1029/2001JC000922.
+
+\bibitem[{Belcher et~al.(2012)Belcher, Grant, Hanley, Fox-Kemper, {Van Roekel},
+  Sullivan, Large, Brown, Hines, Calvert, Rutgersson, Petterson, Bidlot,
+  Janssen, and Polton}]{Belcher_etal2012}
+Belcher, S., Grant, A., Hanley, K., Fox-Kemper, B., {Van Roekel}, L., Sullivan,
+  P., Large, W., Brown, A., Hines, A., Calvert, D., Rutgersson, A., Petterson,
+  H., Bidlot, J., Janssen, P., Polton, J.~A., 2012. A global perspective on
+  {L}angmuir turbulence in the ocean surface boundary layer. Geophysical
+  Research Letters 39-L18605, doi:10.1029/2012GL052932.
+
+\bibitem[{Bryan(1969)}]{Bryan1969}
+Bryan, K., 1969. A numerical method for the study of the circulation of the
+  world ocean. Journal of Computational Physics 4, 347--376.
+
+\bibitem[{Bryan and Lewis(1979)}]{BryanLewis1979}
+Bryan, K., Lewis, L.~J., 1979. A water mass model of the world ocean. Journal
+  of Geophysical Research 84, 2503--2517.
+
+\bibitem[{Chang et~al.(2005)Chang, Xu, {\"{O}zg\"{o}kmen}, Chassignet, Peters,
+  and Fischer}]{Chang_etal2005}
+Chang, Y.~S., Xu, X., {\"{O}zg\"{o}kmen}, T.~M., Chassignet, E.~P., Peters, H.,
+  Fischer, P.~F., 2005. Comparison of gravity current mixing parameterizations
+  and calibration using a high-resolution 3d nonhydrostatic spectral element
+  model. Ocean Modelling 3-4, 342--368.
+
+\bibitem[{Cox(1984)}]{CoxModel}
+Cox, M.~D., 1984. A {P}rimitive {E}quation, 3-{D}imensional {M}odel of the
+  {O}cean. NOAA/Geophysical Fluid Dynamics Laboratory, Princeton, USA.
+
+\bibitem[{Craig and Banner(1994)}]{Craig_Banner_1994}
+Craig, P., Banner, M., 1994. Modeling wave-enhanced turbulence in the surface
+  ocean layer. Journal of Physical Oceanography 24, 2546--2559.
+
+\bibitem[{Dunne et~al.(2012)Dunne, John, Hallberg, Griffies, Shevliakova,
+  Stouffer, Krasting, Sentman, Milly, Malyshev, Adcroft, Cooke, Dunne,
+  Harrison, Levy, Samuels, Spelman, Winton, Wittenberg, Phillips, and
+  Zadeh}]{Dunne_etal_part1_2012}
+Dunne, J.~P., John, J.~G., Hallberg, R.~W., Griffies, S.~M., Shevliakova,
+  E.~N., Stouffer, R.~J., Krasting, J.~P., Sentman, L.~A., Milly, P. C.~D.,
+  Malyshev, S.~L., Adcroft, A.~J., Cooke, W., Dunne, K.~A., Harrison, M.~J.,
+  Levy, H., Samuels, B.~L., Spelman, M., Winton, M., Wittenberg, A.~T.,
+  Phillips, P.~J., Zadeh, N., 2012. {GFDL’s ESM2 global coupled
+  climate-carbon Earth System Models Part I: Physical formulation and baseline
+  simulation characteristics}. Journal of Climate 25, 6646--–6665.
+
+\bibitem[{Durski et~al.(2004)Durski, Glenn, and Haidvogel}]{Durski_etal2004}
+Durski, S.~M., Glenn, S.~M., Haidvogel, D.~B., 2004. Vertical mixing schemes in
+  the coastal ocean: {C}omparison of the level 2.5 {M}ellor-{Y}amada scheme
+  with an enhanced version of the {K} profile parameterization. Journal of
+  Geophysical Research 109, doi:10.1029/2002JC001702.
+
+\bibitem[{Fairall et~al.(1996)Fairall, Bradley, Godfrey, Wick, Edson, and
+  Young}]{Fairall_etal1996}
+Fairall, C., Bradley, E., Godfrey, J., Wick, G., Edson, J., Young, G., 1996.
+  Cool-skin and warm-layer effects on sea surface temperature. Journal of
+  Geophysical Research 101, 1295--1308.
+
+\bibitem[{Gargett(1984)}]{Gargett1984}
+Gargett, A.~E., 1984. Vertical eddy diffusivity in the ocean interior. Journal
+  of Marine Research 42, 359--393.
+
+\bibitem[{Gent et~al.(1998)Gent, Bryan, Danabasoglu, Doney, Holland, Large, and
+  McWilliams}]{Gent_etal_1998}
+Gent, P., Bryan, F., Danabasoglu, G., Doney, S., Holland, W., Large, W.,
+  McWilliams, J., 1998. The {NCAR} climate system model global ocean component.
+  Journal of Climate 11, 1287--1306.
+
+\bibitem[{Gill(1982)}]{Gill1982}
+Gill, A., 1982. Atmosphere-Ocean Dynamics. Vol.~30 of International Geophysics
+  Series. Academic Press, London, 662 + xv pp.
+
+\bibitem[{Goosens et~al.(1994)Goosens, Mittelbach, and
+  Samarin}]{LatexCompanion}
+Goosens, M., Mittelbach, F., Samarin, A., 1994. The \LaTeX Companion.
+  Addison-Wesley, Reading, Massachusetts, 528 pp.
+
+\bibitem[{Gregg et~al.(2003)Gregg, Sanford, and Winkel}]{Gregg_etal2003}
+Gregg, M., Sanford, T., Winkel, D., 2003. Reduced mixing from the breaking of
+  internal waves in equatorial waters. Nature 422, 513--515.
+
+\bibitem[{Grif\/f\/ies(2004)}]{SMGbook}
+Grif\/f\/ies, S.~M., 2004. Fundamentals of Ocean Climate Models. Princeton
+  University Press, Princeton, USA, 518+xxxiv pages.
+
+\bibitem[{Grif\/f\/ies et~al.(2009)Grif\/f\/ies, Biastoch, {B\"{o}ning}, Bryan,
+  Danabasoglu, Chassignet, England, Gerdes, Haak, Hallberg, Hazeleger,
+  Jungclaus, Large, Madec, Pirani, Samuels, Scheinert, Gupta, Severijns,
+  Simmons, Treguier, Winton, Yeager, and Yin}]{CORE}
+Grif\/f\/ies, S.~M., Biastoch, A., {B\"{o}ning}, C.~W., Bryan, F., Danabasoglu,
+  G., Chassignet, E., England, M.~H., Gerdes, R., Haak, H., Hallberg, R.~W.,
+  Hazeleger, W., Jungclaus, J., Large, W.~G., Madec, G., Pirani, A., Samuels,
+  B.~L., Scheinert, M., Gupta, A.~S., Severijns, C.~A., Simmons, H.~L.,
+  Treguier, A.~M., Winton, M., Yeager, S., Yin, J., 2009. Coordinated
+  {O}cean-ice {R}eference {E}xperiments ({CORE}s). Ocean Modelling 26, 1--46.
+
+\bibitem[{Grif\/f\/ies et~al.(2005)Grif\/f\/ies, Gnanadesikan, Dixon, Dunne,
+  Gerdes, Harrison, Rosati, Russell, Samuels, Spelman, Winton, and
+  Zhang}]{OMDT2005a}
+Grif\/f\/ies, S.~M., Gnanadesikan, A., Dixon, K.~W., Dunne, J.~P., Gerdes, R.,
+  Harrison, M.~J., Rosati, A., Russell, J., Samuels, B.~L., Spelman, M.~J.,
+  Winton, M., Zhang, R., 2005. Formulation of an ocean model for global climate
+  simulations. Ocean Science 1, 45--79.
+
+\bibitem[{Grif\/f\/ies et~al.(2001)Grif\/f\/ies, Pacanowski, Schmidt, and
+  Balaji}]{GriffiesPacSchmidtBalaji2001}
+Grif\/f\/ies, S.~M., Pacanowski, R., Schmidt, M., Balaji, V., 2001. Tracer
+  conservation with an explicit free surface method for ${z}$-coordinate ocean
+  models. Monthly Weather Review 129, 1081--1098.
+
+\bibitem[{Henyey et~al.(1986)Henyey, Wright, and Flatte}]{Henyey_etal1986}
+Henyey, F., Wright, J., Flatte, S.~M., 1986. Energy and action flow through the
+  internal wave field: an eikonal approach. Journal of Geophysical Research 91,
+  8487--8496.
+
+\bibitem[{Holland et~al.(1998)Holland, Chow, and Bryan}]{HollandChowBryan1998}
+Holland, W., Chow, J., Bryan, F., 1998. Application of a third-order upwind
+  scheme in the {NCAR} ocean model. Journal of Climate 11, 1487--1493.
+
+\bibitem[{Huang(1993)}]{Huang1993}
+Huang, R.~X., 1993. Real freshwater flux as a natural boundary condition for
+  the salinity balance and thermohaline circulation forced by evaporation and
+  precipitation. Journal of Physical Oceanography 23, 2428--2446.
+
+\bibitem[{{I}{OC} et~al.(2010){I}{OC}, {SCOR}, and {IAPSO}}]{TEOS2010}
+{I}{OC}, {SCOR}, {IAPSO}, 2010. The international thermodynamic equation of
+  seawater-2010: calculation and use of thermodynamic properties.
+  Intergovernmental Oceanographic Commission, Manuals and Guides No.\ 56,
+  UNESCO, available from http://www.TEOS-10.org, 196pp.
+
+\bibitem[{Ivey and Imberger(1991)}]{Ivey_Imberger1991}
+Ivey, G., Imberger, J., 1991. On the nature of turbulence in a stratified
+  fluid. {Part I: T}he energetics of mixing. Journal of Physical Oceanography
+  25, 650--658.
+
+\bibitem[{Jackson et~al.(2008)Jackson, Hallberg, and Legg}]{Jacksonetal2008}
+Jackson, L., Hallberg, R., Legg, S., 2008. A parameterization of shear-driven
+  turbulence for ocean climate models. Journal of Physical Oceanography 38,
+  1033--1053.
+
+\bibitem[{Jayne(2009)}]{Jayne2009}
+Jayne, S., 2009. The impact of abyssal mixing parameterizations in an ocean
+  general circulation model. Journal of Physical Oceanography 39,
+  1756–--1775.
+
+\bibitem[{Jayne and St.Laurent(2001)}]{Jayne_etal2001}
+Jayne, S., St.Laurent, L.~C., 2001. Parameterizing tidal dissipation over rough
+  topography. Geophysical Research Letters 28, 811--814.
+
+\bibitem[{Jochum(2009)}]{Jochum2009}
+Jochum, M., 2009. Impact of latitudinal variations in vertical diffusivity on
+  climate simulations. Journal of Geophysical Research 114 C01010,
+  doi:10.1029/2008JC005030.
+
+\bibitem[{Kantha and Clayson(2000)}]{KanthaClaysonII}
+Kantha, L.~H., Clayson, C.~A., 2000. Small Scale Processes in Geophysical Fluid
+  Flows. Academic Press, New York, USA, 883 pp.
+
+\bibitem[{Killworth et~al.(1991)Killworth, Stainforth, Webb, and
+  Paterson}]{KillworthFreesurf1991}
+Killworth, P.~D., Stainforth, D., Webb, D.~J., Paterson, S.~M., 1991. The
+  development of a free-surface {B}ryan-{C}ox-{S}emtner ocean model. Journal of
+  Physical Oceanography 21, 1333--1348.
+
+\bibitem[{Klinger et~al.(1996)Klinger, Marshall, and Send}]{KlingerConvection}
+Klinger, B.~A., Marshall, J., Send, U., 1996. Representation of convective
+  plumes by vertical adjustment. Journal of Geophysical Research 101,
+  18175--18182.
+
+\bibitem[{Klymak et~al.(2005)Klymak, Moum, Nash, Kunze, Girton, Carter, Lee,
+  Sanford, and Gregg}]{Klymak_etal2005}
+Klymak, J., Moum, J., Nash, J., Kunze, E., Girton, J., Carter, G., Lee, C.,
+  Sanford, T., Gregg, M., 2005. An estimate of tidal energy lost to turbulence
+  at the hawaiian ridge. Journal of Physical Oceanography submitted.
+
+\bibitem[{Lamport(1994)}]{Latex}
+Lamport, L., 1994. \LaTeX : A Documentation Preparation System User's Guide and
+  Reference Manual. Addison-Wesley, Reading, Massachusetts, 272 pp.
+
+\bibitem[{Large(1998)}]{LargeKPP_lectures}
+Large, W., 1998. Modeling the oceanic boundary layer. In: Chassignet, E.~P.,
+  Verron, J. (Eds.), Ocean Modeling and Parameterization. Vol. 516 of {NATO
+  ASI} Mathematical and Physical Sciences Series. Kluwer, pp. 81--120.
+
+\bibitem[{Large and Gent(1999)}]{Large_Gent1999}
+Large, W., Gent, P., 1999. Validation of vertical mixing in an equatorial ocean
+  model using large eddy simulations and observations. Journal of Physical
+  Oceanography 29, 449--464.
+
+\bibitem[{Large et~al.(1994)Large, McWilliams, and Doney}]{LargeKPP}
+Large, W., McWilliams, J., Doney, S., 1994. Oceanic vertical mixing: a review
+  and a model with a nonlocal boundary layer parameterization. Reviews of
+  Geophysics 32, 363--403.
+
+\bibitem[{Large(2012)}]{Large2012}
+Large, W.~G., 2012. An ocean climate modeling perspective on buoyancy-driven
+  flows. In: Chassignet, E.~P., Cenedese, C., Verron, J. (Eds.),
+  Buoyancy-driven flows. Cambrideg, pp. 240--280.
+
+\bibitem[{Large et~al.(1997)Large, Danabasoglu, Doney, and
+  McWilliams}]{Largeforcing}
+Large, W.~G., Danabasoglu, G., Doney, S.~C., McWilliams, J.~C., 1997.
+  Sensitivity to surface forcing and boundary layer mixing in a global ocean
+  model: annual-mean climatology. Journal of Physical Oceanography 27,
+  2418--2447.
+
+\bibitem[{Large and Yeager(2009)}]{LargeYeager2009}
+Large, W.~G., Yeager, S., 2009. The global climatology of an interannually
+  varying air-sea flux data set. Climate Dynamics 33, 341--364.
+
+\bibitem[{Laurent and Schmitt(1999)}]{StLaurentSchmitt1999}
+Laurent, L. C.~S., Schmitt, R., 1999. The contribution of salt fingers to
+  vertical mixing in the north atlantic tracer release experiment. Journal of
+  Physical Oceanography 29, 1404--1424.
+
+\bibitem[{Ledwell et~al.(1993)Ledwell, Watson, and Law}]{Ledwell1993}
+Ledwell, J.~R., Watson, A.~J., Law, C.~S., 1993. Evidence for slow mixing
+  across the pycnocline from an open-ocean tracer-release experiment. Nature
+  364, 701--703.
+
+\bibitem[{Legg et~al.(2006)Legg, Hallberg, and Girton}]{Legg_eta2006}
+Legg, S., Hallberg, R., Girton, J., 2006. Comparison of entrainment in
+  overflows simulated by z-coordinate, isopycnal and non-hydrostatic models.
+  Ocean Modelling 11, 69--97.
+
+\bibitem[{Lemari\'e et~al.(2012)Lemari\'e, Kurian, Shchepetkin, Molemaker,
+  Colas, and McWilliams}]{Lemarie_etal2012a}
+Lemari\'e, F., Kurian, J., Shchepetkin, A.~F., Molemaker, M.~J., Colas, F.,
+  McWilliams, J.~C., 2012. Are there inescapable issues prohibiting the use of
+  terrain-following coordinates in climate models? Ocean Modelling 42, 57--79.
+
+\bibitem[{Li and Garrett(1993)}]{Li_Garrett1993}
+Li, M., Garrett, C., 1993. Cell merging and the jet/downwelling ratio in
+  {L}angmuir circulation. Journal of Marine Research 51, 737--769.
+
+\bibitem[{Li et~al.(2001)Li, Chao, McWilliams, and Fu}]{LiChowMcWilliamsFu2001}
+Li, X., Chao, Y., McWilliams, J.~C., Fu, L.~L., 2001. A comparison of two
+  vertical-mixing schemes in a {P}acific ocean general circulation model.
+  Journal of Climate 14, 1377--1398.
+
+\bibitem[{Marshall et~al.(1997)Marshall, Hill, Perelman, and Adcroft}]{MITgcm}
+Marshall, J., Hill, C., Perelman, L., Adcroft, A., 1997. Hydrostatic,
+  quasi-hydrostatic, and nonhydrostatic ocean modeling. Journal of Geophysical
+  Research 102, 5733--5752.
+
+\bibitem[{McDougall(1987)}]{McDougall1987a}
+McDougall, T.~J., 1987. Neutral surfaces. Journal of Physical Oceanography 17,
+  1950--1967.
+
+\bibitem[{McDougall(2003)}]{McDougall2003}
+McDougall, T.~J., 2003. Potential enthalpy: a conservative oceanic variable for
+  evaluating heat content and heat fluxes. Journal of Physical Oceanography 33,
+  945--963.
+
+\bibitem[{McWilliams and Sullivan(2001)}]{McWilliamsSullivan2001}
+McWilliams, J.~C., Sullivan, P., 2001. Vertical mixing by {L}angmuir
+  circulations. Spill Science and Technology Bulletin 6, 225--237.
+
+\bibitem[{McWilliams et~al.(1997{\natexlab{a}})McWilliams, Sullivan, and
+  Moeng}]{McWilliams_etal1997}
+McWilliams, J.~C., Sullivan, P., Moeng, C.-H., 1997{\natexlab{a}}. Langmuir
+  turbulence in the ocean. Journal of Fluid Mechanics 334, 1--30.
+
+\bibitem[{McWilliams et~al.(1997{\natexlab{b}})McWilliams, Sullivan, and
+  Moeng}]{McWilliamsSullivanMoeng1997}
+McWilliams, J.~C., Sullivan, P., Moeng, C.-H., 1997{\natexlab{b}}. Langmuir
+  turbulence in the ocean. Journal of Fluid Mechanics 334, 1--30.
+
+\bibitem[{Melet et~al.(2013)Melet, Hallberg, Legg, and
+  Polzin}]{Melet_etal_2013}
+Melet, A., Hallberg, R., Legg, S., Polzin, K., 2013. Sensitivity of the
+  {Pacific Ocean} state to the vertical distribution of internal-tide driven
+  mixing. Journal of Physical Oceanography, doi:10.1175/JPO--D--12--055.1.
+
+\bibitem[{Mellor and Yamada(1982)}]{MellorYamada1982}
+Mellor, G.~L., Yamada, T., 1982. Development of a turbulent closure model for
+  geophysical fluid problems. Reviews of Geophysics 20, 851--875.
+
+\bibitem[{Mesinger(1973)}]{Mesinger1973}
+Mesinger, F., 1973. A method for construction of second-order accurate
+  difference schemes permitting no false two-grid-interval waves in the height
+  field. Tellus 25, 444--457.
+
+\bibitem[{Miles(1961)}]{miles1961}
+Miles, J., 1961. On the stability of heterogeneous shear flows. Journal of
+  Fluid Mechanics 10, 496--508.
+
+\bibitem[{Moum et~al.(2002)Moum, Caldwell, Nash, and Gunderson}]{Moum_etal2002}
+Moum, J., Caldwell, D., Nash, J., Gunderson, G., 2002. Observations of boundary
+  mixing over the continental slope. Journal of Physical Oceanography 32,
+  2113--2130.
+
+\bibitem[{Munk and Wunsch(1998)}]{MunkWunsch98}
+Munk, W., Wunsch, C., 1998. Abyssal recipes {II}: {E}nergetics of tidal and
+  wind mixing. Deep-Sea Research 45, 1977--2010.
+
+\bibitem[{Osborn(1980)}]{Osborn1980}
+Osborn, T.~R., 1980. Estimates of the local rate of vertical diffusion from
+  dissipation measurements. Journal of Physical Oceanography 10, 83--89.
+
+\bibitem[{Pacanowski and Grif\/f\/ies(1999)}]{MOM3manual}
+Pacanowski, R.~C., Grif\/f\/ies, S.~M., 1999. The MOM3 Manual. NOAA/Geophysical
+  Fluid Dynamics Laboratory, Princeton, USA, 680 pp.
+
+\bibitem[{Pacanowski and Philander(1981)}]{PPvmix}
+Pacanowski, R.~C., Philander, G., 1981. Parameterization of vertical mixing in
+  numerical models of the tropical ocean. Journal of Physical Oceanography 11,
+  1442--1451.
+
+\bibitem[{Polzin(2009)}]{Polzin2009}
+Polzin, K., 2009. An abyssal recipe. Ocean Modelling 30, 298--309.
+
+\bibitem[{Polzin(2004)}]{Polzin2004}
+Polzin, K.~L., 2004. Idealized solutions for the energy balance of the
+  finescale internal wave field. Journal of Physical Oceanography 34, 231--246.
+
+\bibitem[{Polzin et~al.(1997)Polzin, Toole, Ledwell, and
+  Schmitt}]{Polzinetal97}
+Polzin, K.~L., Toole, J.~M., Ledwell, J.~R., Schmitt, R.~W., 1997. Spatial
+  variability of turbulent mixing in the abyssal ocean. Science 276, 93--96.
+
+\bibitem[{Rahmstorf(1993)}]{Rahmstorf1993}
+Rahmstorf, S., 1993. A fast and complete convection scheme for ocean models.
+  Ocean Modelling 101, 9--11.
+
+\bibitem[{Rascle et~al.(2006)Rascle, Ardhuin, and Terray}]{Rascle_etal2004}
+Rascle, N., Ardhuin, F., Terray, F., 2006. Drift and mixing under the ocean
+  surface: a coherent one-dimensional description with application to
+  unstratified conditions. Journal of Geophysical Research 111: C03016.
+
+\bibitem[{Schmitt(1994)}]{Schmitt1994}
+Schmitt, R.~W., 1994. Double diffusion in oceanography. Annual Review of Fluid
+  Mechanics 26, 255--285.
+
+\bibitem[{Shchepetkin(2005)}]{Shchepetkin2005}
+Shchepetkin, A.~F., 2005. If-less kpp. ROMS/TOMS Workshop: Adjoint Modeling and
+  Applications.
+
+\bibitem[{Simmons et~al.(2004)Simmons, Jayne, St.Laurent, and
+  Weaver}]{Simmonsetal2004}
+Simmons, H.~L., Jayne, S.~R., St.Laurent, L.~C., Weaver, A.~J., 2004. Tidally
+  driven mixing in a numerical model of the ocean general circulation. Ocean
+  Modelling 6, 245--263.
+
+\bibitem[{Smyth et~al.(2002)Smyth, Skyllingstad, and
+  Wijesekera}]{Smyth_etal2002}
+Smyth, G. C. W.~D., Skyllingstad, E.~D., Wijesekera, H., 2002. Nonlocal fluxes
+  and {S}tokes drift effects in the {K}-profile parameterization. Ocean
+  Dynamics 52, 104--115.
+
+\bibitem[{St.Laurent et~al.(2002)St.Laurent, Simmons, and
+  Jayne}]{StLaurent_etal2002}
+St.Laurent, L.~C., Simmons, H., Jayne, S., 2002. Estimating tidally driven
+  energy in the deep ocean. Geophysical Research Letters 29, 2106--2110.
+
+\bibitem[{St.Laurent et~al.(2003)St.Laurent, Stringer, Garrett, and
+  Perrault-Joncas}]{StLaurent_etal2003}
+St.Laurent, L.~C., Stringer, S., Garrett, C., Perrault-Joncas, D., 2003. The
+  generation of internal tides at abrupt topography. Deep-Sea Research 50,
+  987--1003.
+
+\bibitem[{St.Laurent et~al.(2001)St.Laurent, Toole, and
+  Schmitt}]{StLaurent_etal2001}
+St.Laurent, L.~C., Toole, J., Schmitt, R., 2001. Buoyancy forcing by turbulence
+  above rough topography in the abyssal brazil basin. Journal of Physical
+  Oceanography 31, 3476--3495.
+
+\bibitem[{Sullivan and McWilliams(2010)}]{SullivanMcWilliams2010}
+Sullivan, P.~P., McWilliams, J.~C., 2010. Dynamics of winds and currents
+  coupled to surface waves. Annual Review of Fluid Mechanics 42, 19--42.
+
+\bibitem[{Sullivan et~al.(2007)Sullivan, McWilliams, and
+  Melville}]{SullivanMcWilliams07}
+Sullivan, P.~P., McWilliams, J.~C., Melville, W.~K., 2007. Surface gravity wave
+  effects in the oceanic boundary layer: large-eddy simulation with vortex
+  force and stochastic breakers. Journal of Fluid Mechanics 593, 405--452.
+
+\bibitem[{Tennekes(1973)}]{Tennekes1973}
+Tennekes, H., 1973. The logarithmic wind profile. Journal of Atmospheric
+  Sciences 30, 558--567.
+
+\bibitem[{Terray et~al.(1996)Terray, Donelan, Agrawal, Drennan, Kahma,
+  Williams, Hwang, and Kitaigorodskii}]{Terray_etal1996}
+Terray, E., Donelan, M., Agrawal, Y., Drennan, W., Kahma, K., Williams, A.,
+  Hwang, P., Kitaigorodskii, S., 1996. Estimates of kinetic energy dissipation
+  under breaking waves. Journal of Physical Oceanography 26, 792--807.
+
+\bibitem[{Troen and Mahrt(1986)}]{Troen_Mahrt1986}
+Troen, I.~B., Mahrt, L., 1986. A simple model of the atmospheric boundary
+  layer: sensitivity to surface evaporation. Boundary Layer Meteorology 37,
+  129--148.
+
+\bibitem[{Umlauf et~al.(2005)Umlauf, Burchard, and Bolding}]{GOTM}
+Umlauf, L., Burchard, H., Bolding, K., 2005. {GOTM}: source code and test case
+  documentation: version 3.2. 231pp.
+
+\bibitem[{Webb et~al.(1998)Webb, Coward, de~Cuevas, and
+  Gwilliam}]{Webbetal1998}
+Webb, D.~J., Coward, A.~C., de~Cuevas, B.~A., Gwilliam, C.~S., 1998. The first
+  main run of the {OCCAM} global ocean model. Internal Document No. 34.
+  Southampton Oceanography Centre, Southampton, England.
+
+\end{thebibliography}
