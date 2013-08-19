@@ -1,9 +1,11 @@
 \chapter{\scshape Static background schemes}
 \label{chapter:cvmix_background}
 
+
 \minitoc
 \vspace{.5cm}
 
+\begin{mdframed}[backgroundcolor=lightgray!50]
 This chapter presents options in CVMix code for prescribing static
 (time independent) background diffusivities and viscosities.  The
 following CVMix Fortran module is directly connected to the material
@@ -11,7 +13,7 @@ in this chapter:
 \begin{align*} 
  &{\tt cvmix\_background.F90}
 \end{align*}
-
+\end{mdframed}
 
 \section{Options for static background mixing coefficients}
 \label{section:background-diffusivities}
@@ -118,6 +120,7 @@ and for the equatorial region they are
 
 %%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
 \begin{center}
 \includegraphics[angle=0,width=8cm]{./figs/bryan_lewis_cm2p1.pdf}
 \caption[Bryan-Lewis background diffusivities]{\sf Sample vertical
@@ -142,6 +145,7 @@ ${\tt sfkph} = 4.5 \, \times 10^{-5}$,
 ${\tt zfkph} =2500$. }
 \label{fig:bryan_lewis-profiles}
 \end{center}
+\rule{\textwidth}{0.005in}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -156,6 +160,7 @@ Figure \ref{fig:bryan_lewis-lat-depth}.
 
 %%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
 \begin{center}
 \includegraphics[angle=0,width=8cm]{./figs/bl_diffusivity.pdf}
 \caption[Latitude-depth Bryan-Lewis diffusivity]{Shown here is the
@@ -168,6 +173,7 @@ Figure \ref{fig:bryan_lewis-lat-depth}.
   values in the high latitudes.}
 \label{fig:bryan_lewis-lat-depth}
 \end{center}
+\rule{\textwidth}{0.005in}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

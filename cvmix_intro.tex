@@ -4,9 +4,8 @@
 \minitoc
 \vspace{.5cm}
 
-We provide here an overview to the various parameterized vertical
-mixing schemes available with Community Ocean Vertical Mixing
-(CVMix) Parameterizations.  
+We provide in this chapter an overview of the vertical mixing
+parameterizations available with CVMix.
 
 
 \section{Vertical mixing parameterizations in CVMix}
@@ -17,11 +16,11 @@ groups to code, test, tune, and document parameterizations of oceanic
 vertical mixing for numerical ocean simulations.  The project focuses
 on first-order turbulence closures for vertical mixing
 processes.\footnote{Those interested in higher order turbulence
-  closure schemes for oceanm odeling may find the General Ocean
-  Turbulence Model (GOTM) from \cite{GOTM} to be suitable.}  CVMix
-does {\it not} determine time stepping for the model prognostic
-fields.  Instead, time stepping is the responsibility of the calling
-model code.  The following schemes are targets for the CVMix
+  closure schemes for ocean modeling may with to consider using the
+  General Ocean Turbulence Model (GOTM) from \cite{GOTM}.}  CVMix does
+{\it not} determine time stepping for the model prognostic fields.
+Instead, time stepping is the responsibility of the calling model
+code.  The following schemes are included in the CVMix
 parameterizations during phase I of the development.
 
 \begin{itemize}
@@ -36,10 +35,10 @@ parameterizations during phase I of the development.
   independent schemes:
 \begin{itemize}
 \item the vertical profile from \cite{BryanLewis1979};
-\item the profile from \cite{Henyey_etal1986} in which mixing near the
-  equator is very small, as measured by \cite{Gregg_etal2003}; 
-\item the approaches from \cite{Jochum2009}, in which enhanced mixing
-  from parametric subharmonic mixing is included. 
+% \item the profile from \cite{Henyey_etal1986} in which mixing near the
+%   equator is very small, as measured by \cite{Gregg_etal2003}; 
+% \item the approaches from \cite{Jochum2009}, in which enhanced mixing
+%   from parametric subharmonic mixing is included. 
 \end{itemize}
 
 
@@ -49,9 +48,7 @@ parameterizations during phase I of the development.
  \item \cite{PPvmix}, applicable largely for tropical circulation;
  \item \cite{LargeKPP} and \cite{Large_Gent1999}, which builds on the
    \cite{PPvmix} scheme;
- \item \cite{Jacksonetal2008}, which employs a vertically non-local
-   method to determine shear mixing throughout the World Ocean.
- \end{itemize}
+  \end{itemize}
 
 
 \item {\sc Tidally induced mixing} (Chapter
@@ -60,15 +57,13 @@ parameterizations during phase I of the development.
   \begin{itemize}
    \item \cite{Simmonsetal2004} 
    \item \cite{Melet_etal_2013}
-   \item  the bottom boundary mixing scheme from \cite{Legg_eta2006},
-     including bottom mixing from barotropic tides. 
 \end{itemize}
 
 
 \item {\sc Double diffusive processes} (Chapter
   \ref{chapter:cvmix_ddiffusion}): Double diffusive processes arise
-  from the distinct mixing properties of temperature and
-  salinity. 
+  from the distinct mixing properties of temperature relative to
+  salinity and other material tracers.
 
 \item {\sc KPP surface boundary layer} (Chapter
   \ref{chapter:cvmix_kpp}): The K-profile parameterization (KPP)
@@ -97,40 +92,63 @@ parameterizations during phase I of the development.
 \end{itemize}
 
 
-\section{The general form of CVMix parameterizations}
+\section{General form of CVMix parameterizations}
 \label{section:vert_mix_schemes_general_cvmix}
 
-All schemes considered in CVMix can be formulated in terms of a
-diffusivity and a non-local transport.  That is, the vertical
-turbulent flux of a scalar or velocity component is written in the
-form
+CVMix focuses only on vertical transport processes in the ocean, so
+that we are concerned with the tracer or velocity equation in the form
 \begin{equation}
-  \overline{w' \, \lambda'} = 
-  -K_{\lambda} \left( \frac{\partial \overline{\lambda}}{\partial z} - \gamma_{\lambda} \right),
-\label{eq:cvmix-parameterization}
+  \frac{\partial \overline{\lambda} }{\partial t}  = 
+ - \frac{\partial}{\partial z}  \left( \overline{w' \, \lambda'} + \overline{w} \, \overline{\lambda} \right). 
 \end{equation}
-where $w'$ is the turbulent or fluctuating portion of the vertical
-velocity component
+In this equation, $w'$ is the turbulent or fluctuating portion of the
+vertical velocity\footnote{In Chapter \ref{chapter:cvmix_kpp}, we
+  follow the notation of \cite{LargeKPP} by writing the mean
+  quantities with an uppercase, $W$ and $\Lambda$, and turbulent
+  fluctuations with a lowercase, $w$ and $\lambda$. For the present
+  chapter, we follow the more standard notation of equation
+  (\ref{eq:mean-turbulent-decompose}).}
 \begin{equation}
  w = w' + \overline{w},
-\label{eq:mean-turbulent-decompose}
+\label{eq:mean-turbulent-decompose-w}
 \end{equation}
-$\lambda'$ is a turbulent scalar or velocity component, and the
-overline denotes an Eulerian ensemble or time average that separates
-the mean flow from the turbulent flow.\footnote{In Chapter
-  \ref{chapter:cvmix_kpp}, we follow the notation of \cite{LargeKPP}
-  by writing the mean quantities with an uppercase, $W$ and $\Lambda$,
-  and turbulent fluctuations with a lowercase, $w$ and $\lambda$. For
-  the present chapter, we follow the more standard notation of
-  equation (\ref{eq:mean-turbulent-decompose}).}  The first term on
-the right hand side of equation (\ref{eq:cvmix-parameterization})
-provides for the familiar downgradient vertical diffusion determined
-by a non-negative vertical diffusivity, $K_{\lambda} \ge 0$, and the
-local vertical derivative of the model's resolved mean field,
-$\partial \overline{\lambda} / \partial z$.  This term is referred to
-as the local portion of the vertical mixing parameterization
+$\lambda'$ is a fluctuating scalar or velocity component
 \begin{equation}
-\overline{w' \, \lambda'}^{\mbox{\tiny local}} = -K_{\lambda} \left( \frac{\partial \overline{\lambda}}{\partial z} \right).
+ \lambda = \lambda' + \overline{\lambda},
+\label{eq:mean-turbulent-decompose-lambda}
+\end{equation}
+and the overline denotes an Eulerian ensemble or time average that
+separates the mean flow from turbulent fluctuations.  The vertical
+flux $\overline{w} \, \overline{\lambda}$ is represented in a
+numerical model by an advection operator or remapping operation, and
+it is comprised of flow {\it resolved} by the model grid.  In
+contrast, $\overline{w' \, \lambda'}$ is the correlation between
+fluctuations in the vertical velocity component and the field
+$\lambda$. This correlation is often termed the {\it turbulent flux}
+of $\lambda$.  It is not explicitly represented by a numerical model,
+since it arises from processes at the subgrid scale.  CVMix code
+provides a suite of closures, or {\it parameterizations}, for this
+subgrid scale flux.
+
+We are interested in those correlations $\overline{w' \, \lambda'}$
+that can be parameterized in terms of vertical diffusion or vertical
+non-local mixing.  That is, all parameterizations considered in CVMix
+can be formulated in terms of a diffusivity and a non-local transport,
+in which case the turbulent flux is written as
+\begin{equation}
+  \overline{w' \, \lambda'} = 
+  -K_{\lambda} \left( \frac{\partial \overline{\lambda}}{\partial z} - \gamma_{\lambda} \right).
+\label{eq:cvmix-parameterization}
+\end{equation}
+The first term on the right hand side of equation
+(\ref{eq:cvmix-parameterization}) provides for the familiar
+downgradient vertical diffusion determined by a non-negative vertical
+diffusivity, $K_{\lambda} \ge 0$, and the local vertical derivative of
+the model's resolved field, $\partial \overline{\lambda} / \partial
+z$.  This term is referred to as the local portion of the vertical
+mixing parameterization
+\begin{equation}
+\overline{ w' \, \lambda' }^{\, \mbox{\scriptsize local}} = -K_{\lambda} \left( \frac{\partial \overline{\lambda}}{\partial z} \right).
 \end{equation}
 Note that the term ``local'' is used for this portion of the
 parameterized flux (\ref{eq:cvmix-parameterization}) since it is
@@ -143,20 +161,18 @@ such being the case for the KPP scheme (Chapter
 non-local transport that is not directly associated with local
 vertical gradients of $\lambda$, in which we have
 \begin{equation}
-\overline{w' \, \lambda'}^{\mbox{\tiny non-local}} = K_{\lambda} \; \gamma_{\lambda}.
+\overline{w' \, \lambda'}^{\, \mbox{\scriptsize non-local}} = K_{\lambda} \; \gamma_{\lambda}.
 \end{equation}
 KPP is the only scheme available with CVMix that prescribes a nonzero
-value for $\gamma_{\lambda}$.  Other schemes return zero for this
-term.
+value for $\gamma_{\lambda}$.  
 
-Every scheme available in CVMix returns a value, possibly the null
-value, for the diffusivity, $K_{\lambda}$, and the non-local
-transport, $\gamma_{\lambda}$.  It does so based on a standard suite
-of inputs taken from the calling model, such as the surface buoyancy
-and momentum fluxes, the vertical stratification, and the vertical
-shear.  Besides the diffusivity and non-local transport, various
-diagnostic fields are available to help those interested in studying
-or modifying elements of the parameterizations.
+Every scheme available in CVMix computes parameterized turbulent
+fluxes based on a suite of inputs from the calling model, such as the
+surface buoyancy and momentum fluxes, vertical stratification, and
+vertical shear.  There may also need to be information about the
+bottom roughness and unresolved tide speeds.  Besides the diffusivity
+and non-local transport, various diagnostic fields are available to
+help understand the internal workings of the parameterizations.
 
 
 
@@ -187,16 +203,19 @@ consider.
   large.  Problems with the diffusivity matching occur if insisting
   that KPP match its boundary layer diffusivity to a potentially large
   interior diffusivity arising from convective mixing.  To eliminate
-  these problems, convective mixing must be called {\it after} the KPP
-  boundary layer scheme.
+  these problems, parameterized convective mixing in the ocean
+  interior must be called {\it after} the KPP boundary layer scheme.
+  Furthermore, note that convective parameterizations are not used
+  inside the KPP boundary layer, since KPP provides the mixing
+  coefficients in the boundary layer.
 
 \end{itemize}
 These considerations lead to the recommended flow diagram shown in
-Figure \ref{fig:vertical_mix_flow_cvmix} for use of the CVMix
-schemes.
+Figure \ref{fig:vertical_mix_flow_cvmix} for use of CVMix schemes.
 
 %%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
 \begin{center}
 \includegraphics[angle=0,width=15cm]{./mfpic_figs/cvmix_flow_diagram.pdf}
 \caption[Flow diagram for CVMix schemes]{\sf This flow diagram depicts
@@ -209,7 +228,7 @@ schemes.
   This initialization serves to set up arrays and derived type
   structures, all as a function of the input that it receives from the
   calling ocean model code.  The next step during initialization is to
-  call the module {\tt CVmix\_background.F90} to fill chosen static
+  call the module {\tt cvmix\_background.F90} to fill chosen static
   background diffusivities.  Upon entering the time dependent portion
   of the ocean model integration, the driver receives surface fluxes
   and penetrative radiative fluxes.  Calls are made to chosen interior
@@ -221,13 +240,15 @@ schemes.
   portion.  After the boundary layer, then convective mixing is
   called, with regions of gravitationally unstable water given a large
   diffusivity.  Notably, if KPP is used for the surface boundary
-  layer, convective mixing is performed only beneath the KPP boundary
-  layer.  The final step returns the diffusivity $K_{\lambda}$,
-  viscosity, and non-local transport $\gamma_{\lambda}$, arrays to the
-  calling ocean model code.  A new time step starts by reinitializing
-  the diffusivities to their static background values.}
+  layer, parameterized convective mixing is performed only beneath the
+  KPP boundary layer.  The final step returns the diffusivity
+  $K_{\lambda}$, viscosity, and non-local transport
+  $\gamma_{\lambda}$, arrays to the calling ocean model code.  A new
+  time step starts by reinitializing the diffusivities to their static
+  background values.}
 \label{fig:vertical_mix_flow_cvmix}
 \end{center}
+\rule{\textwidth}{0.005in}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

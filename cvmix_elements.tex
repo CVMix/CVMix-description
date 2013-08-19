@@ -1,12 +1,17 @@
-\chapter{\scshape Elements of vertical mixing schemes}
+\chapter{\scshape Elements of CVMix parameterizations}
 \label{chapter:cvmix_elements}
 
 \minitoc
 \vspace{.5cm}
 
-This chapter presents certain of the elements required for computing
-various CVMix parameterization schemes.  Details specific to
-particular schemes are provided in later chapters.
+\begin{mdframed}[backgroundcolor=lightgray!50]
+We present in this chapter certain elements required for computing
+CVMix parameterizations.  Details specific to particular schemes are
+provided in later chapters.
+\end{mdframed}
+
+
+
 
 \section{Discrete vertical grid}
 \label{section:vertical-grid-numerics}
@@ -27,35 +32,51 @@ differ slightly.  A summary of the choices made in developing this
 figure are as follows.
 \begin{itemize}
 
-\item {\sc vertical coordinate}: The vertical coordinate $z$ increases
+\item {\sc vertical coordinate and depth}: The vertical coordinate $z$ increases
   upward and extends from the ocean bottom at $z=-H(x,y)$ to the sea
-  surface at $z = \eta(x,y,t)$.
+  surface at $z = \eta(x,y,t)$
+\begin{equation}
+   -H(x,y) \le z \le \eta(x,y,t).
+\end{equation}
+Conversely, the {\it depth} 
+\begin{equation}
+   d = -z + \eta 
+\label{eq:depth-defined}
+\end{equation} 
+increases from a value of $d=0$ at $z=\eta$ to $d = H+\eta$ at $z=-H$
+\begin{equation}
+  0 \le   d \le H+\eta. 
+\end{equation}
+So in summary, depth increases when moving down into the ocean
+starting from the free surface, and $z$ increases moving up from a
+resting ocean at $z=0$.
 
 \item {\sc tracer cell arrays}: Tracer cell arrays are labelled with
   the discrete index {\tt kt}, and have dimensions {\tt nlevs}.  The
   index {\tt kt} increases downward starting from {\tt kt} =1 for the
   top model grid cell.  The number of levels, {\tt nlevs}, is a
   function of the column, with only wet points included in a CVMix
-  column.  Examples of tracer cell arrays include temperature,
-  salinity, pressure, density, thermal expansion coefficient, and
-  haline contraction coefficient.
+  column.\footnote{\color{red} Is this still true for the code?}
+  Examples of tracer cell arrays include temperature, salinity,
+  pressure, density, thermal expansion coefficient, and haline
+  contraction coefficient.
 
 \item {\sc w-cell or interface arrays}: W-cell or interface arrays are
   labelled with the discrete index {\tt kw}, and have dimensions {\tt
     nlevs+1}.  The index {\tt kw} increases downward starting from
   {\tt kw} =1 at the top ocean interface.  The notation ``w-cell''
   originates from the continuity equation, in which the vertical
-  velocity component, $w$, transfers mass across the vertical
-  interfaces of tracer cells.  Examples of w-cell or interface arrays
-  are diffusivity, viscosity, vertical tracer derivatives, buoyancy
-  frequency, and Richardson number.  For most w-cell arrays, both the
-  top interface at {\tt kw=1} and bottom interface at {\tt kw=nlevs+1}
-  have zero values.
+  velocity component, $w$, transfers mass or tracer across the
+  vertical interfaces of tracer cells.  Examples of w-cell or
+  interface arrays are diffusivity, viscosity, vertical tracer
+  derivatives, buoyancy frequency, and Richardson number.  For most
+  w-cell arrays, both the top interface at {\tt kw=1} and bottom
+  interface at {\tt kw=nlevs+1} have zero values.
 
   One argument for using {\tt nlevs+1} interfaces is that we avoid
   ambiguity of where the data resides. Interface arrays of size {\tt
-    nlevs} could start at either the top or bottom of the first level
-  and, despite documentation, the ambiguity will increase the
+    nlevs} could start at either the top or bottom of the first grid
+  cell and, even if well documented, the ambiguity will increase the
   potential for code errors.  It does not matter so much whether
   interface arrays are dimensioned {\tt 0:nlevs} or {\tt 1:nlevs+1};
   there is only one way the data could be laid out relative to the
@@ -103,6 +124,7 @@ figure are as follows.
 
 %%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
 \begin{center}
 \includegraphics[angle=0,width=10cm]{./mfpic_figs/cvmix_discrete_vertical.pdf}
 \caption[Discrete vertical column for CVMix modules]{\sf Schematic of
@@ -128,11 +150,12 @@ figure are as follows.
   thickness of a column is {\tt zw(nlevs+1)}, and it is generally time
   dependent, as are all of the grid distances {\tt dzt} and {\tt dzw}.
   Arrays that are defined at the interface, such as buoyancy
-  frequency, Richarson number, diffusivity, viscosity, have vertical
+  frequency, Richardson number, diffusivity, viscosity, have vertical
   indices {\tt kw}.  Arrays defined at the tracer cell point, such as
   temperature, salinity, and density, have vertical indices {\tt kt}.}
 \label{fig:cvmix_discrete_vertical}
 \end{center}
+\rule{\textwidth}{0.005in}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -140,30 +163,33 @@ figure are as follows.
 \section{Gravitational stability}
 \label{section:buoyancy-frequency-elements}
 
-Buoyancy stratification plays a key role in ocean physical proceses.
-We have need to quantify stratification, and the associated
-gravitational stability of a water column.  For this purpose, we
-introduce the notion of an adiabatic and isohaline parcel
-displacement, from which we develop an algorithm for computing the
-buoyancy frequency used to measure vertical stratification.  The
-notions detailed here should be respected by the calling ocean model
-in order for the CVMix modules to produce physically relevant results.
+Buoyancy stratification plays a key role in physical ocean proceses.
+We have need to quantify stratification for use in CVMix
+parameterizations, along with the associated gravitational stability
+of a water column.  For this purpose, we introduce the notion of an
+adiabatic and isohaline parcel displacement, from which we develop an
+algorithm for computing the buoyancy frequency used to measure
+vertical stratification.  The notions detailed here should be
+respected by the calling ocean model in order for the CVMix modules to
+produce physically relevant results.
+\begin{mdframed}[backgroundcolor=lightgray!50]
 \begin{quote}
   {\sf The squared buoyancy frequency, $N^2$, is an input to CVMix
     modules.}
 \end{quote}
+\end{mdframed}
 
 
-\subsection{Infinitesimal displacements}
+\subsection{Density change under infinitesimal displacements}
 
-Consider an infinitesimal displacement $\mathrm{d}{\bf x}$ of a fluid
-parcel.  The {\it in situ} density at the new point is related to the
-reference density by
+Consider a displacement $\mathrm{d}{\bf x}$ of a fluid parcel.  To
+leading order, the {\it in situ} density at the new point is related
+to the reference density by
 \begin{equation}
  \rho({\bf x} + \mathrm{d} \, {\bf x})= \rho({\bf x}) + \mathrm{d}\rho({\bf x}).
 \end{equation}
-Using a Taylor series expansion, the density increment can be
-approximated by
+Using the leading order term in a Taylor series expansion, the density
+increment can be approximated by
 \begin{equation}
 \begin{split}
 \mathrm{d}\rho &=  \mathrm{d}{\bf x} \cdot \nabla \rho
@@ -206,18 +232,15 @@ The ambient density at the new point, $\rho({\bf x} + \mathrm{d} {\bf
 \subsection{Neutral directions}
 \label{subsection:neutral-directions}
 
-Displacements that allow for temperature and salinity to change
-require energy for mixing to occur.  Such energy can arise from
-various sources, such as astronomical tides \citep{MunkWunsch98}. We
-are not concerned here with such energy sources.  Instead, we wish to
-know if through buoyancy forces alone a particular parcel displacement
-is favored, resisted, or neutral.  For this purpose, we introduce the
-notion of a displacment restricted to adiabatic and isohaline
-conditions (i.e., no heat or salt exchanged during the parcel
-displacement).  Such fictitious displacements occur in the absence of
-energy needed for mixing, and so they are useful to explore where
-parcel motions may signal a fluid instability associated with buoyancy
-forces.
+Parcel displacements associated with mixing will change the parcel's
+temperature, salinity, and concentration of other material
+tracers. Rather than considering such mixing processes, we here wish
+to know if through buoyancy forces alone, a particular parcel
+displacement is favored, resisted, or neutral.  For this purpose, we
+introduce the notion of a displacment restricted to adiabatic and
+isohaline conditions (i.e., no heat or salt exchanged during the
+parcel displacement).  Such fictitious displacements occur in the
+absence of mechanical energy needed for mixing.
 
 The density change associated with an adiabatic and isohaline
 displacement is determined just by pressure changes arising from the
@@ -315,10 +338,10 @@ identity
 &= 
  -\left( \frac{\rho \, \mathrm{d}z}{g} \right) \, N^{2}.
 \end{split}
-\label{eq:inifinitesimal-delta-rho-elements-upwards1}
+\label{eq:infinitesimal-delta-rho-elements-upwards}
 \end{equation}
 The final equality in equation
-(\ref{eq:inifinitesimal-delta-rho-elements-upwards1}) introduced the
+(\ref{eq:infinitesimal-delta-rho-elements-upwards}) introduced the
 squared buoyancy frequency
  \begin{equation}
  N^{2}_{\mbox{\scriptsize linear}} = g \, \left( \alpha \, \frac{\partial \Theta}{\partial z} 
@@ -334,18 +357,19 @@ neglected.  It is for this reason we denote this a linear
 approximation to the buoyancy frequency.  The higher order terms are
 potentially important in regions where the equation of state becomes
 quite nonlinear, such as the high latitudes of the Southern Ocean.  So
-we do not generally recommend this approximation for global modeling.
-Instead, we recommend use of the full squared buoyancy frequency
+we do not generally recommend the linear approximation for global
+modeling.  Instead, we recommend use of the full squared buoyancy
+frequency
 \begin{equation}
 \begin{split}
  N^{2}_{\mbox{\scriptsize full}}(z \rightarrow z+\mathrm{d}z) &\equiv 
  -\left( \frac{g \, [ \rho(z+\mathrm{d} z)  - \rho(z+\mathrm{d} z)_{\mbox{\tiny adiabatic/isohaline}} ] } {\rho(z) \, \mathrm{d}z} \right)
 \end{split}
-\label{eq:inifinitesimal-delta-rho-elements-upwards2}
+\label{eq:infinitesimal-delta-rho-elements-upwards-B}
 \end{equation}
 
 Again, the calculation
-(\ref{eq:inifinitesimal-delta-rho-elements-upwards2}) will determine
+(\ref{eq:infinitesimal-delta-rho-elements-upwards-B}) will determine
 gravitational stability of an upward parcel displacement from depth
 $z$ to $z+\mathrm{d}z$.  To further expose the physics of this
 calculation, consider two vertical stratifications.
@@ -372,6 +396,7 @@ calculation, consider two vertical stratifications.
 \end{itemize}
 
 \begin{figure}
+\rule{\textwidth}{0.005in}
 \begin{center}
 \resizebox{5cm}{!}{\includegraphics{./mfpic_figs/cvmix_stability.pdf}}
 \caption[Parcel displacements for gravitational stability calculation]
@@ -388,6 +413,7 @@ calculation, consider two vertical stratifications.
   corresponds to the tracer point {\tt zt(kt)}.}
 \label{fig:cvmix_stability}
 \end{center}
+\rule{\textwidth}{0.005in}
 \end{figure}
 
 
@@ -417,18 +443,18 @@ $z$, which requires the calculation
 &=
 \left( \frac{\rho \, \mathrm{d}z}{g} \right) \, N^{2},
 \end{split}
-\label{eq:inifinitesimal-delta-rho-elements-downward}
+\label{eq:infinitesimal-delta-rho-elements-downward}
 \end{equation}
 where terms in the final two equalities are evaluated at the shallow
 reference point $z^{*} = z + \mathrm{d}z$.  Following equation
-(\ref{eq:inifinitesimal-delta-rho-elements-upwards2}), we introduce the
+(\ref{eq:infinitesimal-delta-rho-elements-upwards-B}), we introduce the
 full squared buoyancy frequency
 \begin{equation}
 \begin{split}
  N^{2}_{\mbox{\scriptsize full}}(z +\mathrm{d}z \rightarrow z) &\equiv 
  \left( \frac{g \, [ \rho(z)  - \rho(z)_{\mbox{\tiny adiabatic/isohaline}} ] } {\rho(z+\mathrm{d}z) \, \mathrm{d}z} \right).
 \end{split}
-\label{eq:inifinitesimal-delta-rho-elements-downwards}
+\label{eq:infinitesimal-delta-rho-elements-downwards}
 \end{equation}
 
 
@@ -456,7 +482,7 @@ frequency at the reference point $z$
 }{\mathrm{d}z}
 \right).
 \end{split}
-\label{eq:inifinitesimal-delta-rho-elements-upwards-summary}
+\label{eq:infinitesimal-delta-rho-elements-upwards-summary}
 \end{equation}
 We next the shallower depth $z+\mathrm{d}z$ as a reference point and
 displace parcels vertically downward to $z$.  This calculation leads
@@ -475,7 +501,7 @@ $z+\mathrm{d}z$
   }{\mathrm{d}z}
 \right).
 \end{split}
-\label{eq:inifinitesimal-delta-rho-elements-downward-summary}
+\label{eq:infinitesimal-delta-rho-elements-downward-summary}
 \end{equation}
 We now use these two results to render an approximation to the squared
 buoyancy frequency at the interface point $z + \mathrm{d}z/2$, which
@@ -554,7 +580,8 @@ assumptions about our ability to truncate the Taylor series at the
 leading order.  This truncation may become problematic particularly in
 high latitudes where the equation of state can become quite nonlinear.
 Hence, we generally do not recommend use of the expression
-(\ref{eq:n2-in-terms-of-tracers}).
+(\ref{eq:n2-in-terms-of-tracers}) for the calculation of water column
+stability.
 
 
 \subsubsection{Discrete calculation of the squared buoyancy frequency}
@@ -564,15 +591,18 @@ CVMix modules do {\it not} compute the buoyancy frequency.  Rather,
 the calling model does and then passes $N^{2}$ to CVMix. Nonetheless,
 CVMix modules must assume a placement for the buoyancy frequency, with
 the following choice made:
+\begin{mdframed}[backgroundcolor=lightgray!50]
 \begin{quote}
   {\sf CVMix modules assume the squared buoyancy frequency, $N^{2}$,
       lives at the vertical interface of tracer cells, following the
       convention given by Figure \ref{fig:cvmix_discrete_vertical}.}
 \end{quote}
+\end{mdframed}
 We now write the buoyancy frequency expression
 (\ref{eq:n2-in-terms-of-density-differences}) in terms of discrete
 indices for ready incorporation into a numerical model, in which we have 
 \small
+\begin{mdframed}[backgroundcolor=lightgray!50]
 \begin{equation}
 N^{2}({\tt kw}) = 
  \frac{g}{2} 
@@ -588,6 +618,7 @@ N^{2}({\tt kw}) =
  \right).
 \label{eq:n2-in-terms-of-density-differences-discrete}
 \end{equation}
+\end{mdframed}
 \normalsize Note that by referring to Figures
 \ref{fig:cvmix_discrete_vertical} and \ref{fig:cvmix_stability}, we
 see that the discrete label {\tt kt} corresponds to the shallower
@@ -632,6 +663,7 @@ calculation depend on choices regarding the grid layout in the ocean
 model.  Rather, the Richardson number is an input to CVMix modules.
 CVMix modules assume a placement for the Richardson number, with the
 following choice made:
+\begin{mdframed}[backgroundcolor=lightgray!50]
 \begin{quote}
   {\sf The gradient Richardson number, $\mbox{Ri}$, is an input to
     CVMix modules.  CVMix modules assume the gradient Richardson
@@ -639,6 +671,7 @@ following choice made:
     the convention given by Figure
     \ref{fig:cvmix_discrete_vertical}.}
 \end{quote}
+\end{mdframed}
 
 Staggering of tracer and velocity fields on a discrete grid leads to
 ambiguity for how to compute a discrete Richardson number.  The issue
@@ -672,6 +705,7 @@ mode associated with gravity waves on the B-grid (\cite{Mesinger1973},
 \cite{SMGbook}).
 
 \begin{figure}
+\rule{\textwidth}{0.005in}
 \begin{center}
 \resizebox{7cm}{!}{\includegraphics{./mfpic_figs/B_grid.pdf}}
 \caption[Placement of fields onto the B-grid] {Illustration of how
@@ -684,6 +718,7 @@ mode associated with gravity waves on the B-grid (\cite{Mesinger1973},
   squares.}
 \label{fig:b-grid}
 \end{center}
+\rule{\textwidth}{0.005in}
 \end{figure}
 
 We present here some methods for computing the squared vertical shear
@@ -756,6 +791,7 @@ presence of a computational null mode associated with geostrophically
 balanced flow \citep{Adcroftetal1999}.
 
 \begin{figure}
+\rule{\textwidth}{0.005in}
 \begin{center}
 \resizebox{7cm}{!}{\includegraphics{./mfpic_figs/C_grid.pdf}}
 \caption[Placement of fields onto the C-grid] {Illustration of how
@@ -767,6 +803,7 @@ balanced flow \citep{Adcroftetal1999}.
   convention also used for the B-grid.}
 \label{fig:c-grid}
 \end{center}
+\rule{\textwidth}{0.005in}
 \end{figure}
 
 

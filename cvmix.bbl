@@ -1,4 +1,4 @@
-\begin{thebibliography}{80}
+\begin{thebibliography}{72}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \expandafter\ifx\csname url\endcsname\relax
   \def\url#1{\texttt{#1}}\fi
@@ -22,10 +22,6 @@ Belcher, S., Grant, A., Hanley, K., Fox-Kemper, B., {Van Roekel}, L., Sullivan,
   H., Bidlot, J., Janssen, P., Polton, J.~A., 2012. A global perspective on
   {L}angmuir turbulence in the ocean surface boundary layer. Geophysical
   Research Letters 39-L18605, doi:10.1029/2012GL052932.
-
-\bibitem[{Bryan(1969)}]{Bryan1969}
-Bryan, K., 1969. A numerical method for the study of the circulation of the
-  world ocean. Journal of Computational Physics 4, 347--376.
 
 \bibitem[{Bryan and Lewis(1979)}]{BryanLewis1979}
 Bryan, K., Lewis, L.~J., 1979. A water mass model of the world ocean. Journal
@@ -70,10 +66,6 @@ Fairall, C., Bradley, E., Godfrey, J., Wick, G., Edson, J., Young, G., 1996.
   Cool-skin and warm-layer effects on sea surface temperature. Journal of
   Geophysical Research 101, 1295--1308.
 
-\bibitem[{Gargett(1984)}]{Gargett1984}
-Gargett, A.~E., 1984. Vertical eddy diffusivity in the ocean interior. Journal
-  of Marine Research 42, 359--393.
-
 \bibitem[{Gent et~al.(1998)Gent, Bryan, Danabasoglu, Doney, Holland, Large, and
   McWilliams}]{Gent_etal_1998}
 Gent, P., Bryan, F., Danabasoglu, G., Doney, S., Holland, W., Large, W.,
@@ -89,24 +81,9 @@ Gill, A., 1982. Atmosphere-Ocean Dynamics. Vol.~30 of International Geophysics
 Goosens, M., Mittelbach, F., Samarin, A., 1994. The \LaTeX Companion.
   Addison-Wesley, Reading, Massachusetts, 528 pp.
 
-\bibitem[{Gregg et~al.(2003)Gregg, Sanford, and Winkel}]{Gregg_etal2003}
-Gregg, M., Sanford, T., Winkel, D., 2003. Reduced mixing from the breaking of
-  internal waves in equatorial waters. Nature 422, 513--515.
-
 \bibitem[{Grif\/f\/ies(2004)}]{SMGbook}
 Grif\/f\/ies, S.~M., 2004. Fundamentals of Ocean Climate Models. Princeton
   University Press, Princeton, USA, 518+xxxiv pages.
-
-\bibitem[{Grif\/f\/ies et~al.(2009)Grif\/f\/ies, Biastoch, {B\"{o}ning}, Bryan,
-  Danabasoglu, Chassignet, England, Gerdes, Haak, Hallberg, Hazeleger,
-  Jungclaus, Large, Madec, Pirani, Samuels, Scheinert, Gupta, Severijns,
-  Simmons, Treguier, Winton, Yeager, and Yin}]{CORE}
-Grif\/f\/ies, S.~M., Biastoch, A., {B\"{o}ning}, C.~W., Bryan, F., Danabasoglu,
-  G., Chassignet, E., England, M.~H., Gerdes, R., Haak, H., Hallberg, R.~W.,
-  Hazeleger, W., Jungclaus, J., Large, W.~G., Madec, G., Pirani, A., Samuels,
-  B.~L., Scheinert, M., Gupta, A.~S., Severijns, C.~A., Simmons, H.~L.,
-  Treguier, A.~M., Winton, M., Yeager, S., Yin, J., 2009. Coordinated
-  {O}cean-ice {R}eference {E}xperiments ({CORE}s). Ocean Modelling 26, 1--46.
 
 \bibitem[{Grif\/f\/ies et~al.(2005)Grif\/f\/ies, Gnanadesikan, Dixon, Dunne,
   Gerdes, Harrison, Rosati, Russell, Samuels, Spelman, Winton, and
@@ -121,11 +98,6 @@ Grif\/f\/ies, S.~M., Gnanadesikan, A., Dixon, K.~W., Dunne, J.~P., Gerdes, R.,
 Grif\/f\/ies, S.~M., Pacanowski, R., Schmidt, M., Balaji, V., 2001. Tracer
   conservation with an explicit free surface method for ${z}$-coordinate ocean
   models. Monthly Weather Review 129, 1081--1098.
-
-\bibitem[{Henyey et~al.(1986)Henyey, Wright, and Flatte}]{Henyey_etal1986}
-Henyey, F., Wright, J., Flatte, S.~M., 1986. Energy and action flow through the
-  internal wave field: an eikonal approach. Journal of Geophysical Research 91,
-  8487--8496.
 
 \bibitem[{Holland et~al.(1998)Holland, Chow, and Bryan}]{HollandChowBryan1998}
 Holland, W., Chow, J., Bryan, F., 1998. Application of a third-order upwind
@@ -175,11 +147,6 @@ Kantha, L.~H., Clayson, C.~A., 2000. Small Scale Processes in Geophysical Fluid
 Killworth, P.~D., Stainforth, D., Webb, D.~J., Paterson, S.~M., 1991. The
   development of a free-surface {B}ryan-{C}ox-{S}emtner ocean model. Journal of
   Physical Oceanography 21, 1333--1348.
-
-\bibitem[{Klinger et~al.(1996)Klinger, Marshall, and Send}]{KlingerConvection}
-Klinger, B.~A., Marshall, J., Send, U., 1996. Representation of convective
-  plumes by vertical adjustment. Journal of Geophysical Research 101,
-  18175--18182.
 
 \bibitem[{Klymak et~al.(2005)Klymak, Moum, Nash, Kunze, Girton, Carter, Lee,
   Sanford, and Gregg}]{Klymak_etal2005}
@@ -237,9 +204,9 @@ Legg, S., Hallberg, R., Girton, J., 2006. Comparison of entrainment in
   overflows simulated by z-coordinate, isopycnal and non-hydrostatic models.
   Ocean Modelling 11, 69--97.
 
-\bibitem[{Lemari\'e et~al.(2012)Lemari\'e, Kurian, Shchepetkin, Molemaker,
-  Colas, and McWilliams}]{Lemarie_etal2012a}
-Lemari\'e, F., Kurian, J., Shchepetkin, A.~F., Molemaker, M.~J., Colas, F.,
+\bibitem[{Lemari{\'{e}} et~al.(2012)Lemari{\'{e}}, Kurian, Shchepetkin,
+  Molemaker, Colas, and McWilliams}]{Lemarie_etal2012a}
+Lemari{\'{e}}, F., Kurian, J., Shchepetkin, A.~F., Molemaker, M.~J., Colas, F.,
   McWilliams, J.~C., 2012. Are there inescapable issues prohibiting the use of
   terrain-following coordinates in climate models? Ocean Modelling 42, 57--79.
 
@@ -251,11 +218,6 @@ Li, M., Garrett, C., 1993. Cell merging and the jet/downwelling ratio in
 Li, X., Chao, Y., McWilliams, J.~C., Fu, L.~L., 2001. A comparison of two
   vertical-mixing schemes in a {P}acific ocean general circulation model.
   Journal of Climate 14, 1377--1398.
-
-\bibitem[{Marshall et~al.(1997)Marshall, Hill, Perelman, and Adcroft}]{MITgcm}
-Marshall, J., Hill, C., Perelman, L., Adcroft, A., 1997. Hydrostatic,
-  quasi-hydrostatic, and nonhydrostatic ocean modeling. Journal of Geophysical
-  Research 102, 5733--5752.
 
 \bibitem[{McDougall(1987)}]{McDougall1987a}
 McDougall, T.~J., 1987. Neutral surfaces. Journal of Physical Oceanography 17,
@@ -303,10 +265,6 @@ Miles, J., 1961. On the stability of heterogeneous shear flows. Journal of
 Moum, J., Caldwell, D., Nash, J., Gunderson, G., 2002. Observations of boundary
   mixing over the continental slope. Journal of Physical Oceanography 32,
   2113--2130.
-
-\bibitem[{Munk and Wunsch(1998)}]{MunkWunsch98}
-Munk, W., Wunsch, C., 1998. Abyssal recipes {II}: {E}nergetics of tidal and
-  wind mixing. Deep-Sea Research 45, 1977--2010.
 
 \bibitem[{Osborn(1980)}]{Osborn1980}
 Osborn, T.~R., 1980. Estimates of the local rate of vertical diffusion from

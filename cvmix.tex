@@ -9,12 +9,28 @@
 \usepackage{lastpage}
 \usepackage{graphicx}
 \usepackage{verbatim} 
+\usepackage{authblk}
+\usepackage{tikz}
+\usepackage[framemethod=tikz]{mdframed}
+
+\usepackage{titlesec}
+\titleformat*{\section}{\LARGE\bfseries}
+\titleformat*{\subsection}{\Large\bfseries}
+\titleformat*{\subsubsection}{\large\bfseries}
+\titleformat*{\paragraph}{\large\bfseries}
+\titleformat*{\subparagraph}{\large\bfseries}
+\renewcommand{\familydefault}{\sfdefault}
 
 \usepackage{minitoc} 
+\renewcommand{\mtcfont}{\small\sffamily} 
+\renewcommand{\mtcSfont}{\small\sffamily} 
 \usepackage[Lenny]{./styles/fncychap}
 
-\evensidemargin -.2in
-\oddsidemargin .2in
+%\evensidemargin -.2in
+%\oddsidemargin .2in
+\evensidemargin -.3in
+\oddsidemargin  0.0in
+
 \topmargin -0.50in
 \textheight 9.0in
 \renewcommand{\baselinestretch}{1.0}
@@ -51,87 +67,56 @@
 \makeindex 
 \citeindextrue
 
+\title{\sc Theory and Numerics of the Community 
+         \\ Ocean Vertical Mixing (CVMix) Project}
+
+\date{\today}
+
+\author[$\star$]{Stephen M. Grif\/f\/ies \thanks{Stephen.Griffies@noaa.gov}}
+\affil[$\star$]{NOAA/Geophysical Fluid Dynamics Laboratory, Princeton USA}
+
+\author[$\dagger$]{Michael Levy \thanks{MLevy@ucar.edu}}
+\affil[$\dagger$]{National Center for Atmospheric Research, Boulder USA}
+
+\author[$\star$]{Alistair J. Adcroft \thanks{Alistair.Adcroft@noaa.gov}}
+\author[$\dagger$]{Gokhan Danabasoglu \thanks{Gokhan@ucar.edu}}
+\author[$\star$]{Robert W. Hallberg \thanks{Robert.Hallberg@noaa.gov}}
+
+\author[$\triangle$]{Doub Jacobsen \thanks{Jacobsen.douglas@gmail.com}}
+\affil[$\triangle$]{Los Alamos National Laboratory, Los Alamos USA}
+
+\author[$\dagger$]{William Large \thanks{Wily@ucar.edu}}
+\author[$\triangle$]{Todd Ringler \thanks{Ringler@lanl.gov}}
 
 \begin{document}
 
 \pagenumbering{roman}
-
+\maketitle 
 \thispagestyle{empty}
-\vspace{2cm}
-\begin{center}
-  {\LARGE \sc Community Ocean Vertical Mixing (CVMix)
-    Parameterizations: theory and numerics} 
-  \\
-\end{center}
-\vspace{0.5cm}
+%\newpage 
 
 \begin{center}
-  Stephen Grif\/f\/ies, Alistair Adcroft, Robert Hallberg \\
-  NOAA/GFDL \\
-  Princeton, USA \\
- 
- \vspace{.5cm}
-
- Gokhan Danabasoglu, William Large, Michael Levy \\
- NCAR \\
- Boulder, USA \\
-
- \vspace{.5cm}
-
- Doug Jacobsen,  Phil Jones, Mark Peterson, Todd Ringler \\
- LANL \\
- Los Alamos, USA \\
-
-
- \vspace{.5cm}
-
- Many others...as the project evolves
-
- \vspace{.5cm}
-
- Draft from \today
+{\scshape \Large The CVMix Project} 
 \end{center}
 
+{\sc Community Ocean Vertical Mixing (CVMix)} is a software package
+that aims to provide transparent, robust, flexible, well documented,
+shared Fortran source code for use in parameterizing vertical mixing
+processes in numerical ocean models.  The project is focused on
+developing software for a consensus of first-order closures that
+return a vertical diffusivity, viscosity, and possibly a non-local
+transport, with each quantity dependent on the tracer or velocity
+being mixed.  CVMix modules are written as kernals designed for use in
+a variety of Fortran ocean model codes such as MPAS-ocean, MOM, and
+POP.  CVMix modules use MKS units and expect the same for input and
+output.  Code development occurs within a community of scientists and
+engineers who make use of CVMix modules for a variety of ocean codes.
+When mature, CVMix modules will be freely distributed to the open
+source community under GPLv2 using an open source methodology.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure*}[ht]
-\begin{center}
-\vspace{1cm}
-{\includegraphics[angle=0,width=14cm]{./figs/OceanProcSchem_revision3.png}}
-\end{center}
-\end{figure*}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-\thispagestyle{empty}
-\newpage 
-
-\begin{center}
-{\scshape \Large The CVMix Parameterizations Project} 
-\end{center}
-
-{\sc Community Ocean Vertical Mixing (CVMix) Parameterizations} is a
-software package that aims to provide transparent, robust, flexible,
-well documented, shared Fortran source code for use in parameterizing
-vertical mixing processes in numerical ocean models.  The project is
-focused on developing software for a consensus of first-order closures
-that return a vertical diffusivity, viscosity, and possibly a
-non-local transport, with each quantity dependent on the tracer or
-velocity being mixed.  CVMix modules are written as kernals designed
-for use in a variety of Fortran ocean model codes such as MPAS-ocean,
-MOM, and POP.  CVMix modules use MKS units and expect the same for
-input and output.  Code development occurs within a community of
-scientists and engineers who make use of CVMix modules for a variety
-of ocean codes.  When mature, CVMix modules will be freely distributed
-to the open source community under GPLv2 using an open source
-methodology.
-
-As of January 2013, the CVMix project remains in a very early stage,
-with most of the algorithms listed in this document uncoded.  Hence,
-this document largely summarizes aspirations of its authors, and it
-serves to help develop software design documents.
+As of August 2013, the CVMix code includes a suite of mixing schemes,
+including KPP. Significant refinement to the code will follow as
+testing within MPAS, MOM, and POP continues. 
 
 
 \vspace{2cm}
@@ -142,18 +127,21 @@ following. \vspace{.25cm}
 
 \noindent
 {\bf 
-{\scshape{Community Ocean Vertical Mixing (CVMix) Parameterizations}}
+{\scshape{Theory and Numerics of the Community Ocean Vertical
+    Mixing (CVMix) Project}}
 \\
-Many authors...
+S.M. Grif\/f\/ies, M. Levy, A.J. Adcroft, G. Danabasoglu,
+R.W. Hallberg,  D. Jacobsen, W. Large, T. Ringler
+\\
+Technical Report
+\\
+Draft from \today 
 \\
 \pageref{LastPage} + v pages\\
 }
 \vspace{.4cm}
 
-\noindent Information about how to download the source code can be
-found at...
 
-\vspace{.4cm}
 
 \noindent
 This document was prepared using \LaTeX \hspace{.1cm} as described by
@@ -179,8 +167,8 @@ This document was prepared using \LaTeX \hspace{.1cm} as described by
 \input{cvmix_tidal}
 \input{cvmix_ddiff}
 \input{cvmix_kpp}
-\input{cvmix_convection}
-\input{cvmix_dissipation}
+%\input{cvmix_convection}
+%\input{cvmix_dissipation}
 
 
 %%%%%%%%%%%%%%%%%%%%%      References     %%%%%%%%%%%%%%%%%%%%%%%%%%%

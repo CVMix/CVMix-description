@@ -4,6 +4,7 @@
 \minitoc
 \vspace{.5cm}
 
+\begin{mdframed}[backgroundcolor=lightgray!50]
 This chapter summarizes the CVMix implementation of the parameterized
 vertical mixing associated with tidal dissipation in both the ocean
 interior and near the bottom.  The following CVMix Fortran module is
@@ -11,7 +12,7 @@ directly connected to the material in this chapter:
 \begin{align*} 
  &{\tt cvmix\_tidal.F90}
 \end{align*}
-
+\end{mdframed}
 
 \section{Introduction to tidal induced mixing}
 \label{section:vert_tidal_intro}
@@ -54,10 +55,6 @@ parameterizations.
   vertical diffusivity of \cite{BryanLewis1979} (Chapter
   \ref{chapter:cvmix_background}).
 
-\item {\sc bottom drag induced mixing}: \cite{Legg_eta2006}, in their
-  appendix, present a method to account for the mixing associated with
-  bottom drag dissipation.
-
 \end{itemize}
 Although CVMix provides an optional Prandtl number, it is general
 practice to assume a unit Prandtl number for each of the tide
@@ -69,8 +66,8 @@ parameterization schemes.\footnote{The Prandlt number is the ratio of
 \section{Energetic elements of tide mixing parameterizations}
 \label{section:vert_tidal_formulation}
 
-We now consider some elements of how various of the energetic based
-tide mixing parameterizations are formulated. 
+We now consider elements of how energetic based tide mixing
+parameterizations are formulated.
 
 
 \subsection{Bottom drag}
@@ -366,8 +363,8 @@ number chosen for the tide mixing parameterizations.
 The previous considerations lead to the following general form for a
 diffusivity arising from mechanical energy dissipation that originates
 from the ocean bottom
-\begin{equation}
-\begin{split}
+\begin{subequations}
+\begin{align}
  \kappa_{\mbox{\tiny dissipate}} &= 
  \frac{\Gamma \, \epsilon_{\mbox{\tiny dissipate}}}{N^{2}}
 \\
@@ -375,9 +372,9 @@ from the ocean bottom
 \\
  &=
  \frac{q \, \Gamma \, E_{\mbox{\tiny dissipate}}(x,y) \,  F_{\mbox{\tiny dissipate}}(z)}  {\rho \, N^2}.
-\end{split}
+\end{align}
 \label{eq:wave-vert-kappa-general-bottom}
-\end{equation}
+\end{subequations}
 The energy dissipation at the ocean bottom, $ E_{\mbox{\tiny
     dissipate}}(x,y)$, and the vertical deposition function,
 $F_{\mbox{\tiny dissipate}}(z)$, distinguish the schemes considered by
@@ -398,14 +395,14 @@ $\kappa_{\mbox{\tiny dissipate}}$, with this work given by
 \end{equation}
 Use of equation (\ref{eq:wave-vert-kappa-simmons}) for the vertical
 diffusivity with a constant mixing efficiency $\Gamma = 0.2$ yields
-\begin{equation}
-\begin{split}
+\begin{subequations}
+\begin{align}
  {\cal P} &=  \int \kappa_{\mbox{\tiny dissipate}} \, \rho \, N^{2} \, \mathrm{d}V
  \\
  &= q \, \Gamma  \int  E_{\mbox{\tiny dissipate}}(x,y) \, \mathrm{d}x \, \mathrm{d}y,
-\end{split}
+\end{align}
 \label{eq:energy-conserve-dissipation}
-\end{equation}
+\end{subequations}
 assuming $q \, \Gamma$ constant.  Note that to reach this result, we
 set $\int F_{\mbox{\tiny dissipate}}(z) \, \mathrm{d}z = 1$ (Section
 \ref{subsection:vertical-deposition}), which is a constraint that is
@@ -416,14 +413,14 @@ ocean interior and works against stratification.
 
 For the more general case of $q \, \Gamma$ spatially dependent, we
 have the balance
-\begin{equation}
-\begin{split}
+\begin{subequations}
+\begin{align}
  {\cal P} &=  \int \kappa_{\mbox{\tiny dissipate}}  \, \rho \, N^{2} \, \mathrm{d}V
  \\
  &= \int q \, \Gamma \,  E_{\mbox{\tiny dissipate}}(x,y) \, F_{\mbox{\tiny dissipate}}(z) \; \mathrm{d}V,
-\end{split}
+\end{align}
 \label{eq:energy-conserve-wave-drag-again}
-\end{equation}
+\end{subequations}
 which again is a statement of energy conservation between wave
 dissipation and mixing of density.  Although equation
 (\ref{eq:energy-conserve-wave-drag-again}) is a trivial identity
@@ -460,8 +457,8 @@ q \, \Gamma \, E_{\mbox{\tiny dissipate}}(x,y) \, \mathrm{d}V$.
 To account for mixing associated with energy dissipation from breaking
 internal gravity waves, \cite{Simmonsetal2004} propose a diffusivity
 given by
-\begin{equation}
-\begin{split}
+\begin{subequations}
+\begin{align}
  \kappa_{\mbox{\tiny simmons}} &= 
  \frac{\Gamma \, \epsilon_{\mbox{\tiny wave drag}}}{N^{2}}
 \\
@@ -469,9 +466,9 @@ given by
 \\
  &=
  \frac{q \, \Gamma \, E_{\mbox{\tiny wave drag}}(x,y) \,  F_{\mbox{\tiny simmons}}(z) }  {\rho \, N^2},
-\end{split}
+\end{align}
 \label{eq:wave-vert-kappa-simmons}
-\end{equation}
+\end{subequations}
 which again is the general form introduced in Section
 \ref{subsection:general-form-tide-diffusivity}.  To reach this result,
 we used equation (\ref{eq:wave-drag-dissipation-form}) to introduce
@@ -510,17 +507,19 @@ evaluated as follows.
 
 The bottom intensified vertical profile, or deposition function, is
 taken as
-\begin{equation}
-\begin{split}
-  F_{\mbox{\tiny simmons}}(z) &= \frac{e^{-(D-h)/\zeta}}{\zeta \, (1 - e^{-D/\zeta} )}
+\begin{subequations}
+\begin{align}
+  F_{\mbox{\tiny simmons}}(z) &= \frac{e^{-(d-h)/\zeta}}{\zeta \, (1 - e^{-d/\zeta} )}
   \\
-  &= \frac{e^{h/\zeta}}{\zeta \, (e^{D/\zeta}-1)}.
-\end{split}
+  &= \frac{e^{h/\zeta}}{\zeta \, (e^{d/\zeta}-1)}
+ \\
+  &= e^{-z/\zeta} \left( \frac{ e^{\eta/\zeta} }{ \zeta \, ( e^{d/\zeta} - 1 ) } \right).
+\end{align}
 \label{eq:simmons-vertical-function}
-\end{equation}
+\end{subequations}
  In this expression,
 \begin{equation}
-  D = H + \eta
+  d = H + \eta
 \end{equation}
 is the time dependent thickness of water between the free surface at
 $z=\eta$ and the ocean bottom at $z=-H$, and
@@ -528,7 +527,7 @@ $z=\eta$ and the ocean bottom at $z=-H$, and
   h=-z+\eta
 \end{equation}
 is the time dependent distance from the free surface to a point within
-the water column.\footnote{We emphasize that with a free surface, $D$
+the water column.\footnote{We emphasize that with a free surface, $d$
 and $h$ are generally time dependent.  Furthermore, with general
 vertical coordinates, $h$ is time dependent for all grid cells.}  The
 chosen form of the deposition function is motivated by the
