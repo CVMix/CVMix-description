@@ -460,7 +460,7 @@ Vertical exchange of momentum across the atmosphere-ocean or
 sea-ice-ocean boundary occurs largely through turbulent processes.
 The resulting horizontal stress vector acting on the ocean, $\bftau$,
 is determined through application of a bulk formula \citep[e.g., see
-Appendix C of][]{CORE}. For our purposes, we assume $\bftau$ is given,
+Appendix C of][]{CORE_NYF}. For our purposes, we assume $\bftau$ is given,
 thus yielding the ocean kinematic fluxes associated with the turbulent
 transport of momentum across the ocean surface
 \begin{equation}
@@ -1287,7 +1287,7 @@ any mean field, $\Lambda$, within the surface turbulent layer is a
 function of the scale $\Lambda_{*}$ of its turbulent fluctuations, the
 buoyancy scale $B_{*}$, the velocity scale $u_{*}$, and the vertical
 distance from the upper interface, $d=-z+\eta$ (equation
-(\ref{eq:distance-from-surface})). In this case, we write
+(\ref{eq:distance-from-surface-defined})). In this case, we write
 \begin{equation}
  \frac{\partial \Lambda}{\partial z} =  \Psi(d, u_{*}, B_{*}, \Lambda_{*}), 
 \end{equation}
@@ -1378,9 +1378,9 @@ where we used the relation between vertical increments through
  \mathrm{d}\zeta = - L \, \mathrm{d}z
 \label{eq:dzeta-change-variables}
 \end{equation}
-using $d=-z+\eta$ (equation (\ref{eq:distance-from-surface})).  We now
-vertically integrate equation (\ref{eq:m-o-similarity-form-zeta}) to
-have
+using $d=-z+\eta$ (equation (\ref{eq:distance-from-surface-defined})).
+We now vertically integrate equation
+(\ref{eq:m-o-similarity-form-zeta}) to have
 \begin{equation}
  \Lambda(\zeta) = \Lambda(Z_{\lambda}/L)  
  +\left( \frac{\Lambda_{*}}{L} \right) \,
@@ -2125,7 +2125,7 @@ form for temperature
 \begin{equation}
  \gamma_{\theta} = -\left(\frac{ C_{s}}{\rho_{o}  \, C_{\mbox{\tiny p}}^{o} } \right) 
   \frac{ Q^{\mbox{\footnotesize heat}} }{h \,  w_{\theta}(\sigma)}.  
-\label{eq:non-local-temp-kpp-again}
+\label{eq:non-local-temp-kpp-again-again}
 \end{equation}
 Generally the negative buoyancy forcing that gives rise to the
 non-local transport is associated with cooling
@@ -2135,7 +2135,8 @@ non-local transport is associated with cooling
 \label{eq:surface-cooling-gamma-theta}
 \end{equation}
 
-Combining the parameterizations (\ref{eq:non-local-temp-kpp-again}) and
+Combining the parameterizations
+(\ref{eq:non-local-temp-kpp-again-again}) and
 (\ref{eq:non-local-scalar-kpp-again}) for the non-local term
 $\gamma_{\lambda}$, with that for the vertical diffusivity
 $K_{\lambda}$ in equation (\ref{eq:kpp-diffusivity}) renders the
@@ -2361,7 +2362,7 @@ There is an alternative method to approximate $\delta\rho[{\tt kt},r]$
 based on linear truncations of Taylor series expansions.  The
 alternative leads to a sum of squared buoyancy frequencies, analogous
 to the expression
-(\ref{eq:inifinitesimal-delta-rho-elements-downward}).  There are some
+(\ref{eq:infinitesimal-delta-rho-elements-downward}).  There are some
 advantages offered by the alternative approach, namely there are fewer
 calculations of the equation of state, assuming we already have the
 expansion coefficients $\alpha$ and $\beta$.  However, the deeper the

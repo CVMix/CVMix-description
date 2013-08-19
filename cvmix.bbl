@@ -1,4 +1,4 @@
-\begin{thebibliography}{72}
+\begin{thebibliography}{73}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \expandafter\ifx\csname url\endcsname\relax
   \def\url#1{\texttt{#1}}\fi
@@ -84,6 +84,17 @@ Goosens, M., Mittelbach, F., Samarin, A., 1994. The \LaTeX Companion.
 \bibitem[{Grif\/f\/ies(2004)}]{SMGbook}
 Grif\/f\/ies, S.~M., 2004. Fundamentals of Ocean Climate Models. Princeton
   University Press, Princeton, USA, 518+xxxiv pages.
+
+\bibitem[{Grif\/f\/ies et~al.(2009)Grif\/f\/ies, Biastoch, {B\"{o}ning}, Bryan,
+  Danabasoglu, Chassignet, England, Gerdes, Haak, Hallberg, Hazeleger,
+  Jungclaus, Large, Madec, Pirani, Samuels, Scheinert, Gupta, Severijns,
+  Simmons, Treguier, Winton, Yeager, and Yin}]{CORE_NYF}
+Grif\/f\/ies, S.~M., Biastoch, A., {B\"{o}ning}, C.~W., Bryan, F., Danabasoglu,
+  G., Chassignet, E., England, M.~H., Gerdes, R., Haak, H., Hallberg, R.~W.,
+  Hazeleger, W., Jungclaus, J., Large, W.~G., Madec, G., Pirani, A., Samuels,
+  B.~L., Scheinert, M., Gupta, A.~S., Severijns, C.~A., Simmons, H.~L.,
+  Treguier, A.~M., Winton, M., Yeager, S., Yin, J., 2009. Coordinated
+  {O}cean-ice {R}eference {E}xperiments ({CORE}s). Ocean Modelling 26, 1--46.
 
 \bibitem[{Grif\/f\/ies et~al.(2005)Grif\/f\/ies, Gnanadesikan, Dixon, Dunne,
   Gerdes, Harrison, Rosati, Russell, Samuels, Spelman, Winton, and
