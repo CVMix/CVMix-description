@@ -1979,6 +1979,9 @@ $\sigma=0$.  This constraint is satisfied by setting
 We now discuss further constraints to specify the remaining
 coefficients.  
 
+\subsubsection{Constraints arising from the surface boundary condition
+at $\sigma=0$}
+
 We start by rewriting the expression
 (\ref{eq:specifying-structure-function}) that expresses the ratio of
 turbulent fluxes within the surface layer to those at the surface
@@ -2016,10 +2019,14 @@ shape function and its first derivative vanish at the base of the
 boundary layer, $\sigma=1$.  These assumptions lead to the cubic
 expression valid for all fluctuating fields $\lambda$
 \begin{equation}
- G(\sigma) = \sigma \, (1-\sigma)^{2}   \qquad \mbox{atmospheric boundary layers,}
+ G(\sigma) = \sigma \, (1-\sigma)^{2}   \qquad \mbox{for} \; \; G(\sigma=0) = G(\sigma=1) = G'(\sigma=1) = 0, 
+\label{eq:simple-structure-function}
 \end{equation}
 with this function exhibited in the left panel of Figure
 \ref{fig:kpp-figure2-reproduced}.  
+
+
+\subsubsection{Constraints arising from matching at $\sigma=1$}
 
 \cite{LargeKPP} also assume the surface layer is 10\% of the boundary
 layer, so that 
@@ -2039,6 +2046,15 @@ boundary layer at $\sigma=1$.  This matching condition leads to the
 constraints given by \cite{LargeKPP} equation (18), which in turn
 leads to shape functions that are dependent on the field being
 transported.
+
+Allowing for the interior mixing to influence the KPP boundary layer
+scheme suggests that the KPP calculation should be called {\it after}
+the various methods used to compute interior diffusivities.  This
+ordering is reflected in the CVMix flow diagram in Figure
+\ref{fig:vertical_mix_flow_cvmix}.
+
+
+\subsubsection{Vanishing derivative at $\sigma=1$}
 
 Matching both the shape function and its vertical derivative across
 the boundary layer base adds complexity to the KPP algorithm.
@@ -2067,11 +2083,15 @@ leads to
 \begin{equation}
  a_{3} = 1 - \left(\frac{2 \, K_{\lambda}(h)}{h \, w_{\lambda}(h)} \right).
 \end{equation}
-Allowing for the interior mixing to influence the KPP boundary layer
-scheme suggests that the KPP calculation should be called {\it after}
-the various methods used to compute interior diffusivities.  This
-ordering is reflected in the CVMix flow diagram in Figure
-\ref{fig:vertical_mix_flow_cvmix}.
+The resulting form for $G(\sigma)$ is given by 
+\begin{equation}
+  G(\sigma) = \sigma \, (1-\sigma)^{2}+ \sigma^{2} \,  (3 - 2 \, \sigma) \, \left(\frac{K_{\lambda}(h)}{h \, w_{\lambda}(h)} \right)
+  \qquad \mbox{for} \; \; G(\sigma=0) = G'(\sigma=1) = 0. 
+\end{equation}
+Notice how the structure function reduces to the simpler form
+$G(\sigma) = \sigma \, (1-\sigma)^{2}$ when matching to a zero
+diffusivity, $K_{\lambda}(h) = 0$, at the boundary layer base (see
+equation (\ref{eq:simple-structure-function})).
 
 
 
@@ -2193,7 +2213,11 @@ the non-local flux parameterization in the form
 \end{align}
 Notice how explicit dependence on both the turbulent velocity scale,
 $w_{\lambda}$, and boundary layer depth, $h$, drop out from the
-parameterization of the non-local flux.
+parameterization of the non-local flux.  The expressions
+(\ref{eq:non-local-flux-kpp-param-temp}) and
+(\ref{eq:non-local-flux-kpp-param-scalar}) exhibit clearly how the
+non-local transport provides a redistribution of the surface boundary
+flux into the boundary layer.
 
 \end{itemize}
 
@@ -2291,11 +2315,10 @@ Combining the parameterizations
 $\gamma_{\lambda}$, with that for the vertical diffusivity
 $K_{\lambda}$ in equation (\ref{eq:kpp-diffusivity}) renders the
 non-local flux parameterization for temperature and an arbitrary
-scalar in the form
-\begin{mdframed}[backgroundcolor=lightgray!50]
+scalar in the form (again, $B_{f} < 0$ for non-zero non-local
+transport)
+\begin{subequations}
 \begin{align}
-\overline{w \, \lambda}^{\mbox{\tiny non-local}} &= 0  \qquad \mbox{if} \; \; B_{f} > 0
-\\
 \overline{w \, \theta}^{\mbox{\tiny non-local}} &= K_{\theta}  \, \gamma_{\theta}
   = 
  - G_{\theta}(\sigma) \, C_{s} \, \left( \frac{ Q^{\mbox{\scriptsize heat}}}{ \rho_{o}  \, C_{\mbox{\tiny p}}^{o} } \right)
@@ -2306,22 +2329,25 @@ scalar in the form
  -G_{s}(\sigma) \, C_{s} \,  Q^{s}.
 \label{eq:non-local-flux-kpp-param-scalar-again}
 \end{align}
-\end{mdframed}
+\end{subequations}
 Notice how explicit dependence on both the turbulent velocity scale,
 $w_{\lambda}$, and boundary layer depth, $h$, drop out from the
 parameterization of the non-local flux.  For the CVMix implementation
 of the non-local transport, the CVMix code computes the products
-$G_{\theta}(\sigma) \, C_{s}$ and $G_{s}(\sigma) \, C_{s}$, and returns
-them to the calling model, which then computes the non-local flux upon
-multiplication by the boundary flux.
+$G_{\theta}(\sigma) \, C_{s}$ and $G_{s}(\sigma) \, C_{s}$, and
+returns them to the calling model, which then computes the non-local
+flux upon multiplication by the boundary flux.  In this way we see
+explicitly how the non-local transport provides a redistribution of
+the surface boundary flux into the boundary layer.
 
 
-\subsubsection{Non-local transport problem I: non-local flux larger than surface flux}
+\subsubsection{Problem I: non-local flux larger than surface flux}
 
-We now identify some problems that have been observed related to the
-non-local transport term.  These problems remain under investigation,
-and there is no consensus amongst the developers how to proceed.
-Various options are listed here to address the problems.
+The above discussion of the non-local transport follows the general
+prescription from \cite{LargeKPP}.  Unfortunately, there are problems
+related to the non-local transport term.  These problems remain under
+investigation, with various options listed here to address the
+problems.
 
 The first problem relates to cases where the parameteried non-local
 flux, (\ref{eq:non-local-flux-kpp-param-temp}) of
@@ -2382,7 +2408,7 @@ $G_{\lambda}(\sigma) \, C_{s} > 1$.
 \end{itemize}
 
 
-\subsubsection{Non-local transport problem II: spuriously large divergence}
+\subsubsection{Problem II: spuriously large divergence}
 
 By definition, the non-local transport vanishes beneath the boundary
 layer where $\sigma >1$.  However, the diffusivity generally does not
@@ -2395,8 +2421,7 @@ non-local transport have a smooth transition from the boundary layer
 into the interior.
 
 The jump in the non-local transport is unphysical, and it is a problem
-exacerbated in the following situations of growing importance for
-regional and global models using the KPP scheme.
+exacerbated in the following situations.
 \begin{itemize}
 
 \item In relatively shallow waters where bottom induced mixing from
@@ -2426,25 +2451,31 @@ transport.  The diffusivity structure function, $G_{\lambda}(\sigma)$
 will remain as originally proposed by \cite{LargeKPP}, with matching
 to the interior diffusivity along with the caveats noted above.
 However, for the non-local transport, we propose to use the universal
-cubic function for {\it all} tracers
+cubic function (\ref{eq:simple-structure-function}) for {\it all}
+tracers
 \begin{equation}
 G(\sigma)_{\mbox{\tiny non-local}}= \sigma \, (1-\sigma)^{2}   \qquad \mbox{for} \; \; \sigma \le 1. 
 \label{eq:universal-non-local-structure}
 \end{equation}
-As noted in Figure \ref{fig:kpp-figure2-reproduced}, this structure
-function arises from matching to a zero interior value of the
-diffusivity, along with zero slope at the boundary layer base.  This
-structure function removes problems with the spuriously large
-divergences across the boundary layer base since the non-local term
-smoothly goes to zero at $\sigma =1$.  Additionally, the maximum value
-for the product $G(\sigma)_{\mbox{\tiny non-local}} \, C_{s}$ is
+As noted in the discussion of equation
+(\ref{eq:simple-structure-function}) (see also Figure
+\ref{fig:kpp-figure2-reproduced}), this structure function arises from
+matching the function and its derivative to zero at the boundary layer
+base.  This structure function removes problems with the spuriously
+large divergences across the boundary layer base since the non-local
+term smoothly goes to zero at $\sigma =1$.  Additionally, the
+structure function $G(\sigma)_{\mbox{\tiny non-local}}$ has a maximum
+at $\sigma = 1/3$, where $G'(\sigma)_{\mbox{\tiny non-local}} = 1
+-4\sigma + 3\sigma^2 = 0$.  Hence, the maximum value for the product
+$G(\sigma)_{\mbox{\tiny non-local}} \, C_{s}$ is
 \begin{equation}
  \left[ G(\sigma=1/3)_{\mbox{\tiny non-local}} \, C_{s} \right]^{\mbox{\tiny maximum}} =  \left( \frac{4}{27}  \right) \, 6.32 \approx 0.94 < 1, 
 \end{equation}
 using $C_{s} = 6.32$ suggested by \cite{LargeKPP} (see equation
-(\ref{eq:Cs-value})).  Hence, the structure function
-$G(\sigma)_{\mbox{\tiny non-local}}$ removes problems with the
-non-local flux being larger than the surface flux.
+(\ref{eq:Cs-value})).  Since $\left[ G(\sigma=1/3)_{\mbox{\tiny
+      non-local}} \, C_{s} \right]^{\mbox{\tiny maximum}} < 1$, the
+structure function $G(\sigma)_{\mbox{\tiny non-local}}$ removes
+problems with the non-local flux being larger than the surface flux.
 
 
 
