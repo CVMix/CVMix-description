@@ -37,7 +37,9 @@ parameterizing mixing in the OBL, with examples discussed in
 \cite{Smyth_etal2002}, \cite{Durski_etal2004}, and
 \cite{Chang_etal2005}).  We consider here only the implementation of
 KPP for the surface ocean boundary layer, as implementations for the
-bottom do not exist in MOM or POP.
+bottom do not exist in MOM or POP.  We also motivate simplifications
+to the scheme relative to the original implementation based on
+\cite{LargeKPP}.
 
 
 
@@ -188,7 +190,8 @@ The KPP scheme provides a first order closure for $\overline{w \,
   \lambda}$ within the OBL. It does so by introducing two terms in the
 following manner 
 \begin{equation}
-  \overline{w \, \lambda} = -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z} - \gamma_{\lambda} \right).
+  \overline{w \, \lambda} = -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z}  \right)
+   +  K^{\mbox{\tiny non-local}}_{\lambda}  \, \gamma_{\lambda}.
 \label{eq:kpp-parameterization}
 \end{equation}
 The KPP prescription (\ref{eq:kpp-parameterization}) thus
@@ -202,29 +205,36 @@ diffusion determined by a vertical diffusivity and the local vertical
 derivative of the mean field.  This term is referred to as the local
 portion of the parameterization
 \begin{equation}
-\overline{w \, \lambda}^{\mbox{\tiny local}} = -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z} \right).
+\overline{w \, \lambda}^{\mbox{\tiny local}} = -K_{\lambda}  \left( \frac{\partial \Lambda}{\partial z} \right).
 \label{eq:vertical-flux-local}
 \end{equation}
-Note that the diffusivity computed from KPP is a non-local function of
-boundary layer properties, so the name ``local'' is not directed at
-the diffusivity, but instead at the vertical derivative.  The second
-term, $\gamma_{\lambda}$, accounts for non-local transport that is not
-directly associated with local vertical gradients of $\Lambda$, in
-which
+Note that the diffusivity $K_{\lambda} $ computed from KPP is a
+non-local function of boundary layer properties, so the name ``local''
+is not directed at the diffusivity, but instead at the vertical
+derivative.
+
+The second term, $\gamma_{\lambda}$, accounts
+for non-local transport that is not directly associated with local
+vertical gradients of $\Lambda$, in which
 \begin{equation}
-\overline{w \, \lambda}^{\mbox{\tiny non-local}} = K_{\lambda} \; \gamma_{\lambda}.
+  \overline{w \, \lambda}^{\mbox{\tiny non-local}} = K^{\mbox{\tiny non-local}}_{\lambda} \; \gamma_{\lambda}.
 \label{eq:vertical-flux-nonlocal}
 \end{equation}
-We next provide a general discussion of these two contributions to the
-KPP parameterization.
+\cite{LargeKPP} proposed to set the diffusivity, $K^{\mbox{\tiny
+    non-local}}_{\lambda}$, equal to the diffusivity $K_{\lambda}$.
+However, there are cases where the two diffusivities take on distinct
+matching conditions at the boundary layer base, in which case they are
+different.  We have more to say on this topic in Section
+\ref{subsection:kpp-shape-function}.
 
 
 \subsection{The vertical diffusivity}
 \label{subsection:kpp-vertical-diffusivity}
 
-The vertical diffusivity arising from KPP in the OBL is determined as
-a non-local function of boundary layer properties. It is written in
-the following form
+The vertical diffusivity used to parameterize the local flux
+(\ref{eq:vertical-flux-local}) arising from KPP in the OBL is
+determined as a non-local function of boundary layer properties. It is
+written in the following form
 \begin{equation}
   K_{\lambda}(\sigma) = h \, w_{\lambda}(\sigma) \, G_{\lambda}(\sigma).
 \label{eq:kpp-diffusivity}
@@ -233,10 +243,19 @@ The diffusivity is a constructed as the product of three terms: the
 boundary layer thickness $h$, the vertical turbulent velocity scale
 $w_{\lambda}(\sigma)$, and the vertical shape function
 $G_{\lambda}(\sigma)$.  Note that we introduce a dependence of the
-shape function on the field diffused.  As discussed in Section
-\ref{subsection:kpp-shape-function}, this dependence arises from
-matching to interior diffusivities, which are generally a function of
-$\lambda$.
+shape function on the field diffused.  Such dependence can arise if
+taking the approach of \cite{LargeKPP} whereby the boundary layer
+diffusivity is matched at the base of the boundary layer to the
+interior diffusivities, which can generally be a function of the
+tracer, $\lambda$.  However, as discussed in Section
+\ref{subsection:kpp-shape-function-cvmix}, the recommended approach
+for CVMix is to use the following universal shape function for all
+tracers (equation (\ref{eq:universal-non-local-structure}))
+\begin{equation}
+ G(\sigma)_{\mbox{\tiny universal}} = \sigma \, \ (1-\sigma)^{2},
+\end{equation}
+ thus greatly simplifying the KPP scheme. 
+
 
 
 \subsubsection{Boundary layer thickness} 
@@ -360,7 +379,7 @@ smoothly transition from the ocean surface to the bottom of the
 boundary layer. \cite{LargeKPP} chose a cubic polynomial
 \begin{equation}
  G_{\lambda}(\sigma) = a_{0} + a_{1} \, \sigma + a_{2} \, \sigma^{2} + a_{3} \, \sigma^{3}.
-\label{eq:structure-function-gsigma}
+\label{eq:shape-function-gsigma}
 \end{equation}
 Since turbulent eddies do not cross the ocean surface at $\sigma=0$,
 we should correspondingly have a vanishing diffusivity at $\sigma=0$.
@@ -369,13 +388,27 @@ This constraint is satisfied by setting
  a_{0} = 0.
 \end{equation}
 We detail in Section \ref{subsection:kpp-shape-function} how to
-specify the remaining expansion coefficients $a_{1}, a_{2}, a_{3}$.
-In particular, we simplify the specification of \cite{LargeKPP}.  But
-we note here that the polynomial coefficients $a_{1}, a_{2}, a_{3}$
-depend on the tracer fields in so far as they are specified by
-matching to the interior diffusivities.  Double diffusive processes
-lead to distinct diffusivities for temperature and material tracers
-such as salt.
+specify the remaining expansion coefficients $a_{1}, a_{2}, a_{3}$
+following the approach from \cite{LargeKPP}, in which the polynomial
+coefficients $a_{1}, a_{2}, a_{3}$ depend on the tracer fields in so
+far as they are specified by matching to the interior diffusivities.
+Double diffusive processes lead to distinct diffusivities for
+temperature and material tracers such as salt.  
+
+However, as discussed in Section \ref{subsection:kpp-shape-function},
+the recommended approach for CVMix is to use the following universal
+shape function for all tracers (equation
+(\ref{eq:universal-non-local-structure}))
+\begin{equation}
+ G(\sigma)_{\mbox{\tiny universal}} = \sigma \, \ (1-\sigma)^{2},
+\end{equation}
+thus greatly simplifying the KPP scheme. With this universal shape
+function, we have
+\begin{equation}
+ G(0)_{\mbox{\tiny universal}}= G(1)_{\mbox{\tiny universal}} = G'(1)_{\mbox{\tiny universal}} = 0,
+\end{equation}
+which is the form suggested by atmospheric boundary layer
+implementations of KPP (see Figure \ref{fig:kpp-figure2-reproduced}).
 
 
 \subsection{The non-local transport $\gamma_{\lambda}$}
@@ -446,8 +479,8 @@ This is a reproduction of
   an empirical result that under pure convective forcing ($\bftau =0,
   B_{f} < 0$), the turbulent entrainment flux is roughly 20\% of the
   surface flux: $\overline{w \, b}^{d=h_{e}} = \beta_{T} \;
-  \overline{w \, b}^{0}$, where $\beta_{T} = -0.2$. This situation
-  is depicted in the figure. }
+  \overline{w \, b}^{0}$, where $\beta_{T} = -0.2$. This situation is
+  depicted in the figure. }
 \label{fig:kpp-figure1-reproduced}
 \end{center}
 \rule{\textwidth}{0.005in}
@@ -1542,24 +1575,25 @@ the KPP scheme.
 \label{section:specifying-kpp-diffusivity-nonlocal}
 
 We are now ready to determine the KPP boundary layer depth, $h$, the
-diffusivity, $K_{\lambda}$, and non-local transport,
+diffusivities,$K_{\lambda}$ and $K^{\mbox{\tiny
+    non-local}}_{\lambda}$, and non-local transport,
 $\gamma_{\lambda}$, thus enabling a full parameterization of the
 turbulent flux $\overline{w \, \lambda}$ according to
-\begin{subequations}
-\begin{align}
-  \overline{w \, \lambda} &= -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z} - \gamma_{\lambda} \right)
- \\
- &= -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z} \right)   +   K_{\lambda} \,  \gamma_{\lambda}, 
-\label{eq:kpp-parameterization-again}
-\end{align}
-\end{subequations}
-where the diffusivity is given by equation (\ref{eq:kpp-diffusivity}),
-rewritten here as
 \begin{equation}
- K_{\lambda}(\sigma) = h \, w_{\lambda}(\sigma) \, G_{\lambda}(\sigma).
+  \overline{w \, \lambda} 
+  = -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z} \right)
+  +  K^{\mbox{\tiny  non-local}}_{\lambda} \, \gamma_{\lambda} 
+\label{eq:kpp-parameterization-again}
+\end{equation}
+where the diffusivity computed as part of the local flux is given by
+equation (\ref{eq:kpp-diffusivity}), rewritten here as
+\begin{equation}
+ K_{\lambda}(\sigma) = h \, w_{\lambda}(\sigma) \, G_{\lambda}(\sigma),
 \label{eq:kpp-diffusivity-again}
 \end{equation}
-Recall that 
+and the non-local diffusivity, $K^{\mbox{\tiny non-local}}_{\lambda}$
+is generally the same as $K_{\lambda}$, with some exceptions to be
+discussed in Section \ref{subsection:kpp-shape-function}.  Recall that
 \begin{equation}
   \sigma = d/h
 \end{equation}
@@ -1577,7 +1611,16 @@ boundary layer thickness, with
 We now determine the turbulent vertical velocity scale $w_{\lambda}$
 appearing in equation (\ref{eq:kpp-diffusivity-again}).  This velocity
 scale is a function of the surface buoyancy forcing, surface wind
-forcing, and depth from the ocean surface.
+forcing, and depth from the ocean surface.  We generally assume it is
+the {\it same} for the various scalars
+\begin{equation}
+ w_{s} = w_{\theta}, 
+\end{equation}
+but the scalar turbulent velocity scale differs from that used for
+momentum
+\begin{equation}
+ w_{s} \ne w_{m}. 
+\end{equation}
 
 
 \subsubsection{Velocity scale $w_{\lambda}$ with stable buoyancy forcing}
@@ -1619,20 +1662,20 @@ layer yields the approximate linear relation
 \begin{equation}
 \sigma^{-1} \, G_{\lambda}(\sigma)  \approx a_{1} + a_{2} \, \sigma,  
 \end{equation}
-where we used expression (\ref{eq:structure-function-gsigma}) for the
-structure function $G_{\lambda}(\sigma)$.  Furthermore, within the
-surface layer, turbulent fluxes for any fluctuating field,
-$\overline{w \, \lambda}^{\sigma}$, are linearly proportional to their
-surface value, $\overline{w \, \lambda}^{0}$.  We may thus use this
-result to specify a part of the structure function according to
+where we used expression (\ref{eq:shape-function-gsigma}) for the
+shape function $G_{\lambda}(\sigma)$.  Furthermore, within the surface
+layer, turbulent fluxes for any fluctuating field, $\overline{w \,
+  \lambda}^{\sigma}$, are linearly proportional to their surface
+value, $\overline{w \, \lambda}^{0}$.  We may thus use this result to
+specify a part of the shape function according to
 \begin{equation}
   a_{1} + a_{2} \, \sigma = \left( \frac{ \overline{w \, \lambda}^{\sigma}}{\overline{w \, \lambda}^{0}} \right).
-\label{eq:specifying-structure-function}
+\label{eq:specifying-shape-function}
 \end{equation}
 Note that as shown in Section \ref{subsection:kpp-shape-function},
 there is generally a dependence of $a_{2}$ on the field $\lambda$,
 whereas $a_{1}$ is unity for all fields.  With the specification
-(\ref{eq:specifying-structure-function}), we are led to an expression
+(\ref{eq:specifying-shape-function}), we are led to an expression
 for the turbulent velocity scale within the surface layer
 \begin{equation}
   w_{\lambda}(\sigma)  = \frac{\kappa \,  u_{*}}{\phi_{\Lambda}(\sigma  \, h/L)}   
@@ -1770,28 +1813,30 @@ $u_{*} \rightarrow 0$.
   Figure 2 from \cite{LargeKPP}.  The vertical axis is the
   dimensionless vertical coordinate $\sigma = d/h$ within the KPP
   boundary layer $0 \le \sigma \le 1$.  The left panel shows the
-  vertical profile of the shape or structure function,
+  vertical profile of the shape or shape function,
   $G_{\lambda}(\sigma)$, used to scale the vertical diffusivity via
   equation (\ref{eq:kpp-diffusivity-again}).  The analytic form shown
-  here is given by $G_{\lambda}(\sigma) = \sigma \, (1-\sigma)^{2}$
-  and $\partial_{\sigma} G_{\lambda}(\sigma) = (1-\sigma) \,
-  (1+\sigma)$, which corresponds to the \cite{Troen_Mahrt1986} form
-  and which is independent of the quantity $\Lambda$ being diffused.
-  \cite{LargeKPP} chose a more general form, based on the need to
-  match boundary layer diffusivities to interior diffusivities in
-  which case the shape function becomes a function of $\lambda$.  We
-  detail this approach in Section \ref{subsection:kpp-shape-function}.
-  The right panel shows various examples of the normalized turbulent
-  velocity scale $w_{\lambda}$ (called $w_{x}$ in \cite{LargeKPP}),
-  with the examples differing by the value of the dimensionless ratio
-  $h/L$ between the boundary layer depth, $h$, and the Monin-Obukhov
-  length scale $L$.  For unstable buoyancy forcing, $L<0$, the
-  velocity scale for scalars, $w_{s}$ (dashed lines), is greater than
-  that for momentum, $w_{m}$ (solid lines).  For stable forcing,
-  $L>0$, and both scalar and momentum have the same turbulent velocity
-  scales, $w_{s} = w_{m}$.  In general, the turbulent velocity scale
-  is enhanced with unstable surface buoyancy forcing, and reduced with
-  stable buoyancy forcing.}
+  here is given by the universal form (equation
+  (\ref{eq:universal-non-local-structure})) $G_{\mbox{\tiny
+      universal}}(\sigma) = \sigma \, (1-\sigma)^{2}$ which
+  corresponds to the \cite{Troen_Mahrt1986} form and which is
+  independent of the quantity $\Lambda$ being diffused.  This is the
+  form recommended for CVMix use.  \cite{LargeKPP} chose a more
+  general form, based on the desire to match boundary layer
+  diffusivities to interior diffusivities in which case the shape
+  function becomes a function of $\lambda$.  We detail the problems
+  with this general approach in Section
+  \ref{subsection:kpp-shape-function}.  The right panel shows various
+  examples of the normalized turbulent velocity scale $w_{\lambda}$
+  (called $w_{x}$ in \cite{LargeKPP}), with the examples differing by
+  the value of the dimensionless ratio $h/L$ between the boundary
+  layer depth, $h$, and the Monin-Obukhov length scale $L$.  For
+  unstable buoyancy forcing, $L<0$, the velocity scale for scalars,
+  $w_{s}$ (dashed lines), is greater than that for momentum, $w_{m}$
+  (solid lines).  For stable forcing, $L>0$, and both scalar and
+  momentum have the same turbulent velocity scales, $w_{s} = w_{m}$.
+  In general, the turbulent velocity scale is enhanced with unstable
+  surface buoyancy forcing, and reduced with stable buoyancy forcing.}
 \label{fig:kpp-figure2-reproduced}
 \end{center}
 \rule{\textwidth}{0.005in}
@@ -1923,6 +1968,10 @@ values used in \cite{LargeKPP}, is to maintain original 3-region
 $\phi_{s}$ form, but to simplify $\phi_{m}$ to 2-regions according to
 equation (\ref{eq:phim-alternative}).
 
+The simplified forms for the structure functions $\phi_{s}$ and
+$\phi_{m}$ have {\it not} been implemented in CVMix.  More testing is
+required.
+
 
 %%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[h!t]
@@ -1960,36 +2009,43 @@ equation (\ref{eq:phim-alternative}).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{The shape function $G_{\lambda}(\sigma)$}
+\subsection{The shape function $G_{\lambda}(\sigma)$ as per \cite{LargeKPP}}
 \label{subsection:kpp-shape-function}
 
 The vertical shape function $G_{\lambda}(\sigma)$ is given by the cubic
 polynomial 
 \begin{equation}
  G_{\lambda}(\sigma) = a_{0} + a_{1} \, \sigma + a_{2} \, \sigma^{2} + a_{3} \, \sigma^{3}.
-\label{eq:structure-function-gsigma-again}
+\label{eq:shape-function-gsigma-again}
 \end{equation}
 As already noted when introducing this cubic expression (equation
-(\ref{eq:structure-function-gsigma})), turbulent eddies do not cross
+(\ref{eq:shape-function-gsigma})), turbulent eddies do not cross
 the ocean surface at $\sigma=0$, so the diffusivity should vanish at
 $\sigma=0$.  This constraint is satisfied by setting
 \begin{equation}
  a_{0} = 0.
 \end{equation}
 We now discuss further constraints to specify the remaining
-coefficients.  
+coefficients.  For this purpose, we follow the general approach from
+\cite{LargeKPP}, in which the shape function is determined by matching
+boundary layer diffusivity to the interior diffusivity.  We question
+this approach in Section \ref{subsection:kpp-shape-function-cvmix}, in
+which we argue for the use a the universal shape function given by
+equation (\ref{eq:universal-non-local-structure}).
+
+
 
 \subsubsection{Constraints arising from the surface boundary condition
 at $\sigma=0$}
 
 We start by rewriting the expression
-(\ref{eq:specifying-structure-function}) that expresses the ratio of
+(\ref{eq:specifying-shape-function}) that expresses the ratio of
 turbulent fluxes within the surface layer to those at the surface
 boundary 
 \begin{equation}
   a_{1} + a_{2} \, \sigma = \left( \frac{ \overline{w \, \lambda}^{\sigma}}{\overline{w \, \lambda}^{0}} \right)
  \qquad  \mbox{surface layer: $0 \le \sigma \le \epsilon$.}
-\label{eq:specifying-structure-function-again}
+\label{eq:specifying-shape-function-again}
 \end{equation}
 Satisfying this relation at the ocean surface, $\sigma=0$, requires
 \begin{equation}
@@ -1999,7 +2055,7 @@ Satisfying this relation at the ocean surface, $\sigma=0$, requires
 \begin{equation}
   1 + a_{2} \, \sigma = \left( \frac{ \overline{w \, \lambda}^{\sigma}}{\overline{w \, \lambda}^{0}} \right)
  \qquad  \mbox{surface layer: $0 \le \sigma \le \epsilon$.}
-\label{eq:specifying-structure-function-againB}
+\label{eq:specifying-shape-function-againB}
 \end{equation}
 
 Now define the ratio
@@ -2019,11 +2075,13 @@ shape function and its first derivative vanish at the base of the
 boundary layer, $\sigma=1$.  These assumptions lead to the cubic
 expression valid for all fluctuating fields $\lambda$
 \begin{equation}
- G(\sigma) = \sigma \, (1-\sigma)^{2}   \qquad \mbox{for} \; \; G(\sigma=0) = G(\sigma=1) = G'(\sigma=1) = 0, 
-\label{eq:simple-structure-function}
+ G_{\mbox{\tiny universal}}(\sigma) = \sigma \, (1-\sigma)^{2}   \qquad \mbox{for} \; \; G(\sigma=0) = G(\sigma=1) = G'(\sigma=1) = 0, 
+\label{eq:simple-shape-function}
 \end{equation}
 with this function exhibited in the left panel of Figure
-\ref{fig:kpp-figure2-reproduced}.  
+\ref{fig:kpp-figure2-reproduced}.  We return to this function in
+Section \ref{subsection:kpp-shape-function-cvmix}, where we recommend
+it be used for the CVMix implementation of KPP.  
 
 
 \subsubsection{Constraints arising from matching at $\sigma=1$}
@@ -2083,19 +2141,18 @@ leads to
 \begin{equation}
  a_{3} = 1 - \left(\frac{2 \, K_{\lambda}(h)}{h \, w_{\lambda}(h)} \right).
 \end{equation}
-The resulting form for $G(\sigma)$ is given by 
+The resulting form for $G_{\lambda}(\sigma)$ is given by 
 \begin{equation}
-  G(\sigma) = \sigma \, (1-\sigma)^{2}+ \sigma^{2} \,  (3 - 2 \, \sigma) \, \left(\frac{K_{\lambda}(h)}{h \, w_{\lambda}(h)} \right)
-  \qquad \mbox{for} \; \; G(\sigma=0) = G'(\sigma=1) = 0. 
+  G_{\lambda}(\sigma) = \sigma \, (1-\sigma)^{2}+ \sigma^{2} \,  (3 - 2 \, \sigma) \, \left(\frac{K_{\lambda}(h)}{h \, w_{\lambda}(h)} \right)
+  \qquad \mbox{for} \; \; G_{\lambda}(\sigma=0) = G_{\lambda}'(\sigma=1) = 0. 
 \end{equation}
-Notice how the structure function reduces to the simpler form
+Notice how the shape function reduces to the simpler form
 $G(\sigma) = \sigma \, (1-\sigma)^{2}$ when matching to a zero
 diffusivity, $K_{\lambda}(h) = 0$, at the boundary layer base (see
-equation (\ref{eq:simple-structure-function})).
+equation (\ref{eq:simple-shape-function})).
 
 
-
-\subsection{The non-local transport $\gamma_{\lambda}$}
+\subsection{The non-local term $\gamma_{\lambda}$ as per \cite{LargeKPP}}
 \label{subsection:kpp-non-local-transport}
 
 We now consider the parameterization for the non-local transport (see
@@ -2106,8 +2163,12 @@ by \cite{LargeKPP}.  Again, the KPP parameterization takes the form
   \overline{w \, \lambda} = -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z} - \gamma_{\lambda} \right),
 \label{eq:kpp-parameterization-yet-again}
 \end{equation}
-so that that non-local portion of the turbulent flux is parameterized
-according to
+where we set 
+\begin{equation}
+K^{\mbox{\tiny non-local}}_{\lambda} = K_{\lambda}.
+\end{equation}
+In this way, the non-local portion of the turbulent flux is
+parameterized according to
 \begin{equation}
  \overline{w \, \lambda}^{\mbox{\tiny non-local}} = K_{\lambda}  \, \gamma_{\lambda},  
 \end{equation}
@@ -2128,7 +2189,7 @@ Section \ref{subsection:kpp-nonlocal-transport-outline}.
 \item \cite{Smyth_etal2002} consider a non-local term for momentum.
   Until their ideas have been fully tested in climate models, we
   follow recommendations from \citep{LargeKPP}, who set the non-local
-  momentum transport to zero:
+  momentum term to zero:
 \begin{equation}
  \gamma_{\lambda} \; \; = \; \; 
 \left\{
@@ -2241,7 +2302,8 @@ buoyancy forcing):
             \right).
 \label{eq:non-local-scalar-kpp-again}
 \end{align}
- In these expressions, we have 
+In these expressions, we have (equation
+(\ref{eq:cs-and-cstar-defined}))
 \begin{equation}
  C_{s} = C_{*} \, \kappa \, (c_{s} \, \kappa \, \epsilon)^{1/3},  
 \end{equation}
@@ -2341,16 +2403,25 @@ explicitly how the non-local transport provides a redistribution of
 the surface boundary flux into the boundary layer.
 
 
+\subsection{The shape function and non-local transport as per CVMix}
+\label{subsection:kpp-shape-function-cvmix}
+
+The discussion of the shape function $G_{\lambda}$ in Section
+\ref{subsection:kpp-shape-function} and the non-local term
+$\gamma_{\lambda}$ in Section \ref{subsection:kpp-non-local-transport}
+follow the general prescription from \cite{LargeKPP}.  However, there
+are problems with this prescription related to the non-local transport
+that motivate use of the universal shape function
+(\ref{eq:universal-non-local-structure}) for the diffusivity
+$K_{\lambda} = K^{\mbox{\tiny non-local}}_{\lambda}$.
+
+
+
 \subsubsection{Problem I: non-local flux larger than surface flux}
 
-The above discussion of the non-local transport follows the general
-prescription from \cite{LargeKPP}.  Unfortunately, there are problems
-related to the non-local transport term.  These problems remain under
-investigation, with various options listed here to address the
-problems.
-
-The first problem relates to cases where the parameteried non-local
-flux, (\ref{eq:non-local-flux-kpp-param-temp}) of
+The first problem with the \cite{LargeKPP} prescription relates to
+cases where the parameteried non-local flux,
+(\ref{eq:non-local-flux-kpp-param-temp}) of
 (\ref{eq:non-local-flux-kpp-param-scalar}), is larger than the surface
 tracer flux
 \begin{equation}
@@ -2393,7 +2464,6 @@ $G_{\lambda}(\sigma) \, C_{s} > 1$.
   implements KPP prior to the calculation of diffusivities arising
   from gravitational instabilities.
 
-
 \item {\sc simpler matching}: As noted in Section
   \ref{subsection:kpp-shape-function}, one may choose to simplify the
   matching at the boundary layer base.  The simpler approach assumes
@@ -2412,13 +2482,13 @@ $G_{\lambda}(\sigma) \, C_{s} > 1$.
 
 By definition, the non-local transport vanishes beneath the boundary
 layer where $\sigma >1$.  However, the diffusivity generally does not
-vanish beneath the boundary layer.  Hence, by determining the
-structure function $G_{\lambda}(\sigma)$ according to the needs of
-diffusivity matching, then the non-local transport will in turn have a
-jump at the boundary layer base.  Only for those cases where the
-interior diffusivity vanishes will both the diffusivity and the
-non-local transport have a smooth transition from the boundary layer
-into the interior.
+vanish beneath the boundary layer.  Hence, by determining the shape
+function $G_{\lambda}(\sigma)$ according to the needs of diffusivity
+matching, then the non-local transport will in turn have a jump at the
+boundary layer base.  Only for those cases where the interior
+diffusivity vanishes will both the diffusivity and the non-local
+transport have a smooth transition from the boundary layer into the
+interior.
 
 The jump in the non-local transport is unphysical, and it is a problem
 exacerbated in the following situations.
@@ -2435,48 +2505,115 @@ exacerbated in the following situations.
 
 \end{itemize}
 
-In essence, the fundamental problem identified here is that the
-non-local transport parameterization proposed by \cite{LargeKPP} does
-not smoothly approach zero at the boundary layer base in those cases
-where the interior diffusivity is nonzero.  The problem is present in
-all known implementations of the KPP non-local transport.  However,
-its adverse effects are generally mild for models with either small
-interior diffusivities or with coarse vertical grid spacing.  Modern
-global models, and many regional models, are pushing the limits where
-interior mixing is sizable and vertical grid spacing refined. 
+
+\subsubsection{Resolution I: two shape functions}
+
+The fundamental problem is that the non-local transport
+parameterization proposed by \cite{LargeKPP} does not smoothly
+approach zero at the boundary layer base in those cases where the
+interior diffusivity is nonzero.  Its adverse effects may be mild for
+models with either small interior diffusivities or with coarse
+vertical grid spacing.  However, modern global models, and many
+regional models, are pushing the limits where interior mixing is
+sizable and vertical grid spacing refined.
 
 One solution to this problem is to use two distinct structure
-functions: one for the diffusivity and another for the non-local
-transport.  The diffusivity structure function, $G_{\lambda}(\sigma)$
-will remain as originally proposed by \cite{LargeKPP}, with matching
-to the interior diffusivity along with the caveats noted above.
-However, for the non-local transport, we propose to use the universal
-cubic function (\ref{eq:simple-structure-function}) for {\it all}
-tracers
+functions: one for the diffusivity $K_{\lambda}$ and another for
+$K^{\mbox{\tiny non-local}}_{\lambda}$.  The $K_{\lambda}$ shape
+function, $G_{\lambda}(\sigma)$ will remain as originally proposed by
+\cite{LargeKPP}, with matching to the interior diffusivity along with
+the caveats noted above.  However, for the non-local transport, we
+propose to use the cubic function (\ref{eq:simple-shape-function}) for
+{\it all} tracers
 \begin{equation}
-G(\sigma)_{\mbox{\tiny non-local}}= \sigma \, (1-\sigma)^{2}   \qquad \mbox{for} \; \; \sigma \le 1. 
+G_{\mbox{\tiny universal}}(\sigma)= \sigma \, (1-\sigma)^{2}   \qquad \mbox{for} \; \; \sigma \le 1. 
 \label{eq:universal-non-local-structure}
 \end{equation}
 As noted in the discussion of equation
-(\ref{eq:simple-structure-function}) (see also Figure
-\ref{fig:kpp-figure2-reproduced}), this structure function arises from
+(\ref{eq:simple-shape-function}) (see also Figure
+\ref{fig:kpp-figure2-reproduced}), this shape function arises from
 matching the function and its derivative to zero at the boundary layer
-base.  This structure function removes problems with the spuriously
-large divergences across the boundary layer base since the non-local
-term smoothly goes to zero at $\sigma =1$.  Additionally, the
-structure function $G(\sigma)_{\mbox{\tiny non-local}}$ has a maximum
-at $\sigma = 1/3$, where $G'(\sigma)_{\mbox{\tiny non-local}} = 1
--4\sigma + 3\sigma^2 = 0$.  Hence, the maximum value for the product
-$G(\sigma)_{\mbox{\tiny non-local}} \, C_{s}$ is
+base.  This shape function removes problems with the spuriously large
+divergences across the boundary layer base since the non-local term
+smoothly goes to zero at $\sigma =1$.  Additionally, the shape
+function $G_{\mbox{\tiny universal}}(\sigma)$ has a maximum at $\sigma
+= 1/3$, where $G_{\mbox{\tiny universal}}'(\sigma) = 1 -4\sigma +
+3\sigma^2 = 0$.  Hence, the maximum value for the product
+$G_{\mbox{\tiny universal}}(\sigma) \, C_{s}$ is
 \begin{equation}
- \left[ G(\sigma=1/3)_{\mbox{\tiny non-local}} \, C_{s} \right]^{\mbox{\tiny maximum}} =  \left( \frac{4}{27}  \right) \, 6.32 \approx 0.94 < 1, 
+ \left[ G_{\mbox{\tiny universal}}(\sigma=1/3) \, C_{s} \right]^{\mbox{\tiny maximum}} =  \left( \frac{4}{27}  \right) \, 6.32 \approx 0.94 < 1, 
 \end{equation}
 using $C_{s} = 6.32$ suggested by \cite{LargeKPP} (see equation
-(\ref{eq:Cs-value})).  Since $\left[ G(\sigma=1/3)_{\mbox{\tiny
-      non-local}} \, C_{s} \right]^{\mbox{\tiny maximum}} < 1$, the
-structure function $G(\sigma)_{\mbox{\tiny non-local}}$ removes
+(\ref{eq:Cs-value})).  Since $\left[ G_{\mbox{\tiny
+      universal}}(\sigma=1/3) \, C_{s} \right]^{\mbox{\tiny maximum}}
+< 1$, the shape function $G_{\mbox{\tiny universal}}(\sigma)$ removes
 problems with the non-local flux being larger than the surface flux.
 
+
+\subsubsection{Resolution II: recommended approach using a universal shape function}
+
+The recommended approach for CVMix is to employ the {\it same} shape
+function for the diffusivities as given by $G_{\mbox{\tiny
+    universal}}(\sigma)= \sigma \, (1-\sigma)^{2}$ in equation
+(\ref{eq:universal-non-local-structure}).  In this way, the KPP
+diffusivity takes on the rather simple form for both the parameterized
+local flux and non-local flux
+\begin{equation}
+ K^{\mbox{\tiny KPP}}_{\lambda}  = K_{\lambda}  =  K^{\mbox{\tiny non-local}}_{\lambda} = h \, w_{\lambda} \, \sigma \, (1-\sigma)^{2}.
+\label{eq:universal-diffusivity}
+\end{equation}
+If this approach is used, then diffusivities from processes such as
+tide mixing and shear mixing, which are not parameterized by the KPP
+boundary layer scheme, should be allowed to penetrate into the surface
+boundary layer.  That is, the approach proposed for CVMix assumes the
+net diffusivity, even in the surface boundary layer, is the {\it sum}
+of the KPP diffusivity plus that from other processes
+\begin{equation}
+ K_{\lambda}^{\mbox{\tiny net}} =  K^{\mbox{\tiny KPP}}_{\lambda} + \sum  K^{\mbox{\tiny other processes}}_{\lambda},
+\label{eq:sum-of-diffusivities}
+\end{equation}
+where those other processes parameterized by the diffusivities
+$K^{\mbox{\tiny other processes}}_{\lambda}$ are spectrally localized
+away from the processes parameterized by KPP.  Again, this approach is
+simpler than the original \cite{LargeKPP} approach, which incorporated
+the effects from interior mixing by matching boundary layer and
+interior diffusivities at the base of the boundary layer layer.  That
+approach has serious problems in practice due to the reasons noted
+earlier.  It also has no more fundamental physical basis than the
+summed diffusivities (\ref{eq:sum-of-diffusivities}) proposed for
+CVMix.
+
+In summary, the recommended parameterization of the local and
+non-local flux within the surface boundary layer via the KPP scheme is
+given by
+\begin{subequations}
+\begin{align}
+\overline{w \, \lambda}^{\mbox{\tiny local}} &= -K_{\Lambda}  \, \left( \frac{\partial \Lambda}{\partial z} \right)
+ \\
+\overline{w \, \theta}^{\mbox{\tiny non-local}} &= K_{\theta}  \, \gamma_{\theta} = 
+ - \sigma \, (1-\sigma)^{2} \, C_{s} \, \left( \frac{ Q^{\mbox{\scriptsize heat}}}{ \rho_{o}  \, C_{\mbox{\tiny p}}^{o} } \right)
+\label{eq:non-local-flux-kpp-param-temp-simple}
+\\
+\overline{w \, s}^{\mbox{\tiny non-local}} &= K_{s}  \, \gamma_{s}  = 
+ -\sigma \, (1-\sigma)^{2}  \, C_{s} \,  Q^{s}.
+\label{eq:non-local-flux-kpp-param-scalar-simple}
+\end{align}
+\end{subequations}
+Since the vertical velocity scale $w_{\lambda}$ is the same for scalar
+species, such as temperature, salinity, and biogeochemical species,
+the KPP diffusivity is then the same for all tracers\footnote{The net
+  tracer diffusivity within the surface boundary layer may be a
+  function of the tracer, but tracer dependence arises only from
+  processes that are not parameterized by the KPP scheme (see equation
+  (\ref{eq:sum-of-diffusivities}).}
+\begin{equation}
+  K^{\mbox{\tiny KPP}}  = K_{\theta} = K_{s}.
+\end{equation} 
+The vertical viscosity arising from the KPP scheme generally differs
+from the KPP tracer diffusivity, since the turbulent velocity scale
+for momentum, $w_{m}$, differs from the tracer velocity scale, $w_{s}$
+(see Sections \ref{subsection:vertical-velocity-scale} and
+\ref{subsection:similarity-functions}).
 
 
 \subsection{Bulk Richardson number and the OBL thickness}
@@ -2785,15 +2922,17 @@ an empirical result.
 \end{equation}
 chosen by \cite{LargeKPP}.  
 
-\item The MOM and POP codes take the buoyancy frequency $N$ appearing
-  in equations (\ref{eq:unresolved-shear-kpp}) and
+\item The MOM code takes the buoyancy frequency $N$ appearing in
+  equations (\ref{eq:unresolved-shear-kpp}) and
   (\ref{eq:Cv-values-given}) to be the absolute value of the frequency
 \begin{equation}
  N  = |N|.  
 \end{equation}
-This choice seems problematic in regions of unstable buoyancy forcing,
-where $N^{2} < 0$ is common.\footnote{\color{red} SMG: follow up with
-  Gokhan on this issue. How to think about it?}
+However, this choice is problematic in regions of unstable buoyancy
+forcing, where $N^{2} < 0$ is common.  So instead, one should take 
+\begin{equation}
+ N = \max(0,N).
+\end{equation}
 
 \item It is notable that there are no surface gravity wave parameters in the
 specification of the unresolved shear.  We have more to say on this
@@ -2949,12 +3088,12 @@ grid.  There are two possible options that may be considered.
 The parameterized non-local turbulent flux satisfies a no-flux
 boundary condition at the ocean surface, so that
 \begin{equation}
-  \overline{w \, \lambda}^{\mbox{\tiny non-local}} = K_{\lambda} \;  \gamma_{\lambda}  = 0 \qquad \mbox{at $z=\eta$}.
+  \overline{w \, \lambda}^{\mbox{\tiny non-local}} = 0 \qquad \mbox{at $z=\eta$}.
 \label{eq:non-local-surface-bc}
 \end{equation}
 This boundary condition is satisfied by ensuring that the
-non-dimensional vertical shape function $G(\sigma)$ vanishes at
-$\sigma = 0$, which means that
+non-dimensional vertical shape function $G_{\lambda}(\sigma)$ vanishes
+at $\sigma = 0$, which means that
 \begin{equation}
    K_{\lambda}  = 0   \qquad \mbox{at $z=\eta$}.
 \end{equation}
@@ -3009,7 +3148,7 @@ With the no-flux surface boundary condition
 (\ref{eq:non-local-surface-bc}), we thus have a positive convergence
 of heat into the $k=1$ cell due to the parameterized non-local flux.
 Hence, the parameterized non-local fluxes tend to heat the $k=1$ cells
-whereas the parameterized downgradient diffusive fluxes tend to warm
+whereas the parameterized downgradient diffusive fluxes tend to cool
 this cell.
 
 
@@ -3270,7 +3409,7 @@ pages, equations, or sections where they are described.
 \item[$\bullet$] $a_{0}, a_{1}, a_{2}, a_{3}$ = non-dimensional
   expansion coefficients for the non-dimensional vertical shape
   function $G_{\lambda}(\sigma)$ (equation
-  (\ref{eq:structure-function-gsigma}) and Section
+  (\ref{eq:shape-function-gsigma}) and Section
   \ref{subsection:kpp-shape-function}).  The shape function depends on
   the field diffused, with this dependence arising from matching to
   interior diffusivities, which are generally a function of $\lambda$.
@@ -3330,6 +3469,10 @@ pages, equations, or sections where they are described.
   frequency at the entrainment depth (equation
   \ref{eq:Cv-values-given})).
 
+\item[$\bullet$] $C_{s} = C_{*} \, \kappa \, (c_{s} \, \kappa \,
+  \epsilon)^{1/3}$ = dimensionless coefficient as per equation
+  (\ref{eq:cs-and-cstar-defined}).
+
 \item[$\bullet$] $d = -z + \eta$ is the depth (metre) from the ocean free surface
   to a point within the ocean (equation (\ref{eq:depth-defined}) and
   (\ref{eq:distance-from-surface-defined})).
@@ -3341,10 +3484,20 @@ pages, equations, or sections where they are described.
  \item[$\bullet$] $g$ = constant gravitational acceleration (units
    $\mbox{m}~\mbox{s}^{-2}$) (equation (\ref{eq:buoyancy-kpp})).
 
-\item[$\bullet$] $G_{\lambda}$ = non-dimensional vertical shape function used to
-  smoothly transition from the ocean surface to the bottom of the
-  boundary layer (equation \ref{eq:structure-function-gsigma} and
-  Section \ref{subsection:kpp-shape-function}).
+ \item[$\bullet$] $G(\sigma)_{\lambda}$ = non-dimensional vertical
+   shape function used to smoothly transition from the ocean surface
+   to the bottom of the boundary layer (equation
+   \ref{eq:shape-function-gsigma} and Section
+   \ref{subsection:kpp-shape-function}).
+
+ \item[$\bullet$] $G(\sigma)_{\mbox{\tiny universal}} \sigma \,
+   (1-\sigma)^{2}$ = non-dimensional vertical shape function used to
+   smoothly transition from the ocean surface to the bottom of the
+   boundary layer (equation (\ref{eq:universal-non-local-structure})).
+   This form deviates from the approach taken in \cite{LargeKPP}, but
+   it is recommended for use with all tracers using CVMix
+   implementation of KPP. See Section
+   \ref{subsection:kpp-shape-function}).
 
 \item[$\bullet$] $H$ = depth (metre) at the ocean bottom relative to a
   resting ocean surface at $z=0$ (page
@@ -3382,7 +3535,15 @@ pages, equations, or sections where they are described.
 \item[$\bullet$] $K_{\lambda}$ = vertical kinematic diffusivity
   ($\mbox{m}^{2}~\mbox{s}^{-1}$) in the surface boundary layer
   resulting from the KPP parameterization (equation
-  (\ref{eq:kpp-diffusivity})).
+  (\ref{eq:kpp-diffusivity})).  This diffusivity is used to
+  parameterize the downgradient diffusive portion of the KPP boundary
+  layer scheme.
+
+\item[$\bullet$] $K^{\mbox{\tiny non-local}}_{\lambda}$ = vertical
+  kinematic diffusivity ($\mbox{m}^{2}~\mbox{s}^{-1}$) in the surface
+  boundary layer resulting from the KPP parameterization (equation
+  (\ref{eq:vertical-flux-nonlocal})).  This diffusivity is used to
+  parameterize the non-local portion of the KPP boundary layer scheme.
 
 \item[$\bullet$] $K_{m}$ = vertical kinematic viscosity for momentum
   ($\mbox{m}^{2}~\mbox{s}^{-1}$) in the surface boundary layer
@@ -3549,16 +3710,16 @@ pages, equations, or sections where they are described.
   $\overline{w \, \lambda} > 0$ for an upward turbulent flux for
   $\lambda$.  It has units of $\mbox{velocity} * [\lambda]$.
 
-\item[$\bullet$] $\overline{w \, \lambda}^{\mbox{\tiny local}} = -K_{\lambda}
-  \, \partial \Lambda / \partial z$ is the local portion of the KPP
-  parameterization of the turbulent flux (equation
-  (\ref{eq:vertical-flux-local})).  It has units of $\mbox{velocity}
-  * [\lambda]$.
+\item[$\bullet$] $\overline{w \, \lambda}^{\mbox{\tiny local}} =
+  -K_{\lambda} \, \partial \Lambda / \partial z$
+  is the local portion of the KPP parameterization of the turbulent
+  flux (equation (\ref{eq:vertical-flux-local})).  It has units of
+  $\mbox{velocity} * [\lambda]$.
 
-\item[$\bullet$] $\overline{w \, \lambda}^{\mbox{\tiny non-local}} = K_{\lambda}
-  \; \gamma_{\lambda}$ is the non-local portion of the KPP
-  parameterization of the turbulent flux (equation
-  (\ref{eq:vertical-flux-nonlocal}) and Section
+\item[$\bullet$] $\overline{w \, \lambda}^{\mbox{\tiny non-local}} =
+  K^{\mbox{\tiny non-local}}_{\lambda} \; \gamma_{\lambda}$ is the
+  non-local portion of the KPP parameterization of the turbulent flux
+  (equation (\ref{eq:vertical-flux-nonlocal}) and Sections
   \ref{subsection:vertical-velocity-scale}).
 
 \item[$\bullet$] $z$ = geopotential vertical coordinate (metre) with $z=0$ at the
