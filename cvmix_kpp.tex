@@ -2570,7 +2570,7 @@ explicitly how the non-local transport provides a redistribution of
 the surface boundary flux into the boundary layer.
 
 
-\subsection{The shape function and non-local transport as per CVMix}
+\subsection{CVMix recommended shape function and non-local transport}
 \label{subsection:kpp-shape-function-cvmix}
 
 The discussion of the shape function $G_{\lambda}(\sigma)$ in Section
@@ -2873,20 +2873,20 @@ expose the physics of the bulk Richardson number.
 \subsubsection{Averaging properties over the surface layer}
 
 As mentioned above, it is necessary to determine the averaged
-temperature, salinity, and velocity within the surface layer $0 \le
-\sigma \le \epsilon \, h$ in order to compute the bulk Richardson
-number (\ref{eq:bulk-ri-large-kpp}).  It is inevitable that the
-surface layer penetrates many grid cells in the vertical, particularly
-in regions where the boundary deepens due to negative buoyancy forcing
-and/or in models with refined vertical grid spacing.  In order to
-reduce sensitivity to vertical grid spacing, it is important to
-consider an averaging over the surface layer.
+temperature, salinity, and velocity within the surface layer $0 \le d
+\le \epsilon \, h$ in order to compute the bulk Richardson number
+(\ref{eq:bulk-ri-large-kpp}).  The surface layer will generally
+penetrate many grid cells in the vertical where the boundary deepens
+due to negative buoyancy forcing and/or in models with refined
+vertical grid spacing.  In order to reduce sensitivity to vertical
+grid spacing, it is necessary to average properties over the surface
+layer prior to computing the bulk Richardson number.
 
 However, the bulk Richardson number (equation
 (\ref{eq:bulk-ri-large-kpp})) is itself needed to compute the boundary
 layer depth $h$.  So we have a circular situation in which to compute
 $\mbox{Ri}_{b}$ we need the boundary layer depth $h$, but to compute
-$h$ we need $\mbox{Ri}_{b}$.  We resolve this circularity by
+$h$ we need $\mbox{Ri}_{b}$.  We can resolve this circularity by
 considering an iterative process.  There are additional subtleties
 when averaging temperature and salinity over the surface layer.  Each
 of these considerations must be handled by the model calling CVMix,
@@ -2895,20 +2895,36 @@ since the density difference $\rho[\Theta(d), S(d), p(d)] -
 {\bf U}(d)|$ are inputs to the CVMix scheme.  We outline here the
 method used for the MOM6 implementation of CVMix.
 
-For MOM6, we assume a boundary layer depth, $h_{\mbox{\tiny guess}}$,
-and perform a running average of temperature, salinity, and velocity,
-starting from the surface to a depth $h_{\mbox{\tiny guess}}$.  The
-running average removes the situation where an unstable vertical
-profile is spuriously stabilized.  Once computing the running average,
-the bulk Richardson number is computed at a depth $d$ according to
-equation (\ref{eq:bulk-ri-large-kpp}).  If the Richardson number is
-less than the critical value, then the running average is recomputed
-to the depth $d$, in which case the procedure continues down until the
-boundary layer depth is found.
+On the initial iteration, we assume a boundary layer depth, $h^{(0)}$,
+(e.g., $h^{(0)} = 100~\mbox{m}$) and compute the surface layer
+averaged tracer and velocity according to the expression
+\begin{equation}
+   \Phi^{(0)}_{r}(d) = \frac{1}{\min(\epsilon \, h^{(0)}, d)} \, \int\limits^{0}_{-\min(\epsilon \, h^{(0)}, d)} \Phi(z) \, \mathrm{d}z.
+\label{eq:surface-averaging}
+\end{equation}
+For depths beneath the surface layer, $d > \epsilon \, h^{(0)}$, the
+surface averaged properties are computed over the full extent of the
+region from the ocean surface down to the base of the first guess
+surface layer at $d= \epsilon \, h^{(0)}$. However, for grid points
+shallower than the surface layer base, $d < \epsilon \, h^{(0)}$, the
+``surface'' averaged properties are computed as an average just down
+to the grid point depth $d$ (i.e., just over the region $0 < d$).
+That is, we omit points in the region deeper than $d$ yet still within
+the surface layer.  This approach ensures that for the Richardson
+number calculation at grid points within the surface layer, we are not
+spuriously stabilizing or destabilizing these points, which could
+occur if computing an average that includes deeper points within the
+surface layer.
 
-\color{red} This description of the algorithm is not clear.  Need to
-chat with AJA to make it better.  \color{black}
-
+After determining the initial surface averaged properties
+$\Phi^{(0)}_{r}$, using an initial guess for $h^{(0)}$, then the bulk
+Richardson number is used to determine the first nontrivial estimate
+of the boundary layer depth, $h^{(1)}$.  The boundary layer depth
+$h^{(1)}$ then replaces $h^{(0)}$ for use in an updated calculation of
+the surface averaged properties, $\Phi^{(1)}_{r}$, then allowing
+calculation of a new bulk Richardson number, and finally a new
+boundary layer depth $h^{(2)}$.  We are presently testing the needs to
+further iterate beyon $h^{(2)}$.
 
 
 
