@@ -1296,6 +1296,15 @@ the boundary forcing, but only once the boundary layer depth $h$ is
 known, since it is necessary to remove the shortwave leaving through
 the bottom of the boundary layer.
 
+We make note of one potential confusing point regarding the situation
+where $\alpha < 0$, as occurs in regions where the salinity is
+relatively fresh, such as the Baltic Sea.  Surface heating in these
+regions leads to a negative buoyancy flux, $B_{f} < 0$, which is
+contrary to most cases in the open ocean where $\alpha > 0$ is the
+norm.
+
+
+
 
 \section{Surface layer and Monin-Obukhov similarity}
 \label{section:m-o-similarity}
@@ -2350,6 +2359,7 @@ Section \ref{subsection:kpp-nonlocal-transport-outline}.
 
 
 \subsubsection{General features of $\gamma_{\lambda}$ with the KPP parameterization}
+\label{subsubsection:general-features-gamma-as-per-largekpp}
 
 \begin{itemize}
 
@@ -2419,9 +2429,16 @@ with
 \label{eq:cstar-value-specified}
 \end{equation}
 and $Q_{R}$ is the heat flux from penetrative radiation given by
-equation (\ref{eq:penetrative-heating-kpp}).  Note that equation
+equation (\ref{eq:penetrative-heating-kpp}).  We have more to say in
+Section \ref{subsection:penetrative-radiation-and-kpp-nonlocal}
+regarding the shortwave flux, $Q_{R}$, and the non-local term.  We
+argue in that section that the shortwave flux should {\it not} be part
+of the non-local term.  However, for the meantime we continue
+following the approach of \cite{LargeKPP}, in which they include
+shortwave radiation as part of the non-local term (e.g., see equation
+(20) in \cite{LargeKPP}).  Note that equation
 (\ref{eq:non-local-temp-kpp}) uses $c_{s}$ regardless of the scalar
-field considered.  
+tracer field considered.
 
 Combining the parameterizations (\ref{eq:non-local-temp-kpp}) and
 (\ref{eq:non-local-scalar-kpp}) for the non-local term
@@ -2445,10 +2462,17 @@ parameterization of the non-local flux.  The expressions
 (\ref{eq:non-local-flux-kpp-param-temp}) and
 (\ref{eq:non-local-flux-kpp-param-scalar}) exhibit clearly how the
 non-local transport provides a redistribution of the surface boundary
-flux into the boundary layer.
+flux into the boundary layer. This redistribution is analogous to the
+penetrative radiation associated with shortwave.  Herein lies the
+essence for why we argue in Section
+\ref{subsection:penetrative-radiation-and-kpp-nonlocal} that the
+shortwave should {\it not} be part of the non-local term, since
+shortwave is already redistributed throughout the vertical column
+according to seawater optics.  Including it also as part of the
+non-local KPP redistribution over-counts the interior contribution of
+shortwave radiation.
 
 \end{itemize}
-
 
 
 \subsubsection{Summary of the non-local transport parameterization} 
@@ -2585,6 +2609,7 @@ $K_{\lambda} = K^{\mbox{\tiny non-local}}_{\lambda}$.
 
 
 \subsubsection{Problem I: non-local flux larger than surface flux}
+\label{subsubsection:non-local-flux-too-large}
 
 The first problem with the \cite{LargeKPP} prescription relates to
 cases where the parameteried non-local flux,
@@ -2782,6 +2807,178 @@ from the KPP tracer diffusivity, since the turbulent velocity scale
 for momentum, $w_{m}$, differs from the tracer velocity scale, $w_{s}$
 (see Sections \ref{subsection:vertical-velocity-scale} and
 \ref{subsection:similarity-functions}).
+
+
+\subsection{Penetrative shortwave and the KPP non-local redistribution}
+\label{subsection:penetrative-radiation-and-kpp-nonlocal}
+
+Equation (20) from \cite{LargeKPP} provides an expression for the
+non-local flux parameterized by KPP.  Notably, the heat flux includes
+shortwave radiation.  At the end of Section
+\ref{subsubsection:general-features-gamma-as-per-largekpp} we noted
+potential problems including shortwave radiation as part of the
+vertical flux redistribution arising from the non-local KPP
+parameterization.  We now present arguments to support the contention
+that one should {\it not} include shortwave in the non-local KPP flux.
+We note that there is no guidance from the atmospheric application of
+KPP, since the atmosphere is largely transparent to shortwave.  In
+contrast, the ocean transmits surface shortwave radiation only into a
+few 10s of metres of the upper ocean, with the transmittance a
+function of the optical properties of seawater.
+
+The importance of penetrative shortwave radiation for upper ocean
+heating, particularly in the tropics, is well established (e.g.,
+\cite{Sweeneyetal}, \cite{Manizza_etal2005},
+\cite{Anderson_color_etal2007}, \cite{Anderson_color_etal2009}).
+Additionally, upper ocean shortwave heating plays an important role in
+sea ice formation/melt in relatively fresh regions, such as the Baltic
+Sea, where the thermal expansion coefficient, $\alpha$, is negative.
+In these regions, shortwave heating, particularly in the spring time,
+destabilizes the boundary layer (heating provides a negative buoyancy
+flux when $\alpha < 0$), with the associated vertical mixing of warmer
+sub-surface waters helping to melt the winter sea ice (Martin Schmidt,
+personal communication).
+
+
+\subsubsection{The physical idea}
+
+Recognizing that the KPP non-local term acts as a redistribution of
+surface tracer fluxes, we are led to question whether the shortwave
+heat flux should be included as part of the KPP surface heat flux
+redistribution.  We argue here that it should {\it not} be included.
+The reason is that redistribution of surface shortwave radiation is
+already included as part of an optics-based penetration process (e.g.,
+\cite{Manizza_etal2005}), with this penetration dependent only on
+seawater optical properties.  If we allow the surface shortwave
+radiation to also be redistributed with the non-local KPP process,
+then the net shortwave reaching beneath the surface can be spuriously
+large, in fact even larger than the shortwave radiative flux incident
+on the ocean surface.  In effect, the extra redistribution from KPP
+will over-count contributions from shortwave radiation in the ocean
+interior.
+
+The basic physical idea is that shortwave radiation penetrates into
+the ocean interior as a function of seawater optical properties.  It
+is only through impacts on ocean optics that stratification and
+turbulence impacts shortwave penetration.  If we include shortwave as
+part of the KPP non-local redistribution, we are in turn allowing
+shortwave penetration to also be directly determined by the ocean
+state, including the ocean turbulence and stratification as well as
+seawater optical properties.  In contrast to shortwave, the e vertical
+redistribution of the non-penetrative surface heat fluxes (latent,
+sensible, longwave) is a function of the boundary layer turbulence.
+Hence, it is appropriate to vertically redistribute the
+non-penetrative heat fluxes through KPP, but to allow the shortwave to
+be redistributed only according to the optical properties.
+
+
+\subsubsection{A test case realizing manifestly unphysical behaviour}
+
+A redistribution process vertically redistributes heat over a fluid
+column, and so does not generate or destroy the net heat entering
+through the ocean surface.  This redistribution is unphysical if
+somehow the process produces an interior heat flux that is larger than
+the boundary heat flux.  This unphysical situation can occur if the
+KPP non-local term {\it plus} a penetrative optical scheme separately
+act to vertically redistribute the shortwave radiation in a fluid
+column.  We illustrate this situation as an example of a manifestly
+unphysical situation associated with allowing KPP to vertically
+redistribute shortwave.
+
+For this purpose, return to the heat equation for a surface model grid
+cell (\ref{eq:surface-temperature-equation-kpp}).  Now, consider only
+those contributions from surface heating and non-local KPP mixing
+\begin{equation}
+ \frac{\partial \, (\rho \, \mathrm{d}z \, \Theta)}{\partial t} 
+ =  \underbrace{
+  Q_{\theta}^{\mbox{\tiny non-pen}}(z=\eta) +  Q_{\theta}^{\mbox{\tiny pen}}(z=\eta)
+  }_{\mbox{\tiny penetrative + non-penetrative surface flux}} 
+   \; - \; \underbrace{
+    \left( Q_{\theta}^{\mbox{\tiny pen}} -  \overline{w \, \theta}^{\mbox{\tiny non-local}}\right)_{z=-\Delta z}
+    }_{\mbox{\tiny heat flux leaving through cell bottom}}. 
+ \label{eq:surface-temperature-equation-shortwave-argument-A} 
+\end{equation}
+Recall that $\overline{w \, \theta}^{\mbox{\tiny non-local}}(z=\eta) =
+0$, and so the non-local term contributes to the surface cell only
+through the bottom of the surface grid cell.  Now write the non-local
+term in the simplified form
+(\ref{eq:non-local-flux-kpp-param-temp-simple}) to render
+\begin{equation}
+ \frac{\partial \, (\rho \, \mathrm{d}z \, \Theta)}{\partial t} 
+ =     Q_{\theta}^{\mbox{\tiny non-pen}}(z=\eta) \;     \left( 1 - C_{s} \, \sigma \, (1-\sigma)^{2} \right) 
+    +  Q_{\theta}^{\mbox{\tiny pen}}(z=\eta) \;     
+    - \left( Q_{\theta}^{\mbox{\tiny pen}}(z=\eta) \, C_{s} \, \sigma \, (1-\sigma)^{2} 
+    + Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z)  \right). 
+ \label{eq:surface-temperature-equation-shortwave-argument-B} 
+\end{equation}
+where $\sigma = \Delta z / h$ is the dimensionless boundary layer
+depth.  The first term on the right hand side provides a vertical
+redistribution of the non-penetrative heat fluxes (i.e., sensible,
+longwave, latent) through the KPP boundary layer.  Its form highlights
+the discussion in Section
+\ref{subsubsection:non-local-flux-too-large}, in which we pointed out
+that that the non-locally redistributed surface flux must itself be
+less than the net surface flux entering the ocean surface.  The second
+term in equation
+(\ref{eq:surface-temperature-equation-shortwave-argument-B} ) arises
+from the shortwave radiation incident on the ocean surface.  The final
+term is the combined effect of redistribution of the shortwave
+radiation from KPP plus the shortwave that penetrates through the
+bottom of the cell as determed by seawater optical properties.  We now
+see that if
+\begin{equation}
+ Q_{\theta}^{\mbox{\tiny pen}}(z=\eta)  <    Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z)  + 
+ Q_{\theta}^{\mbox{\tiny pen}}(z=\eta)   \, C_{s} \, \sigma \, (1-\sigma)^{2} 
+\label{eq:shortwave-pathology-A}
+\end{equation}
+then the shortwave incident on the ocean surface is {\it less} than
+that which leaves the bottom of the grid cell. That is, the
+redistributed surface incident shortwave can be larger than the
+incident shortwave.  This unphysical situation is exacerbated in
+situations where the seawater is relatively clear, or where the
+boundary layer is relatively shallow.
+
+
+\subsubsection{Removing the pathology}
+
+There are two ways to ameliorate the pathology
+(\ref{eq:shortwave-pathology-A}). First, we can allow the KPP scheme
+to redistribute {\it only} that shortwave radiation local to the depth
+of the non-local term, in which case the heat equation
+(\ref{eq:surface-temperature-equation-shortwave-argument-B}) takes the
+form
+\begin{equation}
+ \frac{\partial \, (\rho \, \mathrm{d}z \, \Theta)}{\partial t} 
+ =     Q_{\theta}^{\mbox{\tiny non-pen}}(z=\eta) \;     \left( 1 - C_{s} \, \sigma \, (1-\sigma)^{2} \right) 
+    +  Q_{\theta}^{\mbox{\tiny pen}}(z=\eta) \;     
+    - Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z) \, \left( 1 +  C_{s} \, \sigma \, (1-\sigma)^{2} \right). 
+\label{eq:surface-temperature-equation-shortwave-argument-C} 
+\end{equation}
+Pathological heating now occurs only for those cases where 
+\begin{equation}
+ Q_{\theta}^{\mbox{\tiny pen}}(z=\eta)  <    Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z)  
+\, \left( 1 +  C_{s} \, \sigma \, (1-\sigma)^{2} \right).
+\label{eq:shortwave-pathology-B}
+\end{equation}
+
+The second, and recommended, modification completely removes the
+pathology by removing the shortwave heat flux from the KPP non-local
+redistribution.  In this case, case the heat equation
+(\ref{eq:surface-temperature-equation-shortwave-argument-C}) takes the
+form
+\begin{equation}
+ \frac{\partial \, (\rho \, \mathrm{d}z \, \Theta)}{\partial t} 
+ =     Q_{\theta}^{\mbox{\tiny non-pen}}(z=\eta) \;     \left( 1 - C_{s} \, \sigma \, (1-\sigma)^{2} \right) 
+    +  \left( Q_{\theta}^{\mbox{\tiny pen}}(z=\eta) - Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z) \right). 
+\label{eq:surface-temperature-equation-shortwave-argument-D} 
+\end{equation}
+Notice how the non-local redistribution from KPP only acts on the
+non-penetrative surface heat flux, whereas the shortwave flux is
+redistributed only through the penetrative optical scheme.  We
+recommend this second approach for reasons noted above.  Namely,
+redistribution of the surface shortwave flux should occur only via
+optical properties.  KPP should redistribute {\it only} those surface
+fluxes that are non-penetrative.
 
 
 \subsection{Bulk Richardson number and the OBL thickness}
