@@ -9,7 +9,7 @@
   scheme \citep{LargeKPP} as implemented in CVMix.  CVMix provides the
   same features as that suggested by \cite{LargeKPP} and Appendix A of
   \cite{Dana_etal2006}.  However, for those not intent on recovering
-  older results, we recommend simplifying the non-dimensional
+  older results, we recommend simplifying the non-dimensional shape or
   structure function $G(\sigma)$, with this recommendation based on
   testing conducted during the CVMix implementation.  The following
   CVMix Fortran module is directly connected to the material in this
@@ -247,7 +247,7 @@ written in the following form
 \end{equation}
 The diffusivity is a constructed as the product of three terms: the
 boundary layer thickness $h$, the vertical turbulent velocity scale
-$w_{\lambda}(\sigma)$, and the vertical shape function
+$w_{\lambda}(\sigma)$, and the vertical shape or structure function
 $G_{\lambda}(\sigma)$.  Note that we introduce a dependence of the
 shape function on the field diffused.  Such dependence can arise if
 taking the approach of \cite{LargeKPP} whereby the boundary layer
@@ -1692,13 +1692,19 @@ scale is a function of the surface buoyancy forcing, surface wind
 forcing, and depth from the ocean surface.  We generally assume it is
 the {\it same} for the various scalars
 \begin{equation}
- w_{s} = w_{\theta}, 
+ w_{s} = w_{\theta}. 
 \end{equation}
-but the scalar turbulent velocity scale differs from that used for
-momentum
+Similarly, for stable buoyancy forcing, the turbulent velocity scale
+for scalars is the same as that for momentum momentum
 \begin{equation}
- w_{s} \ne w_{m}. 
+ w_{s} = w_{m} \qquad \mbox{when} \; B_{f} > 0. 
 \end{equation}
+For unstable buoyancy forcing, scalars have a larger velocity scale
+than momentum
+\begin{equation}
+ w_{s}  > w_{m} \qquad \mbox{when} \;  B_{f} < 0. 
+\end{equation}
+ We now provide details for the values of the velocity scales.  
 
 
 \subsubsection{Velocity scale $w_{\lambda}$ with stable buoyancy forcing}
@@ -1924,8 +1930,8 @@ surface buoyancy flux in this case is then given by
 \begin{align}
  B_{f} &= \left( \frac{g \, \alpha}{\rho_{o} \, C_{\mbox{\tiny p}}^{o} } \right) \, Q^{\mbox{\tiny non-pen}} 
 \\
- &= \left( \frac{ 9.8~\mbox{m}~\mbox{s}^{-2} \; \; 2.5 \, \times \, 10^{-4}~\mbox{}^{\circ}C^{-1} }
-             {1035~\mbox{kg}~\mbox{m}^{-3} \; \; 3992~\mbox{J}~\mbox{kg}^{-1}~\mbox{}^{\circ}C^{-1} }
+ &= \left( \frac{ 9.8~\mbox{m}~\mbox{s}^{-2} \, \times \, 2.5 \, \times \, 10^{-4}~\mbox{}^{\circ}C^{-1} }
+             {1035~\mbox{kg}~\mbox{m}^{-3} \, \times \, 3992~\mbox{J}~\mbox{kg}^{-1}~\mbox{}^{\circ}C^{-1} }
        \right)
        (-100~\mbox{W}~\mbox{m}^{-2})
  \\
@@ -1944,7 +1950,7 @@ $6000~\mbox{m}$.  The velocity scale $w_{*}$ then takes the value
 \begin{align}
   w_{*} &= (-B_{f} \, h)^{1/3}
  \\
-  &= (5.9 \, \times \, 10^{-8}~\mbox{m}^{2}~\mbox{s}^{-3} \; \; 6000~\mbox{m})^{1/3} 
+  &= (5.9 \, \times \, 10^{-8}~\mbox{m}^{2}~\mbox{s}^{-3} \, \times \, 6000~\mbox{m})^{1/3} 
  \\
  &= 0.07~\mbox{m}~\mbox{s}^{-1}.
 \end{align}
@@ -1953,7 +1959,6 @@ The vertical turbulent velocity scale for scalars is then given by
 \begin{subequations}
 \begin{align}
  w_{s} &= \kappa \, w_{*} \, (c_{s} \, \epsilon \, \kappa)^{1/3}  
- \\
  \\ &= 
   0.044~\mbox{m}~\mbox{s}^{-1},
 \end{align}
@@ -2127,7 +2132,7 @@ values used in \cite{LargeKPP}, is to maintain original 3-region
 $\phi_{s}$ form, but to simplify $\phi_{m}$ to 2-regions according to
 equation (\ref{eq:phim-alternative}).
 
-The simplified forms for the structure functions $\phi_{s}$ and
+The simplified forms for the similarity functions $\phi_{s}$ and
 $\phi_{m}$ have {\it not} been implemented in CVMix.  More testing is
 required.
 
@@ -2219,7 +2224,6 @@ Satisfying this relation at the ocean surface, $\sigma=0$, requires
  \qquad  \mbox{surface layer: $0 \le \sigma \le \epsilon$.}
 \label{eq:specifying-shape-function-againB}
 \end{equation}
-
 Now define the ratio
 \begin{equation}
   \beta_{\lambda} = \left( \frac{ \overline{w \, \lambda}^{\epsilon}}{\overline{w \, \lambda}^{0}} \right),
@@ -2440,6 +2444,8 @@ shortwave radiation as part of the non-local term (e.g., see equation
 (\ref{eq:non-local-temp-kpp}) uses $c_{s}$ regardless of the scalar
 tracer field considered.
 
+\end{itemize}
+
 Combining the parameterizations (\ref{eq:non-local-temp-kpp}) and
 (\ref{eq:non-local-scalar-kpp}) for the non-local term
 $\gamma_{\lambda}$, with that for the vertical diffusivity
@@ -2463,16 +2469,8 @@ parameterization of the non-local flux.  The expressions
 (\ref{eq:non-local-flux-kpp-param-scalar}) exhibit clearly how the
 non-local transport provides a redistribution of the surface boundary
 flux into the boundary layer. This redistribution is analogous to the
-penetrative radiation associated with shortwave.  Herein lies the
-essence for why we argue in Section
-\ref{subsection:penetrative-radiation-and-kpp-nonlocal} that the
-shortwave should {\it not} be part of the non-local term, since
-shortwave is already redistributed throughout the vertical column
-according to seawater optics.  Including it also as part of the
-non-local KPP redistribution over-counts the interior contribution of
-shortwave radiation.
+penetrative radiation associated with shortwave. 
 
-\end{itemize}
 
 
 \subsubsection{Summary of the non-local transport parameterization} 
@@ -2514,7 +2512,7 @@ according to the similarity function $\phi_{s}$ (Section
 \ref{subsection:similarity-functions}).  Plugging in the constants
 suggested by \cite{LargeKPP} leads to
 \begin{equation}
- C_{s} \approx 6.32. 
+ C_{s} \approx 6.33. 
 \label{eq:Cs-value}
 \end{equation}
 
@@ -2594,7 +2592,7 @@ explicitly how the non-local transport provides a redistribution of
 the surface boundary flux into the boundary layer.
 
 
-\subsection{CVMix recommended shape function and non-local transport}
+\subsection{The shape function and non-local transport: Part I}
 \label{subsection:kpp-shape-function-cvmix}
 
 The discussion of the shape function $G_{\lambda}(\sigma)$ in Section
@@ -2734,16 +2732,16 @@ function $G_{\mbox{\tiny universal}}(\sigma)$ has a maximum at $\sigma
 3\sigma^2 = 0$.  Hence, the maximum value for the product
 $G_{\mbox{\tiny universal}}(\sigma) \, C_{s}$ is
 \begin{equation}
- \left[ G_{\mbox{\tiny universal}}(\sigma=1/3) \, C_{s} \right]^{\mbox{\tiny maximum}} =  \left( \frac{4}{27}  \right) \, 6.32 \approx 0.94 < 1, 
+ \left[ G_{\mbox{\tiny universal}}(\sigma=1/3) \, C_{s} \right]^{\mbox{\tiny maximum}} =  \left( \frac{4}{27}  \right) \, 6.33 \approx 0.94 < 1, 
 \end{equation}
-using $C_{s} = 6.32$ suggested by \cite{LargeKPP} (see equation
+using $C_{s} = 6.33$ suggested by \cite{LargeKPP} (see equation
 (\ref{eq:Cs-value})).  Since $\left[ G_{\mbox{\tiny
       universal}}(\sigma=1/3) \, C_{s} \right]^{\mbox{\tiny maximum}}
 < 1$, the shape function $G_{\mbox{\tiny universal}}(\sigma)$ removes
 problems with the non-local flux being larger than the surface flux.
 
 
-\subsubsection{Resolution II: recommended approach using a universal shape function}
+\subsubsection{Resolution II: universal shape function}
 
 The recommended approach for CVMix is to employ the {\it same} shape
 function for the diffusivities as given by $G_{\mbox{\tiny
@@ -2809,22 +2807,27 @@ for momentum, $w_{m}$, differs from the tracer velocity scale, $w_{s}$
 \ref{subsection:similarity-functions}).
 
 
+\subsubsection{Further problems to be discussed later}
+
+In section \ref{section:kernals-of-behaviour} we identify further
+problems with the parameterized non-local term, even when using the
+shape function $\sigma \, (1-\sigma)^{2}$.  We thus revisit in that
+section the question about how to parameterize the non-local flux.
+
+
 \subsection{Penetrative shortwave and the KPP non-local redistribution}
 \label{subsection:penetrative-radiation-and-kpp-nonlocal}
 
 Equation (20) from \cite{LargeKPP} provides an expression for the
 non-local flux parameterized by KPP.  Notably, the heat flux includes
-shortwave radiation.  At the end of Section
-\ref{subsubsection:general-features-gamma-as-per-largekpp} we noted
-potential problems including shortwave radiation as part of the
-vertical flux redistribution arising from the non-local KPP
-parameterization.  We now present arguments to support the contention
-that one should {\it not} include shortwave in the non-local KPP flux.
-We note that there is no guidance from the atmospheric application of
-KPP, since the atmosphere is largely transparent to shortwave.  In
-contrast, the ocean transmits surface shortwave radiation only into a
-few 10s of metres of the upper ocean, with the transmittance a
-function of the optical properties of seawater.
+shortwave radiation.  In this section, we discuss some of the issues
+related to the shortwave radiation and its contribution to the
+non-local term.  We note that there is no guidance from the
+atmospheric application of KPP, since the atmosphere is largely
+transparent to shortwave.  In contrast, the ocean transmits surface
+shortwave radiation only into a few 10s of metres of the upper ocean,
+with the transmittance a function of the optical properties of
+seawater.
 
 The importance of penetrative shortwave radiation for upper ocean
 heating, particularly in the tropics, is well established (e.g.,
@@ -2840,54 +2843,65 @@ sub-surface waters helping to melt the winter sea ice (Martin Schmidt,
 personal communication).
 
 
-\subsubsection{The physical idea}
+\subsubsection{Physical ideas}
+\label{subsubsection:shortwave-physics}
 
 Recognizing that the KPP non-local term acts as a redistribution of
 surface tracer fluxes, we are led to question whether the shortwave
 heat flux should be included as part of the KPP surface heat flux
-redistribution.  We argue here that it should {\it not} be included.
-The reason is that redistribution of surface shortwave radiation is
-already included as part of an optics-based penetration process (e.g.,
-\cite{Manizza_etal2005}), with this penetration dependent only on
-seawater optical properties.  If we allow the surface shortwave
-radiation to also be redistributed with the non-local KPP process,
-then the net shortwave reaching beneath the surface can be spuriously
-large, in fact even larger than the shortwave radiative flux incident
-on the ocean surface.  In effect, the extra redistribution from KPP
-will over-count contributions from shortwave radiation in the ocean
-interior.
+redistribution.  One may argue that it should {\it not} be included,
+since it is already included as part of an optics-based penetration
+process (e.g., \cite{Manizza_etal2005}), with this penetration
+dependent only on seawater optical properties.  If we allow the
+surface shortwave radiation to also be redistributed with the
+non-local KPP process, then the net shortwave reaching beneath the
+surface can be larger than the shortwave radiative flux incident on
+the ocean surface.  But is this wrong?  And will it be problematic?
+These are two related, but distinct, questions that we aim to address
+here.
 
-The basic physical idea is that shortwave radiation penetrates into
-the ocean interior as a function of seawater optical properties.  It
-is only through impacts on ocean optics that stratification and
-turbulence impacts shortwave penetration.  If we include shortwave as
-part of the KPP non-local redistribution, we are in turn allowing
-shortwave penetration to also be directly determined by the ocean
-state, including the ocean turbulence and stratification as well as
-seawater optical properties.  In contrast to shortwave, the e vertical
-redistribution of the non-penetrative surface heat fluxes (latent,
-sensible, longwave) is a function of the boundary layer turbulence.
-Hence, it is appropriate to vertically redistribute the
-non-penetrative heat fluxes through KPP, but to allow the shortwave to
-be redistributed only according to the optical properties.
+Consider a quiescent stably stratified ocean with uniform optical
+properties; e.g., there is uniform chlorophyll concentration.
+Shortwave radiation incident on the ocean surface will penetrate into
+the interior according to the ocean optics, given some exponential
+decay relations such as those from \cite{Manizza_etal2005}.  Now allow
+the surface to have a strong cooling that is stronger than the
+shortwave warming, thus creating a negative buoyancy flux and leading
+to convective mixing processes.  Assuming uniform optical properties
+both before and after the negative buoyancy flux means that the
+exponential shortwave penetration remains unchanged.  However, the
+shortwave absorbed in the surface layer ($\sigma < \epsilon \, h$)
+will be carried into the deeper reaches of the boundary layer through
+the action of the turbulence.  Consequently, there will be more
+shortwave reaching the deeper portion of the boundary layer than just
+through the optical penetration alone.  
+
+We are thus motivated to include the shortwave radiation as part of
+the surface buoyancy flux appearing in the non-local flux.  Now the
+presence of shortwave radiation (i.e., daytime) in the presence of
+negative buoyancy forcing typically occurs in the high latitudes,
+where strong sensible and latent heating can overcome shortwave
+radiation even during the daytime.  In these regions, most of the
+shortwave radiation is absorbed within the upper portion of the
+boundary layers.  So it is common to merely include the full incident
+shortwave as part of the heat flux determining the parameterized
+non-local flux.
 
 
-\subsubsection{A test case realizing manifestly unphysical behaviour}
+\subsubsection{Some mathematics}
 
 A redistribution process vertically redistributes heat over a fluid
 column, and so does not generate or destroy the net heat entering
-through the ocean surface.  This redistribution is unphysical if
-somehow the process produces an interior heat flux that is larger than
-the boundary heat flux.  This unphysical situation can occur if the
-KPP non-local term {\it plus} a penetrative optical scheme separately
-act to vertically redistribute the shortwave radiation in a fluid
-column.  We illustrate this situation as an example of a manifestly
-unphysical situation associated with allowing KPP to vertically
-redistribute shortwave.
+through the ocean surface.  This redistribution is presumably
+unphysical if somehow the process produces an interior heat flux that
+is larger than the boundary heat flux.  This situation can occur if
+the KPP non-local term {\it plus} a penetrative optical scheme
+separately act to vertically redistribute the shortwave radiation in a
+fluid column.  We illustrate this situation here. 
 
 For this purpose, return to the heat equation for a surface model grid
 cell (\ref{eq:surface-temperature-equation-kpp}).  Now, consider only
-those contributions from surface heating and non-local KPP mixing
+those contributions from surface heating and non-local KPP flux 
 \begin{equation}
  \frac{\partial \, (\rho \, \mathrm{d}z \, \Theta)}{\partial t} 
  =  \underbrace{
@@ -2911,15 +2925,18 @@ term in the simplified form
     + Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z)  \right). 
  \label{eq:surface-temperature-equation-shortwave-argument-B} 
 \end{equation}
-where $\sigma = \Delta z / h$ is the dimensionless boundary layer
-depth.  The first term on the right hand side provides a vertical
-redistribution of the non-penetrative heat fluxes (i.e., sensible,
-longwave, latent) through the KPP boundary layer.  Its form highlights
-the discussion in Section
+where $\sigma = \Delta z / h$ is the dimensionless depth within the
+boundary layer.  The first term on the right hand side provides a
+vertical redistribution of the non-penetrative heat fluxes (i.e.,
+sensible, longwave, latent) through the KPP boundary layer.  Its form
+highlights the discussion in Section
 \ref{subsubsection:non-local-flux-too-large}, in which we pointed out
 that that the non-locally redistributed surface flux must itself be
-less than the net surface flux entering the ocean surface.  The second
-term in equation
+less than the net surface flux entering the ocean surface.  Otherwise,
+the redistributed heat flux leaving the bottom of the surface cell
+will have a magnitude larger than that entering the top.
+
+The second term in equation
 (\ref{eq:surface-temperature-equation-shortwave-argument-B} ) arises
 from the shortwave radiation incident on the ocean surface.  The final
 term is the combined effect of redistribution of the shortwave
@@ -2934,17 +2951,26 @@ see that if
 then the shortwave incident on the ocean surface is {\it less} than
 that which leaves the bottom of the grid cell. That is, the
 redistributed surface incident shortwave can be larger than the
-incident shortwave.  This unphysical situation is exacerbated in
-situations where the seawater is relatively clear, or where the
-boundary layer is relatively shallow.
+incident shortwave.  This situation is exacerbated in situations where
+the seawater is relatively clear, or where the boundary layer is
+relatively shallow.  
+
+But is it unphysical to have more shortwave leave the bottom of a cell
+than entered the top?  It is, if we are referring to the same
+shortwave (i.e., the same photons).  But we can have more leaving the
+bottom if there is an absorption of some shortwave that is then
+transported to depth via the turbulence, as per the discussion in
+Section \ref{subsubsection:shortwave-physics}.  Nonetheless, there can
+be problems in the transient situation, and we now discuss some
+possible remedies.
 
 
-\subsubsection{Removing the pathology}
+\subsubsection{Modifying the treatment of shortwave in the KPP non-local flux}
 
-There are two ways to ameliorate the pathology
-(\ref{eq:shortwave-pathology-A}). First, we can allow the KPP scheme
-to redistribute {\it only} that shortwave radiation local to the depth
-of the non-local term, in which case the heat equation
+We consider two options to ameliorate the situation
+(\ref{eq:shortwave-pathology-A}). First, we allow the KPP scheme to
+redistribute {\it only} that shortwave radiation local to the depth of
+the non-local term, in which case the heat equation
 (\ref{eq:surface-temperature-equation-shortwave-argument-B}) takes the
 form
 \begin{equation}
@@ -2954,31 +2980,28 @@ form
     - Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z) \, \left( 1 +  C_{s} \, \sigma \, (1-\sigma)^{2} \right). 
 \label{eq:surface-temperature-equation-shortwave-argument-C} 
 \end{equation}
-Pathological heating now occurs only for those cases where 
+Excessive heating now occurs only for those cases where 
 \begin{equation}
  Q_{\theta}^{\mbox{\tiny pen}}(z=\eta)  <    Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z)  
 \, \left( 1 +  C_{s} \, \sigma \, (1-\sigma)^{2} \right).
 \label{eq:shortwave-pathology-B}
 \end{equation}
 
-The second, and recommended, modification completely removes the
-pathology by removing the shortwave heat flux from the KPP non-local
-redistribution.  In this case, case the heat equation
-(\ref{eq:surface-temperature-equation-shortwave-argument-C}) takes the
-form
+The second modification completely removes the shortwave heat flux
+from the KPP non-local redistribution.  In this case, case the heat
+equation (\ref{eq:surface-temperature-equation-shortwave-argument-C})
+takes the form
 \begin{equation}
  \frac{\partial \, (\rho \, \mathrm{d}z \, \Theta)}{\partial t} 
  =     Q_{\theta}^{\mbox{\tiny non-pen}}(z=\eta) \;     \left( 1 - C_{s} \, \sigma \, (1-\sigma)^{2} \right) 
     +  \left( Q_{\theta}^{\mbox{\tiny pen}}(z=\eta) - Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z) \right). 
 \label{eq:surface-temperature-equation-shortwave-argument-D} 
 \end{equation}
-Notice how the non-local redistribution from KPP only acts on the
+In this way, the non-local redistribution from KPP only acts on the
 non-penetrative surface heat flux, whereas the shortwave flux is
-redistributed only through the penetrative optical scheme.  We
-recommend this second approach for reasons noted above.  Namely,
-redistribution of the surface shortwave flux should occur only via
-optical properties.  KPP should redistribute {\it only} those surface
-fluxes that are non-penetrative.
+redistributed only through the penetrative optical scheme.  This
+approach is counter to the idea that some of the absorbed shortwave
+indeed is carried by the turbulent eddies.
 
 
 \subsection{Bulk Richardson number and the OBL thickness}
@@ -3272,10 +3295,12 @@ approach, and instead prefer the original approach given by equation
 
 The shear, $U_{t}/d$, in the bulk Richardson number
 (\ref{eq:bulk-ri-large-kpp}) acknowledges the potential for unresolved
-shears that can impact on the boundary layer depth.  \cite{LargeKPP}
-present an argument on page 372 that focuses on an unresolved shear
-that reduces to a desired form for the case of pure convection.  The
-general result is for the velocity scale $U_{t}$ given by
+to impact on the boundary layer depth.  The unresolved shear acts to
+deepen the boundary layer beyond that which would occur with only the
+resolved shears.  \cite{LargeKPP} present an argument on their page
+372 that focuses on an unresolved shear that reduces to a desired form
+for the case of pure convection.  The general result is for the
+velocity scale $U_{t}$ given by
 \begin{subequations}
 \begin{align}
  U_{t}^{2}(d) &= 
@@ -3466,8 +3491,6 @@ buoyancy into the interior, further deepening the boundary layer as
 the simulation proceeds.
 
 
-
-
 \subsubsection{Restrictions on $h$ under stable buoyancy forcing}
 
 \cite{LargeKPP} suggest on page 372 that for stable buoyancy forcing,
@@ -3556,73 +3579,43 @@ recommendation on a useful approach.
 \subsection{Surface boundary condition}
 \label{subsection:kpp-surface-boundary-condition}
 
-The parameterized non-local turbulent flux satisfies a no-flux
-boundary condition at the ocean surface, so that
+The KPP parameterization as per \cite{LargeKPP} prescribe a vanishing
+non-local flux at the ocean surface, so that
 \begin{equation}
   \overline{w \, \lambda}^{\mbox{\tiny non-local}} = 0 \qquad \mbox{at $z=\eta$}.
 \label{eq:non-local-surface-bc}
 \end{equation}
-This boundary condition is satisfied by ensuring that the
-non-dimensional vertical shape function $G_{\lambda}(\sigma)$ vanishes
-at $\sigma = 0$, which means that
+Although standard in the KPP implementation for CVMix, we reconsider
+this boundary condition in Section \ref{section:kernals-of-behaviour}
+in order to remove a pathology.  For now, we note that this boundary
+condition is satisfied by ensuring that the non-dimensional vertical
+shape function $G_{\lambda}(\sigma)$ vanishes at $\sigma = 0$.  Since
+the same shape function is used for the parameterized non-local flux
+as for the diffusivity, we have
 \begin{equation}
    K_{\lambda}  = 0   \qquad \mbox{at $z=\eta$}.
 \end{equation}
-We also set the local closure portion of the flux to zero at the
+We thus also set the local closure portion of the flux to zero at the
 surface
 \begin{equation}
 \overline{w \, \lambda}^{\mbox{\tiny local}} = -K_{\lambda} \left( \frac{\partial \Lambda}{\partial z} \right) = 
  0  \qquad \mbox{at $z=\eta$},
 \label{eq:no-flux-local}
 \end{equation}
-which again follows since $K_{\lambda} = 0$ at $z=\eta$.  However, to
-incorporate the non-advective surface boundary fluxes (e.g.,
-shortwave, longwave, latent, and sensible heat fluxes), we we follow
-the usual convention these fluxes enter through the vertical diffusion
-equation surface flux boundary condition, so that in effect we have
+
+To incorporate the non-advective surface boundary fluxes (e.g.,
+shortwave, longwave, latent, and sensible heat fluxes), we follow the
+usual convention in which these fluxes enter as a boundary condition
+on the vertical diffusion equation.  In effect we have
 \begin{equation}
 \overline{w \, \lambda}^{0}  = Q^{\lambda}  \qquad \mbox{at $z=\eta$}. 
 \label{eq:surface-boundary-flux}
-\end{equation}
+\end{equation} 
+This boundary condition will be revisited in Section
+\ref{section:kernals-of-behaviour}.
 
 
-\subsection{Convergence into a surface grid cell}
-\label{subsection:kpp-surface-cell-tendency}
-
-At the surface boundary, the parameterized local and non-local flux
-components vanish.  However, these flux components are generally quite
-large at the bottom interface of the $k=1$ cell.  Hence, there is a
-sizable convergence of the parameterized fluxes into the $k=1$ cell.
-We can furthermore account for the predominance of a tendency for the
-parameterized local fluxes to cool the $k=1$ cell, whereas the
-parameterized non-local fluxes generally warm this cell.
-
-In a region stably stratified in temperature, we have temperature
-increasing upwards in the column, $\partial \Theta / \partial z >
-0$. Assuming such stratification for the upper ocean, the downgradient
-diffusive flux
-\begin{equation}
-\overline{w \, \theta}^{\mbox{\tiny local}} = -K_{\theta} \left( \frac{\partial \Theta}{\partial z} \right) < 0,
-\end{equation}
-is then negative at the lower face of the $k=1$ cell.  With the
-no-flux boundary condition (\ref{eq:no-flux-local}) at the ocean
-surface, the parameterized local diffusive flux will thus cool the top
-model grid cell. For $k > 1$ interior cells, the diffusive flux either
-cools or warms, depending on curvature in the temperature field.
-
-The non-local transport is non-zero only for cases of negative
-buoyancy forcing.  Assuming such forcing occurs due to a cooling
-surface heat flux, we already showed in Section
-\ref{subsection:kpp-surface-boundary-condition} that $\gamma_{\theta}
-> 0$ for cooling (equation (\ref{eq:surface-cooling-gamma-theta})).
-With the no-flux surface boundary condition
-(\ref{eq:non-local-surface-bc}), we thus have a positive convergence
-of heat into the $k=1$ cell due to the parameterized non-local flux.
-Hence, the parameterized non-local fluxes tend to heat the $k=1$ cells
-whereas the parameterized downgradient diffusive fluxes tend to cool
-this cell.
-
-\subsection{Summary of the recommended KPP implementation for CVMix}
+\subsection{Summary of the standard CVMix implementation of KPP}
 \label{subsection:recommended-choices}
 
 We summarize here the recommendations for those wishing to implement
@@ -3648,8 +3641,13 @@ allows one to systematically transition to the simpler approach.
 \label{eq:kpp-diffusivity}
 \end{equation}
 where $\sigma = d/h$ is the non-dimensional boundary layer depth with
-$d$ the depth and $h$ the boundary layer thickness.  
-
+$d$ the depth, and $h$ the boundary layer thickness. We also use the
+shape function
+\begin{equation}
+  G(\sigma)_{\mbox{\tiny universal}} = \sigma \, \ (1-\sigma)^{2}
+\end{equation}
+for both the local and non-local flux, and for all tracers and
+momentum.
 
 \item The vertical velocity scale, $w_{\lambda}(\sigma)$, is the same
   for each scalar tracer field, and distinct for the momentum only for
@@ -3695,6 +3693,550 @@ similarity function for scalars, as well as other non-dimensional
 coefficients (see equation (\ref{eq:cs-and-cstar-defined}).
 
 \end{itemize}
+
+
+\section{Further considerations for the KPP non-local term}
+\label{section:kernals-of-behaviour}
+
+During the testing of KPP in CVMix, we encountered some cases where
+unphysical behaviour resulted.  Some of these cases were summarized
+earlier, such as when motivating use of the universal shape function
+$G(\sigma)$ in Section \ref{subsection:kpp-shape-function}.  We raise
+further issues in this section, with particular focus on problems with
+the KPP non-local flux parameterization along with potential remedies.
+
+
+\subsection{KPP in the top grid cell}
+\label{subsection:kpp-surface-cell-tendency}
+
+We start our discussion by considering what happens in the $k=1$
+surface model grid cell from the combined effects of surface boundary
+fluxes, KPP local downgradient diffusion, and KPP non-local
+redistribution of surface boundary fluxes.  We do not identify a
+problem here.  Instead, our purpose is to introduce the general
+behaviour that will be further explored later in this section. 
+\begin{itemize}
+
+\item {\sc convergence into top cell}: At the surface boundary,
+  $z=\eta$, the parameterized local and non-local flux components
+  vanish (Section \ref{subsection:kpp-surface-boundary-condition}).
+  However, these flux components are nonzero at the bottom interface
+  of the $k=1$ cell, with larger fluxes for thicker top grid cells.
+  Hence, there is a convergence of the KPP parameterized fluxes into
+  the $k=1$ cell.
+
+\item {\sc local downgradient diffusion}: In a region stably
+  stratified in temperature ($\partial \Theta / \partial z > 0$), the
+  downgradient diffusive flux
+\begin{equation}
+\overline{w \, \theta}^{\mbox{\tiny local}} = -K_{\theta} \left( \frac{\partial \Theta}{\partial z} \right) < 0,
+\end{equation}
+is negative at the lower face of the $k=1$ cell.  With the no-flux
+boundary condition (\ref{eq:no-flux-local}) at the ocean surface, the
+parameterized local diffusive flux will cool the top model grid
+cell. For $k > 1$ interior cells, the diffusive flux either cools or
+warms, depending on curvature in the temperature field.
+
+\item {\sc non-local redistibution of surface boundary flux}: The KPP
+  parameterized non-local tracer flux is non-zero only for cases of
+  negative buoyancy forcing.  Assuming such forcing occurs with a
+  negative (cooling) surface heat flux, we already showed in Section
+  \ref{subsection:kpp-surface-boundary-condition} that
+  $\gamma_{\theta} > 0$ for cooling (equation
+  (\ref{eq:surface-cooling-gamma-theta})).  With the no-flux surface
+  boundary condition (\ref{eq:non-local-surface-bc}), we thus have a
+  positive convergence of heat into the $k=1$ cell due to the KPP
+  parameterized non-local flux.  Hence, the KPP non-local fluxes heat
+  the $k=1$ cells whereas the parameterized downgradient diffusive
+  fluxes cool this cell.
+
+\end{itemize}
+
+\subsection{Tracer evolution with the KPP parameterization}
+
+We next consider effects from KPP throughout the boundary layer.  For
+this purpose, return to the vertical transport equation
+(\ref{eq:mean-field-equation-kpp}) and focus on the KPP parameterized
+vertical processes as per the recommendations in Section
+\ref{subsection:recommended-choices}.  In the presence of negative
+buoyancy forcing we include the non-local KPP redistribution function,
+so that evolution of an arbitrary scalar tracer (ignoring horizontal
+processes) is determined by
+\begin{subequations}
+\begin{align}
+ \frac{\partial S}{\partial t} &= 
+ -\left( \frac{\partial \, (\overline{w \, s}) }{\partial z} \right) + Q^{s} \, \delta(z-\eta)
+ \\
+ &= 
+ -\left( \frac{\partial \, (\overline{w \, s}^{\mbox{\tiny local}}) }{\partial z} \right)
+ -\left( \frac{\partial \, (\overline{w \, s}^{\mbox{\tiny non-local}}) }{\partial z} \right)
+ + Q^{s} \, \delta(z-\eta),
+\\
+ &= 
+   \frac{\partial}{\partial z} \left( K \, \frac{\partial S}{\partial z} \right)
+ +C_{s} \, Q^{s} \, \frac{\partial}{\partial z} [\sigma \, (1-\sigma)^{2}]
+ + Q^{s} \, \delta(z-\eta)
+\\
+ &= 
+ \underbrace{
+ \frac{\partial}{\partial z} \left( K \, \frac{\partial S}{\partial z} \right)
+  }_{\mbox{\tiny local downgradient diffusion}}
+ - \; \; \; \underbrace{
+  \left( \frac{C_{s} \, Q^{s}}{h} \right)  \, (1 - 3 \, \sigma) \, (1-\sigma)
+  }_{\mbox{\tiny non-local redistribution of surface flux}} 
+ \; \; \; + \underbrace{ Q^{s} \, \delta(z-\eta)}_{\mbox{\tiny surface boundary forcing}}
+\label{eq:mean-field-equation-kpp-kernels}
+\end{align}
+\end{subequations}
+where $Q^{s}$ is the surface tracer flux ($Q^{s} > 0$ means
+tracer enters the ocean),
+\begin{equation}
+ K = h \, w \,  \sigma \, (1-\sigma)^{2}  \ge 0 
+\end{equation}
+is the KPP diffusivity, and we used $\sigma = (-z+\eta)/h$ so that  
+\begin{equation}
+ \frac{\partial \sigma}{\partial z} = -1/h.
+\end{equation}
+The surface boundary flux is multiplied by a Dirac delta function
+(dimensions of inverse length), where
+\begin{equation}
+  \int\limits_{z=-h}^{z=\eta} \delta(z-\eta) \, \mathrm{d}z = 1,
+\end{equation}
+so that the flux appears as a surface boundary condition when
+integrating the tracer budget over the surface grid cell.
+
+To help interpret the result
+(\ref{eq:mean-field-equation-kpp-kernels}), we plot the KPP structure
+function $G = \sigma \, (1-\sigma)^{2}$ as well as its derivative
+$G'(\sigma) = (1-3\, \sigma)(1-\sigma)$ in Figure
+\ref{fig:KPP-shape-function}, from which we deduce the following
+behaviours.
+\begin{itemize}
+
+\item {\sc downgradient diffusion}: The local downgradient diffusive
+  portion of the KPP parameterization always acts to smooth the
+  profile of a tracer, given that the diffusivity is non-negative.
+  The vertical diffusivity is zero at the ocean surface, $\sigma=0$,
+  and vanishes again at the boundary layer base, $\sigma=1$.  It is
+  modulated by the non-dimensional shape function $G(\sigma) = \sigma
+  \, (1-\sigma)^{2}$, which has a maximum at $\sigma=1/3$ (Figure
+  \ref{fig:KPP-shape-function}).  In the presence of a surface
+  boundary flux, vertical diffusion transports the surface flux into
+  the ocean interior on a time scale set by the vertical diffusivity
+  $K$ and curvature in the tracer field.
+
+\item {\sc non-local redistribution}: The non-local portion of the KPP
+  parameterization redistributes the surface flux throughout the
+  boundary layer.  Its vertical structure is provided exclusively by
+  the non-dimensional shape function $G(\sigma)$.  There is no
+  time scale for impacts from the non-local redistribution to affect a
+  point within the boundary layer. Instead, the impacts are
+  instantaneous.  In the upper portion of the boundary layer, where
+  $\sigma < 1/3$, the tracer tendency has a contribution that is
+  opposite in sign to the surface boundary flux.  It is furthermore in
+  this shallow region where the non-local parameterization has its
+  largest contribution at a single grid point (Figure
+  \ref{fig:KPP-shape-function}).  In constrast, for deeper reaches
+  of the boundary layer with $\sigma > 1/3$, the tracer tendency has a
+  contribution that has the same sign as the surface flux.
+
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
+\begin{center}
+\includegraphics[angle=0,width=7cm]{./figs/KPP_Gfunction.pdf}
+\includegraphics[angle=0,width=7cm]{./figs/KPP_Gprime.pdf}
+\caption[KPP shape function]{\sf KPP shape function $G = \sigma \,
+  (1-\sigma)^{2}$ multiplied by the constant $C_{s} = 6.33$ (equation
+  (\ref{eq:Cs-value})) as well as its derivative $C_{s} \; G'(\sigma)
+  = C_{s} \, (1-3\, \sigma)(1-\sigma)$. In the upper portion of the
+  boundary layer where $\sigma < 1/3$, the derivative is positive, in
+  which case the non-local contribution to KPP adds a tendency to
+  tracers with a sign opposite to that of the surface boundary flux
+  (see equation (\ref{eq:mean-field-equation-kpp-kernels})).  In the
+  regions where $1/3 < \sigma < 1$, the KPP non-local tendency has the
+  same sign as the surface boundary flux.  The largest magnitude of
+  $G'(\sigma)$ is at $\sigma=0$, so that the largest impact at a
+  single depth from the non-local flux convergence is in the upper
+  portion of the boundary layer.  The area encompassed by $G'(\sigma)$
+  in the shallow region $\sigma < 1/3$ is the same as that in the
+  deeper region $1 < \sigma < 1/3$.}
+\label{fig:KPP-shape-function}
+\end{center}
+\rule{\textwidth}{0.005in}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{A thought experiment with surface cooling}
+
+We introduce a thought experiment to illustrate the potential for
+unphysical behaviour from the KPP parameterization, in particular from
+the parameterization of non-local transport of surface fluxes into the
+boundary layer.  Consider constant surface cooling from sensible heat
+applied to an ocean that is stratified in salinity but unstratified in
+temperature, and ignore the impacts from penetrative shortwave
+radiation.  There is no baroclinicity and surface forcing introduces
+no resolved vertical shear.  Furthermore, assume zero surface water
+fluxes.  Surface cooling thus imparts a negative buoyancy forcing,
+which means the KPP non-local redistribution function is
+active. Surface winds blow, but they are not fundamental to our
+considerations.
+
+The tracer equation (\ref{eq:mean-field-equation-kpp-kernels}) for
+temperature takes the form
+\begin{equation}
+ \frac{\partial \Theta}{\partial t} = 
+   \frac{\partial}{\partial z} \left( K \, \frac{\partial \Theta}{\partial z} \right)
+ - |Q_{\theta}| \left( \delta(z-\eta) - \frac{C_{s}}{h} \, (1-3 \, \sigma) \, (1-\sigma) \right).
+\end{equation}
+Here are the basics of the temperature evolution.
+\begin{itemize}
+
+\item Boundary layer mixing penetrates to a depth determined initially
+  by the salinity stratification, but over time the developing
+  temperature structure also impacts on the boundary layer depth. 
+
+\item The local portion of KPP diffusively spreads the surface
+  cooling, $Q_{\theta} < 0$, into the ocean boundary layer as the
+  boundary layer deepens.
+
+\item The KPP non-local redistribution warms the shallow regions of
+  the boundary layer where $\sigma < 1/3$.  Consequently, the KPP
+  non-local flux partially counteracts cooling from the downgradient
+  diffusion.  Conversely, in the deeper portion of the boundary layer,
+  where $\sigma > 1/3$, the non-local KPP flux enhances cooling.  For
+  the full boundary layer, the KPP non-local flux acts to restratify.
+  Indeed, in cases where the non-local term dominates over the local
+  diffusion, these stabilizing effects can reduce, rather than
+  increase, the boundary layer depth.  Conversely, for weakly
+  stratified regions below the boundary layer, the introduction of
+  cooling to the deeper boundary layer can destabilize the lower
+  portion of the boundary layer, thus deepening the boundary layer.
+
+\end{itemize}
+
+As noted above, the KPP non-local term acts to increase the
+temperature in the shallow portion of the boundary layer where $0 <
+\sigma < 1/3$ (Figure \ref{fig:KPP-shape-function}).  We further
+explore this process by considering the boundary layer at an early
+time in the simulation prior to local effects from downgradient
+diffusion having reached the depth considered, so that $\partial
+\Theta / \partial z = 0$.  Even though diffusion has yet to reach this
+depth, the instantaneous effects from convergence of the KPP non-local
+flux acts to warm depths with $\sigma < 1/3$.  We thus have ocean
+warming in the presence of surface cooling.  As the simulation
+evolves, vertical diffusion spreads effects from surface cooling
+deeper into the boundary layer, and this cooling can overcome the
+warming effects from the non-local flux.  We thus tend to see the
+warming from the KPP non-local flux early during a transient response
+to surface cooling.
+
+This thought experiment has been realized in various idealized
+configurations of the KPP scheme using the CVMix code. We illustrate a
+particular case in Figure \ref{fig:KPP_temperature_test}, with the
+figure caption providing experimental details.  As seen in this
+figure, the warming manifests more prominently upon refining the
+vertical grid spacing.  Doing so provides more grid points within the
+upper portion of the boundary layer, where the vertical diffusion
+effects are dominated by the non-local term.  With a coarse enough
+vertical grid, evidence of spurious warming disappears.
+
+In addition to noting problems with warming depths in the presence of
+surface cooling, it is trivial to illustrate problems in the case of
+an initially uniform passive tracer with a nonzero surface flux that
+adds tracer to the ocean.  A negative passive tracer concentration
+arises during the early portion of the simulation, again due to the
+convergence of the KPP non-local flux in the region $\sigma < 1/3$.
+
+In realistic configurations, time evolution of scalar fields may be
+dominated by effects such as advection and lateral mixing in a way
+that hides unphysical behaviour from the non-local KPP
+parameterization.  Furthermore, the unphysical effects identified here
+occur in transient situations. Studies such as \cite{LargeKPP} focused
+instead on the steady state.  Our results motivate investigating
+alternatives to the shape function used for the parameterized
+non-local flux, particularly in order to properly represent the
+transient behaviour.
+
+
+%%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
+\begin{center}
+\includegraphics[angle=0,width=10cm]{./figs/KPP_temperature_test.pdf}
+\caption[KPP temperature test]{\sf Temperature profiles after six time
+  steps (each of one hour) for three different model grids from an
+  idealized one-dimensional simulation.  Each grid has 75 levels down
+  to 6000~m (upper 4000~m shown here), with the upper ocean spacing
+  noted in the figure. The simulation is forced with
+  $-100~\mbox{W}~\mbox{m}^{-2}$ sensible heat flux, and no penetrative
+  radiation.  The temperature profile is initially uniform at
+  $15^{\circ}C$, whereas the salinity profile is stable with the
+  surface value of $35$ and bottom value of $35.01$.  The equation of
+  state is linear, with $\rho = \rho_{o} \, (1 - \alpha \, \Theta +
+  \beta \, S)$, where $\alpha = 2.55 \, \times \,
+  10^{-4}\mbox{}^{\circ}C^{-1}$, and $\beta = 7.4 \, \times \,
+  10^{-4}\mbox{ppt}^{-1}$.  Winds are applied with a stress of
+  $0.1~\mbox{N}~\mbox{m}^{-2}$.  The domain is periodic and there are
+  no horizontal gradients, so that no resolved shear contributes to
+  the bulk Richardson number calculation.  Regions with temperatures
+  larger than the initial uniform $15^{\circ}C$ are unphysical, since
+  they appear even though the surface is being cooled.  Spurious
+  warming is more prominent in the fine resolution simulation (2~m),
+  whereas the coarse spaced grid (10~m) shows no sign of spurious
+  warming due to the relatively larger contribution from vertical
+  diffusion.}
+\label{fig:KPP_temperature_test}
+\end{center}
+\rule{\textwidth}{0.005in}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Modified shape function for the KPP non-local flux}
+\label{subsection:modified-kpp-structure}
+
+In so far as properly representing the transient behaviour to a
+negative surface buoyancy flux, we identify the following two problems
+with the KPP non-local redistribution as parameterized by the
+shape function $G(\sigma) = \sigma \, (1-\sigma)^{2}$.
+
+\begin{itemize}
+
+\item It redistributes a surface flux into the shallow boundary layer
+  region ($\sigma < 1/3$) with an opposite sign to the surface flux
+  itself.
+
+\item It affects the boundary layer instantaneously. 
+
+\end{itemize}
+Unsatisfying elements from the instantaneous impacts become
+increasingly apparent when considering refined resolution models.
+Model time steps of a few minutes mean that the full extent of a
+boundary layer is impacted within minutes by changes in surface
+fluxes.  This very short response time is reminiscient of the full
+convection parameterizations of the 1990s (e.g.,
+\cite{Rahmstorf1993}), which have largely been displaced by diffusive
+adjustment schemes that allow for a nonzero time scale (e.g.,
+\cite{KlingerConvection}).  Nonetheless, within the framework of the
+KPP parameterization of non-local fluxes, we see no alternative to the
+instantaneous response.
+
+However, we do see alternatives to the shape function used for the
+parameterized non-local flux.  We denote this new function by
+$\mathcal{G}(\sigma)$ to distinguish it from $G(\sigma)$ used for the
+diffusivity.  We emphasize that our considerations leave untouched the
+shape function for the diffusivity, which still takes the form
+$G(\sigma) = \sigma \, (1-\sigma)^{2}$.  Contrary to the $G(\sigma)$
+shapee function, we insist that $\mathcal{G}(\sigma)$ be monotonic,
+thus eliminating the sign change that causes problems with use of
+$G(\sigma)$ for the parameterized non-local flux.  We also wish to
+maintain a shape function that vanishes at the bottom of the boundary
+layer, so that
+\begin{equation}
+  \mathcal{G}(\sigma = 1)   = 0.
+\end{equation}
+
+Given this lower boundary condition, a nontrivial shape function must
+have a nonzero surface value.  Having $\mathcal{G}(0) \ne 0$ is
+fundamentally distinct from the constraint $G(0) = 0$ imposed by
+\cite{LargeKPP}.  However, having a non-zero non-local flux at the
+ocean surface may in fact be physically appropriate.  Namely, we
+consider the non-local flux to be a redistribution of the surface flux
+into the boundary layer.  Consequently, we may choose to let the
+parameterized non-local flux equal to the surface boundary flux when
+approaching the ocean surface, $\sigma \rightarrow 0$.  That is,
+\begin{subequations}
+\begin{align}
+  \overline{w \, s}^{\mbox{\tiny non-local}} (\sigma=0) &= -Q^{s}   
+ \\
+  &= -C_{s} \, \mathcal{G}(0)\, Q^{s} 
+ \\
+ & \Rightarrow  \mathcal{G}(0) = C_{s}^{-1},
+\end{align}
+\end{subequations}
+where the minus sign in the first equation arose from the sign
+convention whereby $\overline{w \, s}^{\mbox{\tiny non-local}} > 0$
+implies tracer leaving the ocean, whereas $Q^{s} > 0$ signals tracer
+entering the ocean (see Section \ref{subsection:conventions}).  
+
+Given the above considerations, we have investigated the following
+three shape functions
+\begin{subequations}
+\begin{align}
+ C_{s} \,  \mathcal{G}(\sigma) &= 1 - \sigma 
+\label{eq:non-local-shape-function-linear}
+ \\
+ C_{s} \,  \mathcal{G}(\sigma) &= (1 - \sigma)^{2}
+\label{eq:non-local-shape-function-parabolic}
+ \\
+ C_{s} \,  \mathcal{G}(\sigma) &= 1 + (2 \, \sigma  - 3) \, \sigma^{2}.
+\label{eq:non-local-shape-function-cubic}
+\end{align}
+\end{subequations}
+The linear function has a constant nonzero slope, whereas the
+parabolic and cubic functions satisfy $\mathcal{G}'(\sigma = 1) = 0$.
+In Figure \ref{fig:KPPmod-shape-function} we plot the three
+modified shape functions and their derivatives.  The non-local flux is
+parameterized by (compare to equation
+(\ref{eq:non-local-flux-kpp-param-scalar-summary}))
+\begin{equation}
+ \overline{w \, s}^{\mbox{\tiny non-local}} = - C_{s} \, \mathcal{G} \, Q^{s} 
+\label{eq:non-local-flux-kpp-param-scalar-new-form}
+\end{equation}
+and its vertical convergence, which determines the tracer tendency,
+takes the form
+\begin{subequations}
+\begin{align}
+ -\frac{\partial}{\partial z} \left( \overline{w \, s}^{\mbox{\tiny non-local}} \right)_{\mbox{\tiny linear}} 
+ &= \left( \frac{Q^{s}}{h} \right)
+ \\
+-\frac{\partial}{\partial z} \left( \overline{w \, s}^{\mbox{\tiny non-local}} \right)_{\mbox{\tiny parabolic}} 
+ &= \left( \frac{2 \, Q^{s}}{h} \right) (1-\sigma)
+ \\
+-\frac{\partial}{\partial z} \left( \overline{w \, s}^{\mbox{\tiny non-local}} \right)_{\mbox{\tiny cubic}} 
+ &= \left( \frac{6 \, Q^{s}}{h} \right) \sigma \, (1-\sigma).
+\end{align}
+\end{subequations}
+The resulting tracer tendency
+(\ref{eq:mean-field-equation-kpp-kernels}) is given by 
+\begin{subequations}
+\begin{align}
+ \left( \frac{\partial S}{\partial t} \right)_{\mbox{\tiny linear}} &= 
+ \underbrace{
+ \frac{\partial}{\partial z} \left( K \, \frac{\partial S}{\partial z} \right)
+  }_{\mbox{\tiny local downgradient diffusion}}
+ + \; \; \underbrace{
+  \left( \frac{Q^{s}}{h} \right)
+  }_{\mbox{\tiny non-local redistribution}} 
+\label{eq:mean-field-equation-kpp-kernels-modified-linear}
+\\
+ \left( \frac{\partial S}{\partial t} \right)_{\mbox{\tiny parabolic}} &= 
+ \underbrace{
+ \frac{\partial}{\partial z} \left( K \, \frac{\partial S}{\partial z} \right)
+  }_{\mbox{\tiny local downgradient diffusion}}
+ + \; \; \underbrace{
+  \left( \frac{2 \, Q^{s}}{h} \right)  \, (1-\sigma)
+  }_{\mbox{\tiny non-local redistribution}} 
+\label{eq:mean-field-equation-kpp-kernels-modified-parabolic}
+\\
+ \left( \frac{\partial S}{\partial t} \right)_{\mbox{\tiny cubic}} &= 
+ \underbrace{
+ \frac{\partial}{\partial z} \left( K \, \frac{\partial S}{\partial z} \right)
+  }_{\mbox{\tiny local downgradient diffusion}}
+ + \; \; \underbrace{
+  \left( \frac{6 \, Q^{s}}{h} \right)  \, \sigma \, (1-\sigma),
+  }_{\mbox{\tiny non-local redistribution}} 
+\label{eq:mean-field-equation-kpp-kernels-modified-cubic}
+\end{align}
+\end{subequations}
+in which we see that the non-local redistribution retains the sign of
+the surface flux throughout the boundary layer where $0 \le \sigma \le
+1$.  Note that the delta-function distributed surface flux, present in
+the formulation (\ref{eq:mean-field-equation-kpp-kernels}), has been
+dropped from equations
+(\ref{eq:mean-field-equation-kpp-kernels-modified-linear})--(\ref{eq:mean-field-equation-kpp-kernels-modified-cubic}).
+The reason is that the surface boundary condition has been absorbed by
+the parameterized non-local flux.  That is, the boundary condition
+(\ref{eq:surface-boundary-flux}) is now directly part of the
+parameterized flux.  Nonetheless, the reformulation of the boundary
+condition for the parameterized non-local flux leads to no code
+changes, since the boundary flux is introduced to the ocean in the
+same manner regardless the shape function.
+
+
+%%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
+\begin{center}
+\includegraphics[angle=0,width=5cm]{./figs/KPPmod_linear_Gfunction.pdf}
+\includegraphics[angle=0,width=5cm]{./figs/KPPmod_parabolic_Gfunction.pdf}
+\includegraphics[angle=0,width=5cm]{./figs/KPPmod_cubic_Gfunction.pdf}
+\includegraphics[angle=0,width=5cm]{./figs/KPPmod_linear_Gprime.pdf}
+\includegraphics[angle=0,width=5cm]{./figs/KPPmod_parabolic_Gprime.pdf}
+\includegraphics[angle=0,width=5cm]{./figs/KPPmod_cubic_Gprime.pdf}
+\caption[Modified KPP shape function]{\sf Modified KPP shape functions
+  according to equations
+  (\ref{eq:non-local-shape-function-linear})--(\ref{eq:non-local-shape-function-cubic}):
+  linear function $C_{s} \, \mathcal{G}(\sigma) = 1 - \sigma$;
+  parabolic function $C_{s} \, \mathcal{G}(\sigma) = (1 -
+  \sigma)^{2}$; and cubic function $C_{s} \, \mathcal{G}(\sigma) = 1 +
+  (2 \, \sigma - 3) \, \sigma^{2}$.  Also shown are their derivatives:
+  linear function $C_{s} \, \mathcal{G}'(\sigma) = -1$; parabolic
+  function $C_{s} \, \mathcal{G}'(\sigma) = -2 \, (1 - \sigma)$; and
+  cubic function $C_{s} \, \mathcal{G}'(\sigma) = -6 \, \sigma \, (1-
+  \sigma)$.  Note the monotonic nature of the function, which has a
+  linear derivative of one sign throughout the boundary layer where $0
+  \le< \sigma \le 1$.}
+\label{fig:KPPmod-shape-function}
+\end{center}
+\rule{\textwidth}{0.005in}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Tests with the modified KPP non-local shape function}
+\label{subsection:tests-of-kpp-modified-non-local}
+
+Figure \ref{fig:non-local-shape-compare} shows results from the
+modified shape functions
+(\ref{eq:non-local-shape-function-linear})--(\ref{eq:non-local-shape-function-cubic})
+in the idealized test described in Figure
+\ref{fig:KPP_temperature_test}.  The first panel shows the very small
+sensivity to vertical grid spacing when using the parabolic function
+(equation (\ref (\ref{eq:non-local-shape-function-parabolic})).
+This small sensitivity contrasts to the results from the original
+shape function as shown in Figure \ref{fig:KPP_temperature_test}.
+All three of the new shape functions show similar small
+sensitivity to the vertical grid.  Furthermore, there is no sign of
+spurious warming with the new functions.  
+
+The second panel in Figure \ref{fig:non-local-shape-compare} exhibits
+sensitivity to the use of the linear, parabolic, or cubic shape
+functions
+(\ref{eq:non-local-shape-function-linear})--(\ref{eq:non-local-shape-function-cubic}).
+The parabolic shape function generally renders a deeper boundary
+layer.  We can understand that effect by noting that the parabolic
+shape function places the largest amount of cooling into the upper
+ocean, as revealed by the derivative shown in Figure
+\ref{fig:KPPmod-shape-function}.  It is unclear how general this
+result is, though note that preliminary results from a more realistic
+seasonally forced test case that also show deeper boundary layers with
+the parobolic shape function.
+
+%%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[h!t]
+\rule{\textwidth}{0.005in}
+\begin{center}
+\includegraphics[angle=0,width=8cm]{./figs/KPP_temperature_parabolic_nonlocal.pdf}
+\includegraphics[angle=0,width=8cm]{./figs/KPP_temperature_linear_para_cubic_nonlocal.pdf}
+\caption[KPP temperature test with modified non-local]{\sf Temperature
+  profiles after six time steps (each of one hour).  The first panel
+  shows sensitivity to three different model grids from an idealized
+  one-dimensional simulation using the parabolic shape function
+  $\mathcal{G} = (1-\sigma)^{2}$ (equation
+  (\ref{eq:non-local-shape-function-parabolic})) for the parameterized
+  non-local flux.  Details of the grid and experimental design are
+  given in the caption to Figure \ref{fig:KPP_temperature_test}.  Note
+  the absence of any water warmer than $15^{\circ}C$, and the close
+  agreement for the three simulations with different vertical grid
+  spacings.  These results contrast with those shown in Figure
+  \ref{fig:KPP_temperature_test} realized with the shape function $G =
+  \sigma \, (1-\sigma)^{2}.$ The second panel here shows sensitivity
+  to the modified non-local structure functions. The parabolic
+  function exhibits the deeper boundary layer relative to the linear
+  and cubic functions.  Note the different horizontal and vertical
+  scales for the two panels.}
+\label{fig:non-local-shape-compare}
+\end{center}
+\rule{\textwidth}{0.005in}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -4032,19 +4574,26 @@ pages, equations, or sections where they are described.
    $\mbox{m}~\mbox{s}^{-2}$) (equation (\ref{eq:buoyancy-kpp})).
 
  \item[$\bullet$] $G _{\lambda} (\sigma)$ = non-dimensional vertical
-   shape function used to smoothly transition from the ocean surface
-   to the bottom of the boundary layer (equation
+   shape or structure function used to smoothly transition from the
+   ocean surface to the bottom of the boundary layer (equation
    \ref{eq:shape-function-gsigma} and Section
    \ref{subsection:kpp-shape-function}).
 
  \item[$\bullet$] $G _{\mbox{\tiny universal}}(\sigma) = \sigma \,
-   (1-\sigma)^{2}$ = non-dimensional vertical shape function used to
-   smoothly transition from the ocean surface to the bottom of the
-   boundary layer (equation (\ref{eq:universal-non-local-structure})).
-   This form deviates from the approach taken in \cite{LargeKPP}, but
-   it is recommended for use with all tracers using CVMix
-   implementation of KPP. See Section
+   (1-\sigma)^{2}$ = non-dimensional vertical shape or structure
+   function used to smoothly transition from the ocean surface to the
+   bottom of the boundary layer (equation
+   (\ref{eq:universal-non-local-structure})).  This form deviates from
+   the approach taken in \cite{LargeKPP}, but it is recommended for
+   use with all tracers using CVMix implementation of KPP. See Section
    \ref{subsection:kpp-shape-function}).
+
+ \item[$\bullet$] $\mathcal{G}(\sigma)$ = non-dimensional vertical
+   shape or structure function for the parameterized non-local flux,
+   used to smoothly transition from the ocean surface to the bottom of
+   the boundary layer (equation
+   \ref{eq:non-local-shape-function})).  This structure function
+   is distinct from that used for the diffusivity.
 
 \item[$\bullet$] $H$ = depth (metre) at the ocean bottom relative to a
   resting ocean surface at $z=0$ (page
