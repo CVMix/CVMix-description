@@ -3638,7 +3638,7 @@ allows one to systematically transition to the simpler approach.
  The diffusivity is written in the form 
 \begin{equation}
   K_{\lambda}(\sigma) = h \, w_{\lambda}(\sigma) \, \sigma \, (1-\sigma)^{2},
-\label{eq:kpp-diffusivity}
+\label{eq:kpp-diffusivity-and-yet-again}
 \end{equation}
 where $\sigma = d/h$ is the non-dimensional boundary layer depth with
 $d$ the depth, and $h$ the boundary layer thickness. We also use the
@@ -4189,12 +4189,12 @@ modified shape functions
 in the idealized test described in Figure
 \ref{fig:KPP_temperature_test}.  The first panel shows the very small
 sensivity to vertical grid spacing when using the parabolic function
-(equation (\ref (\ref{eq:non-local-shape-function-parabolic})).
-This small sensitivity contrasts to the results from the original
-shape function as shown in Figure \ref{fig:KPP_temperature_test}.
-All three of the new shape functions show similar small
-sensitivity to the vertical grid.  Furthermore, there is no sign of
-spurious warming with the new functions.  
+(equation (\ref{eq:non-local-shape-function-parabolic})).  This small
+sensitivity contrasts to the results from the original shape function
+as shown in Figure \ref{fig:KPP_temperature_test}.  All three of the
+new shape functions show similar small sensitivity to the vertical
+grid.  Furthermore, there is no sign of spurious warming with the new
+functions.
 
 The second panel in Figure \ref{fig:non-local-shape-compare} exhibits
 sensitivity to the use of the linear, parabolic, or cubic shape
@@ -4591,9 +4591,9 @@ pages, equations, or sections where they are described.
  \item[$\bullet$] $\mathcal{G}(\sigma)$ = non-dimensional vertical
    shape or structure function for the parameterized non-local flux,
    used to smoothly transition from the ocean surface to the bottom of
-   the boundary layer (equation
-   \ref{eq:non-local-shape-function})).  This structure function
-   is distinct from that used for the diffusivity.
+   the boundary layer (equations
+   \ref{eq:non-local-shape-function-linear})--(\ref{eq:non-local-shape-function-cubic})).
+   This shape function is distinct from that used for the diffusivity.
 
 \item[$\bullet$] $H$ = depth (metre) at the ocean bottom relative to a
   resting ocean surface at $z=0$ (page

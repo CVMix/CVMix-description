@@ -617,179 +617,84 @@ namelists for this scheme.
 \end{itemize}
 
 
-\section{The Melet et al. (2013) scheme}
-\label{section:melet-etal}
+% \section{The Melet et al. (2013) scheme}
+% \label{section:melet-etal}
 
-A limitation of the \cite{Simmonsetal2004} scheme is the arbitrary
-choice of their empirical vertical deposition function
-(\ref{eq:simmons-vertical-function}) and the corresponding exponential
-decay length, $\zeta$.  \cite{Melet_etal_2013} build on ideas proposed
-by \cite{Polzin2004,Polzin2009} to overcome these limitations.  In
-their parameterization, they propose a deposition function
-corresponding to finescale internal wave shear producing an energy
-dissipation given by
-\begin{equation}
- \epsilon_{\mbox{\tiny melet}} = 
- \left( \frac{\epsilon_{o}}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
- \, \left( \frac{N^{2}(z)}{\overline{N^{2}}^{z}} \right) 
- \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right).
-\end{equation}
-The corresponding diffusivity is given by the general form
-(\ref{eq:wave-vert-kappa-general-bottom}), so that 
-\begin{equation}
-\begin{split}
- \kappa_{\mbox{\tiny melet}} &= 
- \frac{\epsilon_{\mbox{\tiny melet}} \, \Gamma}{N^{2}}
-\\
- &= 
- \left( \frac{ {\cal E}_{\mbox{\tiny wave drag}}}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
- \, \left( \frac{\Gamma}{\overline{N^{2}}^{z}} \right) 
- \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right)
-\\
- &=
- \left( \frac{q \, \Gamma \, E_{\mbox{\tiny wave drag}}}{\rho \, \overline{N^{2}}^{z}} \right)
- \left( \frac{1}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
-\, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right),
-\end{split}
-\end{equation}
- where we set 
-\begin{equation}
-{\cal E}_{\mbox{\tiny wave drag}} = \frac{q \,  E_{\mbox{\tiny wave drag}}}{\rho}
-\end{equation}
-according to equation (\ref{eq:wave-dissipation-time-length}).  
-
-The vertical deposition function
-\begin{equation}
- F_{\mbox{\tiny melet}} = \frac{N^{2}}{ \overline{N^{2}}^{z}} 
- \, \left( \frac{1}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
- \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right)
-\end{equation}
-is algebraic, rather than the exponential suggested by
-\cite{Simmonsetal2004} (equation
-(\ref{eq:simmons-vertical-function})).  A fundamental element to the
-deposition function is the scaled vertical distance from the bottom
-\begin{equation}
- z^{*}( h_{\mbox{\tiny bott}}) = 
- \frac{1}{\overline{N^{2}}^{z}}
- \int\limits_{0}^{ h_{\mbox{\tiny bott}}} N^{2}(z')  \, \mathrm{d}z',
-\end{equation}
-where the vertical integral extends from the bottom at $h_{\mbox{\tiny
-    bott}} = 0$ to an arbitrary distance above the bottom.  The depth
-averaged squared buoyancy frequency is given by
-\begin{equation}
- \overline{N^{2}}^{z} = \frac{1}{H + \eta} \, \int\limits_{-H}^{\eta} N^{2}(z) \, \mathrm{d}z. 
-\end{equation}
-Note that by definition, the rescaled vertical height from the bottom
-satisfies
-\begin{equation}
-  0 \le z^{*} \le H.
-\end{equation}
-We also introduced the rescaled length scale according to 
-\begin{equation}
- z_{p}^{*}  = z_{p} \, \left( \frac{N^{2}_{\mbox{\tiny bott}}}{ \overline{N^{2}}^{z}} \right),
-\end{equation}
-The bottom buoyancy frequency, $N^{2}_{\mbox{\tiny bott}}$, is
-computed according to the discussion in Section
-\ref{subsection:wave-drag-details-simmons}.
-
-The length scale $z_{p}$ is computed according to
-\cite{Polzin2004,Polzin2009}, and needs to be written here...
-
-
-
-% \section{The Legg, Hallberg, and Girton (2006) scheme}
-% \label{section:legg-hallberg-girton}
-
-% \cite{Legg_eta2006} present a method to introduce mixing associated
-% with bottom drag (Section
-% \ref{subsection:bottom-drag-barotropic-tides}).  We formulate their
-% parameterization in the manner considered in Section
-% \ref{section:vert_tidal_formulation}, so that it follows that used by
-% \cite{Simmonsetal2004} and \cite{Melet_etal_2013}. We thus introduce a
-% diffusivity associated just with bottom drag 
+% A limitation of the \cite{Simmonsetal2004} scheme is the arbitrary
+% choice of their empirical vertical deposition function
+% (\ref{eq:simmons-vertical-function}) and the corresponding exponential
+% decay length, $\zeta$.  \cite{Melet_etal_2013} build on ideas proposed
+% by \cite{Polzin2004,Polzin2009} to overcome these limitations.  In
+% their parameterization, they propose a deposition function
+% corresponding to finescale internal wave shear producing an energy
+% dissipation given by
+% \begin{equation}
+%  \epsilon_{\mbox{\tiny melet}} = 
+%  \left( \frac{\epsilon_{o}}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+%  \, \left( \frac{N^{2}(z)}{\overline{N^{2}}^{z}} \right) 
+%  \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right).
+% \end{equation}
+% The corresponding diffusivity is given by the general form
+% (\ref{eq:wave-vert-kappa-general-bottom}), so that 
 % \begin{equation}
 % \begin{split}
-%  \kappa_{\mbox{\tiny bottom drag}} &= 
-%  \frac{\Gamma \, \epsilon_{\mbox{\tiny bottom drag}}}{N^{2}}
+%  \kappa_{\mbox{\tiny melet}} &= 
+%  \frac{\epsilon_{\mbox{\tiny melet}} \, \Gamma}{N^{2}}
+% \\
+%  &= 
+%  \left( \frac{ {\cal E}_{\mbox{\tiny wave drag}}}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+%  \, \left( \frac{\Gamma}{\overline{N^{2}}^{z}} \right) 
+%  \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right)
 % \\
 %  &=
-%  \frac{q \, \Gamma \, E_{\mbox{\tiny bottom drag}}(x,y) \,  F_{\mbox{\tiny lhg}}(z)}  {\rho \, N^2}.
+%  \left( \frac{q \, \Gamma \, E_{\mbox{\tiny wave drag}}}{\rho \, \overline{N^{2}}^{z}} \right)
+%  \left( \frac{1}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+% \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right),
 % \end{split}
-% \label{eq:wave-vert-kappa-legg-bottom}
 % \end{equation}
-% For the bottom drag induced energy dissipation, we take the form
-% (\ref{eq:energy-dissipation-bottom-drag-with-tides}) incorporating an
-% unresolved root-mean-square tide velocity scale, $U_{\mbox{\tiny  tide}}$, so that
+%  where we set 
 % \begin{equation}
-% E_{\mbox{\tiny bottom drag}} =  \rho_{o} \, C_{D} \,  {\bf u}_{b}^{2}
-% \, \left( {\bf u}_{b}^{2} + U_{\mbox{\tiny tide}}^{2} \right)^{1/2}
-% \qquad \mbox{(units of $\mbox{W} \; \mbox{m}^{-2}$).}
-% \label{eq:energy-dissipation-bottom-drag-with-tides-again}
+% {\cal E}_{\mbox{\tiny wave drag}} = \frac{q \,  E_{\mbox{\tiny wave drag}}}{\rho}
 % \end{equation}
-% We now detail each piece of this equation.
-% \begin{itemize}
+% according to equation (\ref{eq:wave-dissipation-time-length}).  
 
-% \item We choose to use a horizontal velocity averaged over the
-%   thickness of a bottom roughness layer as determined by the roughness
-%   length of the topography
+% The vertical deposition function
 % \begin{equation}
-%  {\bf u}_{b} = \mbox{bottom roughness layer averaged horizontal velocity.}
+%  F_{\mbox{\tiny melet}} = \frac{N^{2}}{ \overline{N^{2}}^{z}} 
+%  \, \left( \frac{1}{ (1 + z^{*}/z_{p}^{*})^{2}} \right)
+%  \, \left( \frac{1}{H} + \frac{1}{z_{p}^{*}} \right)
 % \end{equation}
-% If the roughness layer sits within the bottom grid cell, then ${\bf
-%   u}_{b}$ is merely the horizontal velocity from the model's bottom
-% cell. However, when using bottom partial cells
-% \citep{Adcroftetal1997,PacGnan1998}, it is possible for the roughness
-% layer to extend over more than a single grid cell.  
+% is algebraic, rather than the exponential suggested by
+% \cite{Simmonsetal2004} (equation
+% (\ref{eq:simmons-vertical-function})).  A fundamental element to the
+% deposition function is the scaled vertical distance from the bottom
+% \begin{equation}
+%  z^{*}( h_{\mbox{\tiny bott}}) = 
+%  \frac{1}{\overline{N^{2}}^{z}}
+%  \int\limits_{0}^{ h_{\mbox{\tiny bott}}} N^{2}(z')  \, \mathrm{d}z',
+% \end{equation}
+% where the vertical integral extends from the bottom at $h_{\mbox{\tiny
+%     bott}} = 0$ to an arbitrary distance above the bottom.  The depth
+% averaged squared buoyancy frequency is given by
+% \begin{equation}
+%  \overline{N^{2}}^{z} = \frac{1}{H + \eta} \, \int\limits_{-H}^{\eta} N^{2}(z) \, \mathrm{d}z. 
+% \end{equation}
+% Note that by definition, the rescaled vertical height from the bottom
+% satisfies
+% \begin{equation}
+%   0 \le z^{*} \le H.
+% \end{equation}
+% We also introduced the rescaled length scale according to 
+% \begin{equation}
+%  z_{p}^{*}  = z_{p} \, \left( \frac{N^{2}_{\mbox{\tiny bott}}}{ \overline{N^{2}}^{z}} \right),
+% \end{equation}
+% The bottom buoyancy frequency, $N^{2}_{\mbox{\tiny bott}}$, is
+% computed according to the discussion in Section
+% \ref{subsection:wave-drag-details-simmons}.
 
-% \item The fraction of dissipation occurring locally is assumed to be
-%   unity, so that
-% \begin{equation}
-%  q = 1.
-% \end{equation}
+% The length scale $z_{p}$ is computed according to
+% \cite{Polzin2004,Polzin2009}, and needs to be written here...
 
-% \item The mixing efficiency, $\Gamma$, is computed according to
-%   equation (\ref{eq:gamma-stratification-dependent}) as motivated by
-%   \cite{Melet_etal_2013}
-% \begin{equation}
-%   \Gamma = 0.2 \left( \frac{N^{2}}{N^{2} + \Omega^{2}} \right),
-% \label{eq:gamma-stratification-dependent-again}
-% \end{equation} 
-% where $\Omega$ is the rotation rate of the earth (equation
-% (\ref{eq:Omega-defined})).  
 
-% \item The vertical deposition function, $F_{\mbox{\tiny lhg}}(z)$, is
-%   given by
-% \begin{equation}
-% F_{\mbox{\tiny lhg}}(z) = {\cal N} \, e^{-(2 \, \Omega \, h_{\mbox{\tiny bott}})/(\kappa_{\mbox{\tiny von Karman}} \, u_{*})},
-% \end{equation}
-% where ${\cal N}$ is a normalization coefficient with units of inverse
-% length ensuring that the vertical integral of $F(z)$ over an ocean
-% column is unity
-% \begin{equation}
-%   \int\limits_{-H}^{\eta} F(z) \, \mathrm{d}z = 1.  
-% \label{eq:normalization-of-Fz-again}
-% \end{equation}
-
-% \item The height
-% \begin{equation}
-%  h_{\mbox{\tiny bott}} = z+H
-% \end{equation}
-% measures the distance above the ocean bottom at $z=-H$.  
-
-% \item The semi-empirical Von Karman constant has a value
-% \begin{equation}
-%   \kappa_{\mbox{\tiny von Karman}} = 0.4.
-% \end{equation}
-
-% \item The friction velocity, $u_{*}$, is defined via
-% \begin{equation}
-% u_{*}^{3} \equiv C_{D} \,  {\bf u}^{2} \, \left( {\bf u}^{2} + U_{\mbox{\tiny tide}}^{2} \right)^{1/2}
-% \end{equation}
-%  so that the energy dissipation takes the form 
-% \begin{equation}
-% E_{\mbox{\tiny bottom drag}} =  \rho_{o} \, u_{*}^{3}.
-% \end{equation}
-
-% \end{itemize}
 
 
