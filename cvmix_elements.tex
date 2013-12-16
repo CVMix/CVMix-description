@@ -51,6 +51,23 @@ So in summary, depth increases when moving down into the ocean
 starting from the free surface, and $z$ increases moving up from a
 resting ocean at $z=0$.
 
+\item {\sc height coordinate}: The height vertical coordinate is
+  defined as minus the depth
+\begin{equation}
+   {\cal  H}  = -d = z - \eta 
+\label{eq:height-defined}
+\end{equation} 
+and so represents the height above the sea surface.  In the ocean, the
+height is negative (liquid ocean sits beneath the sea surface), and
+sits within the range of values
+\begin{equation}
+  -(H+\eta) \le  {\cal  H}  \le 0.
+\end{equation}
+For the CVMix implementation of the KPP scheme detailed in Chapter
+\ref{chapter:cvmix_kpp}, the code assumes the vertical coordinate
+provided by the calling routine is the height, so that the CVMix code
+does not need to be given the sea level field.
+  
 \item {\sc tracer cell arrays}: Tracer cell arrays are labelled with
   the discrete index {\tt kt}, and have dimensions {\tt nlevs}.  The
   index {\tt kt} increases downward starting from {\tt kt} =1 for the

@@ -72,6 +72,22 @@ We use the following notational and sign conventions in this chapter.
   surface. The ocean free surface is defined by $z=\eta(x,y,t)$ and
   the static ocean bottom is at $z=-H(x,y)$.
 
+\item \label{height_defined} The height coordinate, ${\cal H}$, is
+  defined as minus the depth, $d$, according to the discussion in
+  Section \ref{section:vertical-grid-numerics}, in which
+\begin{equation}
+  {\cal  H} = -d = z - \eta,
+\label{eq:height-defined-kpp}
+\end{equation} 
+which lives within the range 
+\begin{equation}
+ -(H+\eta) \le  {\cal  H} \le 0.
+\label{eq:height-range-defined-kpp}
+\end{equation} 
+The CVMix version of the KPP code assumes the calling models (e.g.,
+MOM, MPAS, POP) provide the height as defined here, so that the CVMix
+code does not need to be given the sea level field.
+
 \item \label{lambda_defined} A lowercase $\lambda$ is used to denote a
   turbulent fluctuation of an arbitrary field within the surface ocean
   boundary layer; e.g., a tracer such as potential or conservative
@@ -164,7 +180,7 @@ correlations evaluated at the ocean surface will be written
   (\ref{eq:correlation-convention}).
 
 \item At the ocean bottom, the convention requires no minus sign,
-  since $\overline{w \, \lambda}^{-H} > 0$ means there is a transfer
+  since $\overline{w \, \lambda}^{d=H+\eta} > 0$ means there is a transfer
   of scalar field into the ocean through the ocean bottom, such as
   through geothermal heating.  Note that we are not concerned with
   implementing KPP at the ocean bottom \citep{Durski_etal2004}.
@@ -4598,6 +4614,9 @@ pages, equations, or sections where they are described.
 \item[$\bullet$] $H$ = depth (metre) at the ocean bottom relative to a
   resting ocean surface at $z=0$ (page
   \pageref{geopotential_defined}).
+
+\item[$\bullet$] ${\cal H} = z - \eta$ = height (metre) above the sea
+  surface (page \pageref{height_defined}).
 
 \item[$\bullet$] $H^{\mbox{\tiny fusion}}$ = latent heat of fusion for
   fresh water = $3.34 \times 10^{5} \, \mbox{J} \;\mbox{kg}^{-1}$
