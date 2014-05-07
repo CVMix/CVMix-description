@@ -1,0 +1,76 @@
+\chapter{\scshape Sample chapter for CVMix documentation}
+\label{chapter:cvmix_MODULE}
+
+\minitoc
+\vspace{.5cm}
+
+\begin{mdframed}[backgroundcolor=lightgray!50]
+  This chapter provides a sample for what is useful to include in the
+  CVMix documentation of a physical parameterization scheme.  Clear
+  and complete CVMix documentation is critical for the intelligent use
+  of any scheme, so the author should focus on creating documentation
+  that is useful and pedagogical.  The following CVMix Fortran module
+  is directly connected to the material in this chapter:
+\begin{align*} 
+ &{\tt cvmix\_MODULE.F90}
+\end{align*}
+\end{mdframed}
+
+Here are some suggestions for writing this document.
+\begin{itemize}
+
+\item Aim for a level of concise pedagogy, so that the reader will
+  readily understand the scheme, but without going into too many
+  details that are available in published literature.  Some of the
+  other CVMix chapters are good examples of this philosophy (e.g.,
+  tide mixing chapter \ref{chapter:cvmix_tidal}), though others are
+  not (e.g., KPP chapter \ref{chapter:cvmix_kpp}).
+
+\item This chapter should describe any test cases available from the
+  scheme, including sample figures.  Test cases allow the new user to
+  verify a particular implementation, and to provide a sample of how
+  the physical parameterizion works.
+
+\item Add new bibliography entries to the .bib file in the directory
+  {\tt cvmix\_manual/references}.
+
+\item Figures associated with this document should ideally be named
+  {\tt new\_scheme\_figure\_number.pdf} or the like, thus making it
+  simpler to associate a figure with a chapter.
+
+\end{itemize}
+
+
+
+\section{Introduction to the mixing scheme}
+\label{section:intro_new_scheme}
+
+This section provides a broad overview of the scheme, focusing on the
+scientific background and the processes available from the CVMix
+module.  
+
+
+\section{Theory}
+\label{section:theory_new_scheme}
+
+This section develops the basic theory for the scheme, summarizing
+elements of the published literature in a manner that provides an
+intellectual foundation for the CVMix scheme.  The reader should
+understand what the scheme aims to do from a physics perspective.  
+
+\section{Numerical implementation in CVMix}
+\label{section:numerics_new_scheme}
+
+This section develops the numerical implementation choices made for
+the CVMix implementation.  Please include here a full description of
+options for using the scheme, as well as a list of parameters and
+their physical dimensions.  Recommended usage and test cases can be
+presented here as well.  
+
+
+\section{Further sections}
+
+The above template is clearly insufficient for some purposes.  Feel
+free to modify as you see appropriate.  
+
+
