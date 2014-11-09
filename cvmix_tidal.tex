@@ -1,14 +1,16 @@
 \chapter{\scshape Energetically based mixing schemes from tidal dissipation}
 \label{chapter:cvmix_tidal}
 
+
 \minitoc
 \vspace{.5cm}
 
 \begin{mdframed}[backgroundcolor=lightgray!50]
-This chapter summarizes the CVMix implementation of the parameterized
-vertical mixing associated with tidal dissipation in both the ocean
-interior and near the bottom.  The following CVMix Fortran module is
-directly connected to the material in this chapter:
+  This chapter summarizes the CVMix implementation of the
+  parameterized vertical mixing associated with mechanical energy
+  dissipation from tidal motions in both the ocean interior and near
+  the bottom.  The following CVMix Fortran module is directly
+  connected to the material in this chapter:
 \begin{align*} 
  &{\tt cvmix\_tidal.F90}
 \end{align*}
@@ -17,15 +19,16 @@ directly connected to the material in this chapter:
 \section{Introduction to tidal induced mixing}
 \label{section:vert_tidal_intro}
 
-Mixing arises when energy dissipates at the small scales in the
-presence of a nonzero gradient of tracer and/or momentum.  There are
-two sources of energy dissipation considered in this chapter.
+Mixing arises when mechanical energy dissipates at the small scales in
+the presence of a nonzero gradient of tracer and/or momentum.  There
+are two sources of mechanical energy dissipation considered in this
+chapter.
 \begin{itemize}
 
 \item {\sc Internal waves in ocean interior}: Breaking internal
   gravity waves arise when barotropic tidal flow is scattered into
   internal tidal energy. This process occurs when astronomical tides
-  interact with rough bottom topography,
+  interact with rough bottom topography.
 
 \item {\sc Tidal waves interacting with continental shelves}:
   Frictional bottom drag is enhanced as tides encounter continental
@@ -111,10 +114,9 @@ thus takes the form
  E_{\mbox{\tiny bottom drag}} =  \rho_{o} \, C_{D} \,  {\bf u}^{2} \, \left( {\bf u}^{2} + U_{\mbox{\tiny tide}}^{2} \right)^{1/2}.
 \label{eq:energy-dissipation-bottom-drag-with-tides}
 \end{equation}
-
-Note that the tidal speed $U_{\mbox{\tiny tide}}$ may be a prescribed
-global constant, as in the OCCAM simulations from \cite{Webbetal1998}.
-It may instead be a map determined by an offline tide model, as in
+The tidal speed $U_{\mbox{\tiny tide}}$ may be a prescribed global
+constant, as in the OCCAM simulations from \cite{Webbetal1998}.  It
+may instead be a map determined by an offline tide model, as in
 \cite{Jayne_etal2001}.  Or, it may be computed online by periodically
 running a tide model during the update of the primitive equation ocean
 model.
@@ -170,12 +172,12 @@ energy dissipation can be diagnosed from the tide model.
 As with the bottom drag (Section
 \ref{subsection:bottom-drag-barotropic-tides}), the wave energy
 dissipation arises from energy removed from the barotropic tides, yet
-here the is transferred into baroclinic tides.  Some of the energy
+here it is transferred into baroclinic tides.  Some of the energy
 transferred into the baroclinic tides dissipates locally due to local
-wave breaking, and this then leads to enhanced mixing locally.  The
-remaining baroclinic energy propogates away (i.e., it is non-local).
-The ratio of local to non-local energy is not well known, and is the
-focus of research.   
+wave breaking, and this dissipation then leads to enhanced local
+mixing.  The remaining baroclinic energy propogates away; i.e., it is
+non-local.  The ratio of local to non-local energy is not well known,
+and is the focus of research.
 
 
 \subsection{Relating dissipation to mixing via \cite{Osborn1980}}
@@ -186,17 +188,8 @@ not known from first principles, so we consider dimensional arguments
 to establish a useful form.  Since we are concerned with vertical
 mixing, we assume that diffusivity is inversely proportional to the
 vertical stratification, with stratification strength measured by the
-buoyancy frequency, with a linearized form given by equation
-(\ref{eq:buoyancy-frequency-elements})
-\begin{equation}
-N^{2} =  -\frac{g}{\rho} \, \left( 
-   \frac{\partial \rho}{\partial \theta} \frac{\partial \theta}{\partial z}  
-  +
-   \frac{\partial \rho}{\partial S} \frac{\partial S}{\partial z}
-\right), 
-\end{equation}
-and a fully nonlinear form detailed in Section
-\ref{subsection:buoyancy-frequency-and-stability}.  Mechanical energy
+buoyancy frequency, $N^{2}$ (see Section
+\ref{subsection:buoyancy-frequency-and-stability}).  Mechanical energy
 per mass has units of $\mbox{m}^{2}~\mbox{s}^{-2} =
 \mbox{J}~\mbox{kg}^{-1}$, and the dissipation of this energy, written
 as $\epsilon$, has units of $\mbox{m}^{2}~\mbox{s}^{-3} =
@@ -215,8 +208,8 @@ diffusivity given through the relation \citep{Osborn1980}
 where the dimensionless parameter $\Gamma$ measures the efficiency
 that mechanical energy dissipation translates into mixing that can be
 parameterized by a diffusivity acting on vertical stratification.
-This relation is used throughout the mixing community for converting
-measurements of mechanical energy dissipation into diffusivity.
+This relation converts measurements of mechanical energy dissipation
+into a diffusivity.
 
 The efficiency parameter in equation (\ref{eq:osborn-relation}) is
 often chosen as
@@ -240,7 +233,7 @@ efficiency tends to zero according to
  \left( \frac{\pi}{43082} \right) \mbox{s}^{-1} 
  \\
  &=
- 7.2921 \times 10^{-5} \mbox{s}^{-1}.
+ 7.2921 \times 10^{-5} \mbox{s}^{-1}
 \end{split}
 \label{eq:Omega-defined}
 \end{equation}
@@ -323,20 +316,19 @@ wave dissipation. The actual value is related to the modal content of
 the excited internal tide, which is related to the roughness spectrum
 of topography.  The redder the mode/roughness spectrum, the lower $q$.
 For example, Hawaii has been modelled as a knife-edge by
-\citep{StLaurent_etal2003}.  This topography excites predominantly low
+\cite{StLaurent_etal2003}.  This topography excites predominantly low
 modes, and these modes are stable, propogate quickly, and have long
 interaction times.  That is, they propagate to the far field.
 \cite{Klymak_etal2005} argue that $q=0.1$ for Hawaii from the Hawaiian
 Ocean Mixing Experiment (HOME) data. For the mid-Atlantic ridge, the
 use of $q=1/3$, as in \cite{Simmonsetal2004} and
-\cite{Melet_etal_2013}, may be more suitable.
-
-The bottom mixing scheme from \cite{Legg_eta2006} in effect assume 
+\cite{Melet_etal_2013}, may be more suitable.  In contrast, the bottom
+mixing scheme from \cite{Legg_eta2006} in effect assume
 \begin{equation}
  q=1   \qquad \mbox{bottom mixing scheme},
 \end{equation}
-which is sensible given that the mixing considered in their scheme
-occurs predominantly within a bottom boundary layer.
+which is sensible given that the mixing they considered occurs
+predominantly within a bottom boundary layer.
 
 
 \subsection{Prandtl number}
@@ -498,7 +490,7 @@ evaluated as follows.
       topo}}$ given some variance of topography within a grid cell,
   and then tune $E_{\mbox{\tiny wave drag}}$ to be roughly 1TW in
   ocean deeper than 1000m, with $\kappa_{\mbox{\tiny topo}}$ as the
-  tuning paramter.
+  tuning parameter.
 
 \end{itemize}
 
@@ -528,8 +520,9 @@ $z=\eta$ and the ocean bottom at $z=-H$, and
 \end{equation}
 is the time dependent distance from the free surface to a point within
 the water column.\footnote{We emphasize that with a free surface, $d$
-and $h$ are generally time dependent.  Furthermore, with general
-vertical coordinates, $h$ is time dependent for all grid cells.}  The
+  and $h$ are generally time dependent.  Furthermore, with general
+  vertical coordinates, $h$ is time dependent for all grid cells.  See
+  Section \ref{section:vertical-grid-numerics} for details.}  The
 chosen form of the deposition function is motivated by the
 microstructure measurements of \cite{StLaurent_etal2001} in the
 abyssal Brazil Basin, and the continental slope measurements of
@@ -556,9 +549,11 @@ that the modeller may wish to exercise.
 
 \begin{itemize}
 
-\item We may choose to limit the diffusivity to be no larger than a
-  maximum value, defaulted to $50 \times 10^{-4} \, \mbox{m}^{2} \,
-  \mbox{s}^{-1}$ in CVMix.
+\item We may choose to limit the tide-induced diffusivity to be no
+  larger than a maximum value, defaulted to $0.005 \, \mbox{m}^{2} \,
+  \mbox{s}^{-1}$ in CVMix.  In contrast, \cite{Jayne2009} set a
+  maximum diffusivity at $0.1 \, \mbox{m}^{2} \, \mbox{s}^{-1}$, which
+  perhaps led to problems with his implementation.
 
 \item Based on observations, the mechanical energy input from wave
   drag (equation (\ref{eq:wave-energy-flux})) should not exceed
@@ -581,11 +576,13 @@ that the modeller may wish to exercise.
 
 \cite{Simmonsetal2004} do not apply their scheme in waters with ocean
 bottom shallower than 1000m, whereas \cite{Jayne2009} applies the
-scheme for all depths.  CVMix has a namelist that allows for setting
-a cutoff depth.  In principle, there is nothing wrong with using the
-\cite{Simmonsetal2004} scheme all the way to shallow waters, and
-removing the somewhat arbitrary depth cutoff is more satisfying.  So
-one may wish to naively use $q = 1/3$ without a 1000m depth cutoff.
+scheme for all depths.  CVMix has a namelist that allows for setting a
+cutoff depth, with the cutoff defaulted to 0m, thus allowing for the
+scheme to operate over all ocean regions.  In principle, there is
+nothing wrong with using the \cite{Simmonsetal2004} scheme all the way
+to shallow waters, and removing the somewhat arbitrary depth cutoff is
+more satisfying.  So one may wish to naively use $q = 1/3$ without a
+1000m depth cutoff.
 
 Likewise, $\zeta = 500$m globally may be a reasonable choice. The
 structure function will properly integrate to unity, whether or not
@@ -593,8 +590,7 @@ the ocean depth $H$ is greater or less than $\zeta$.
 
 \subsection{Further comments} 
 
-Here are some further points to consider when setting some of the
-namelists for this scheme.
+Here are some further points to consider for this scheme. 
 \begin{itemize}
 
 \item One means to ensure that the diffusivities are within a
@@ -604,7 +600,8 @@ namelists for this scheme.
   the floor value $N^{2} \ge 10^{-8} \, \mbox{s}^{-2}$.  There is a
   great deal of sensitivity to the floor value used.  GFDL practice is
   to keep the floor value quite low so that $N^{2}_{\mbox{\tiny min}}
-  < \Omega^{2}$.
+  < \Omega^{2}$.  CVMix does not provide an option for setting this
+  floor.
 
 \item If the maximum diffusivity realized by the scheme is allowed to
   be very large, say much greater than as $1000 \, \mbox{cm}^{2} \,
@@ -613,6 +610,11 @@ namelists for this scheme.
   below the canonical 1TW value.  This process resembles a negative
   feedback in some manner, though it has not been explored
   extensively.
+
+\item \cite{Simmonsetal2004} chose a tidal energy data set between
+  $72^{\circ}$S and $72^{\circ}$N (polar regions had no tidal forcing
+  and just used a constant background mixing).  In contrast,
+  \cite{Jayne2009} used a global data set.
 
 \end{itemize}
 

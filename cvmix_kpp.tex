@@ -5,15 +5,13 @@
 \vspace{.5cm}
 
 \begin{mdframed}[backgroundcolor=lightgray!50]
-  We summarize in this chapter the KPP scheme surface boundary layer
-  scheme \citep{LargeKPP} as implemented in CVMix.  CVMix provides the
-  same features as that suggested by \cite{LargeKPP} and Appendix A of
-  \cite{Dana_etal2006}.  However, for those not intent on recovering
-  older results, we recommend simplifying the non-dimensional shape or
-  structure function $G(\sigma)$, with this recommendation based on
-  testing conducted during the CVMix implementation.  The following
-  CVMix Fortran module is directly connected to the material in this
-  chapter:
+  We summarize the KPP surface boundary layer scheme \citep{LargeKPP}
+  as implemented in CVMix.  CVMix provides the same features as
+  \cite{LargeKPP} and Appendix A of \cite{Dana_etal2006}.  For those
+  not intent on recovering older results, we make available a
+  simplified treatment of the non-dimensional shape or structure
+  function $G(\sigma)$.  The following CVMix Fortran module is
+  directly connected to the material in this chapter:
 \begin{align*} 
  & {\tt cvmix\_kpp.F90}
 \end{align*}
@@ -31,7 +29,7 @@ parameterization (KPP) is a widely used method for parameterizing
 boundary layer processes in both the atmosphere and ocean.\footnote{We
   consider here the implementation of KPP for the surface ocean
   boundary layer, as implementations for the bottom do not exist in
-  MOM or POP.  \citep{Durski_etal2004} consider KPP for the ocean
+  MOM or POP.  \cite{Durski_etal2004} consider KPP for the ocean
   bottom in ROMS.} The paper by \cite{LargeKPP} introduced this scheme
 to the ocean community for use in parameterizing processes in the
 surface ocean boundary layer .  The pedagogical lectures by
@@ -44,17 +42,18 @@ parameterizing mixing in the OBL, with examples discussed in
 \cite{Largeforcing}, \cite{HollandChowBryan1998},
 \cite{Gent_etal_1998}, \cite{GOTM}, \cite{LiChowMcWilliamsFu2001},
 \cite{Smyth_etal2002}, \cite{Durski_etal2004}, and
-\cite{Chang_etal2005}).  It was also used in various climate and earth
+\cite{Chang_etal2005}.  It was also used in various climate and earth
 system models developed at NCAR and GFDL, and elsewhere.  
 
-We aim to be thorough in exposing the physical aspects of the KPP
-scheme, building on the previous discussions in \cite{LargeKPP} and
-\cite{Large2012}.  We also discuss certain of the issues that arose
-when testing the scheme for use in CVMix that further motivate the
-choices and provide suggestions for how to make use of the CVMix
-version of KPP for ocean modeling purposes. Correspondingly, we
-motivate simplifications to the scheme available in CVMix, relative to
-the original implementation based on \cite{LargeKPP}.
+We aim to thoroughly expose physical aspects of the KPP scheme,
+building on discussions in \cite{LargeKPP} and \cite{Large2012}.  We
+also discuss issues that arose when testing the scheme for CVMix.
+These tests motivate suggestions for how to make use of the CVMix
+version of KPP. Correspondingly, we propose simplifications available
+in CVMix that aim to resolve problems with the \cite{LargeKPP}
+implementation.
+
+
 
 
 \subsection{Conventions}
@@ -64,13 +63,13 @@ We use the following notational and sign conventions in this chapter.
 
 \begin{itemize}
  
-\item The fluid is assumed to be volume conserving Boussinesq, with
-  extensions to a mass conserving non-Boussinesq fluid trivial.
+\item The fluid is assumed to be volume conserving Boussinesq.
+  Extensions to a mass conserving non-Boussinesq fluid are trivial.
 
 \item \label{geopotential_defined} The geopotential coordinate, $z$,
-  which increases up and where $z=0$ defines the resting ocean
-  surface. The ocean free surface is defined by $z=\eta(x,y,t)$ and
-  the static ocean bottom is at $z=-H(x,y)$.
+  increases up, with $z=0$ defining the resting ocean surface. The
+  ocean free surface is at $z=\eta(x,y,t)$ and the static ocean bottom
+  is at $z=-H(x,y)$.  Neither $\eta$ nor $H$ contain overturns.
 
 \item \label{height_defined} The height coordinate, ${\cal H}$, is
   defined as minus the depth, $d$, according to the discussion in
@@ -91,20 +90,20 @@ code does not need to be given the sea level field.
 \item \label{lambda_defined} A lowercase $\lambda$ is used to denote a
   turbulent fluctuation of an arbitrary field within the surface ocean
   boundary layer; e.g., a tracer such as potential or conservative
-  temperature $\theta$ and salinity $s$), or a velocity component
+  temperature $\theta$ and salinity $s$, or a velocity component
   ($u,v,w$). Note that $x$ is the notation used in \cite{LargeKPP} and
   \cite{LargeKPP_lectures}, but we prefer the Greek letter $\lambda$
   to avoid confusion with the horizontal spatial coordinate.  Also,
   the symbol $s$ is somtimes used for scalar fields such as salinity
   and temperature, whereas $m$ is sometimes used for components of a
-  vector field.  
+  vector field.
 
 \item There is no distinction in the treatment of scalar fields within
   the KPP boundary layer.  It is only beneath the boundary layer,
   where double diffusive processes are relevant, that we distinguish
   the mixing between scalar fields such as temperature and salinity.
-  Also, the surface forcing for salt/scalars and heat distinguishing
-  the tracers.
+  Also, surface forcing for salt/scalars and heat distinguish the
+  tracers.
 
 \item \label{Lambda_defined} An uppercase $\Lambda$ is used to denote
   the Eulerian mean of a tracer or velocity component within the
@@ -193,8 +192,11 @@ correlations evaluated at the ocean surface will be written
       u}}^{0}$ removes the associated momentum from the surface
   ocean.  These sign conventions give rise to the minus sign in the
   relation (\ref{eq:wu-kinematic-flux-kpp}) connecting turbulent
-  kinematic stress to the boundary stress: $-\rho \, \overline{w \,
-    {\bf u}}^{0} = \bftau$.  
+  kinematic stress to the boundary stress: 
+\begin{equation}
+  \overline{w \, {\bf u}}^{0} = -\rho^{-1} \, \bftau.  
+\end{equation}
+
 
 \end{itemize}
 
@@ -225,7 +227,7 @@ following manner
 \label{eq:kpp-parameterization}
 \end{equation}
 The KPP prescription (\ref{eq:kpp-parameterization}) thus
-parameterizes the vertical turbulent flux using two terms
+parameterizes the vertical turbulent flux according to
 \begin{equation}
   \overline{w \, \lambda} = \overline{w \, \lambda}^{\mbox{\tiny local}} + \overline{w \, \lambda}^{\mbox{\tiny non-local}}.
 \label{eq:vertical-flux-decomposed}
@@ -253,26 +255,30 @@ vertical gradients of $\Lambda$, in which
 \subsection{The vertical diffusivity}
 \label{subsection:kpp-vertical-diffusivity}
 
-The vertical diffusivity used to parameterize the local flux
-(\ref{eq:vertical-flux-local}) arising from KPP in the OBL is
-determined as a non-local function of boundary layer properties. It is
-written in the following form
+The KPP vertical diffusivity used to parameterize the local flux
+(\ref{eq:vertical-flux-local}) in the OBL is determined as a non-local
+function of boundary layer properties. It is written in the following
+form
 \begin{equation}
   K_{\lambda}(\sigma) = h \, w_{\lambda}(\sigma) \, G_{\lambda}(\sigma).
 \label{eq:kpp-diffusivity}
 \end{equation}
-The diffusivity is a constructed as the product of three terms: the
-boundary layer thickness $h$, the vertical turbulent velocity scale
-$w_{\lambda}(\sigma)$, and the vertical shape or structure function
-$G_{\lambda}(\sigma)$.  Note that we introduce a dependence of the
-shape function on the field diffused.  Such dependence can arise if
-taking the approach of \cite{LargeKPP} whereby the boundary layer
-diffusivity is matched at the base of the boundary layer to the
-interior diffusivities, which can generally be a function of the
-tracer, $\lambda$.  However, as discussed in Section
-\ref{subsection:kpp-shape-function-cvmix}, the recommended approach
-for CVMix is to use the following universal shape function for all
-tracers (equation (\ref{eq:universal-non-local-structure}))
+The diffusivity is constructed as the product of three terms:
+\begin{itemize}
+ \item boundary layer thickness $h$,
+ \item vertical turbulent velocity scale $w_{\lambda}(\sigma)$, 
+ \item dimensionless vertical shape or structure function
+   $G_{\lambda}(\sigma)$. 
+\end{itemize}
+Note that we introduce a dependence of the shape function on the field
+diffused.  Such dependence can arise if taking the approach of
+\cite{LargeKPP} whereby the boundary layer diffusivity is matched at
+the base of the boundary layer to the interior diffusivities, which
+can generally be a function of the tracer, $\lambda$.  However, as
+discussed in Section \ref{subsection:kpp-shape-function-cvmix}, the
+recommended approach for CVMix is to use the following universal shape
+function for all tracers (equation
+(\ref{eq:universal-non-local-structure}))
 \begin{equation}
  G(\sigma)_{\mbox{\tiny universal}} = \sigma \, \ (1-\sigma)^{2},
 \label{eq:simpler-shape-function-first}
@@ -408,10 +414,10 @@ boundary layer.
 \label{subsubsection:turbulent-vertical-velocity-scale}
 
 We introduce a scale for turbulent vertical velocity fluctuations,
-written as $w_{\lambda}(\sigma)$.  It is a function of depth within
-the boundary layer, and a function of the field to which it refers.
-\cite{LargeKPP} recommend using the {\it same} scale $w_{s}$ for all
-scalar fields (temperature, salinity, and passive tracers)
+written as $w_{\lambda}(\sigma)$.  This scale is a function of depth
+within the boundary layer, and a function of the field to which it
+refers.  \cite{LargeKPP} recommend using the {\it same} scale $w_{s}$
+for all scalar fields (temperature, salinity, and passive tracers)
 \begin{equation}
   w_{s}= \mbox{same for all scalars}.
 \end{equation}
@@ -460,8 +466,8 @@ shape function for all tracers (equation
 \begin{equation}
  G(\sigma)_{\mbox{\tiny universal}} = \sigma \, \ (1-\sigma)^{2},
 \end{equation}
-thus greatly simplifying the KPP scheme. With this universal shape
-function, we have
+thus greatly simplifying the KPP scheme. This universal shape
+function satisfies 
 \begin{equation}
  G(0)_{\mbox{\tiny universal}}= G(1)_{\mbox{\tiny universal}} = G'(1)_{\mbox{\tiny universal}} = 0,
 \end{equation}
@@ -478,7 +484,7 @@ derivative of the mean field (see Section 2 of \cite{LargeKPP}).  This
 behaviour leads to a diffusivity $K_{\lambda}$ that is a function of
 the surface fluxes and boundary layer thickness $h$.  Furthermore,
 under convective forcing (negative surface buoyancy forcing; $B_{f} <
-0$), fluxes can penetrate into stratified interior.  This
+0$), fluxes can penetrate into the stratified interior.  This
 characteristic then motivates the introduction of a non-local
 transport term $\gamma_{\lambda}$ to the KPP parameterization
 (equation (\ref{eq:kpp-parameterization})) in the case of $B_{f} < 0$.
@@ -556,7 +562,7 @@ following characteristics to $\gamma_{\lambda}$.
 
 \item Page 371 of \citep{LargeKPP} notes that there is no theory for
   non-local momentum transport, so the non-local transport is assumed
-  to directly affects only the tracer fields:
+  to directly affect only the tracer fields:
 \begin{equation}
  \gamma_{\lambda} \; \; = \; \; 
 \left\{
@@ -571,8 +577,8 @@ following characteristics to $\gamma_{\lambda}$.
 motivating further research to see whether it is suitable for climate
 modeling.  CVMix has not implemented the \cite{Smyth_etal2002} scheme.
 However, CVMix has hooks available in the code for a non-local
-momentum transport term, thus facilitating further development of
-their ideas.
+momentum transport term, thus facilitating further research into this
+question.
 
   \item The non-local transport is non-zero only within the OBL:  
 \begin{equation}
@@ -612,6 +618,31 @@ We summarize the KPP parameterization of $\gamma_{\lambda}$ in Section
 the KPP non-local transport acts to redistribute the surface tracer
 fluxes throughout the boundary layer.  
 
+\subsection{Some caveats regarding KPP}
+\label{subsection:caveats-for-kpp}
+
+Subsequent to \cite{LargeKPP}, many ocean modelling groups have made
+use of the KPP scheme for ocean climate purposes.  One key practical
+feature of the scheme is the general ability to use relatively coarse
+vertical grid spacing, more coarse than typically suitable for
+turbulent kinetic energy methods such as those coded in \cite{GOTM}.
+Physically, the non-local transport term available in KPP can capture
+features in the boundary layer that are more difficult, if not
+impossible, to parameterize using local methods.
+
+Nonetheless, KPP is not a complete scheme nor is it without its
+problems.  For example, as we note in Section
+\ref{section:kernals-of-behaviour}, there are cases where KPP is
+clearly performing in an unphysical manner.  One key reason the scheme
+can be pushed outside of physical relevance concerns the absence of an
+energetic basis for KPP.  Furthermore, the non-local scheme is not
+constrained to satisfy the 2nd Law of Thermodynamics, meaning that it
+can produce extrema.  We present potential ``fixes'' in Section
+\ref{section:kernals-of-behaviour}.  However, these fixes are based
+largely on {\it ad hoc} considerations.  A more fundamental approach
+may be to combine the ideas of KPP with those of energetically based
+turbulence closure schemes.  Such considerations are the topic of
+ongoing research.
 
 
 \section{Surface ocean boundary momentum fluxes}
@@ -710,7 +741,8 @@ a fixed pressure level. In this way, buoyancy changes are directly
 related to processes that impact locally referenced potential density.
 
 Ocean buoyancy is affected through surface ocean heat, salt, and water
-fluxes. 
+fluxes.  These fluxes are associated with the following physical
+processes.
 \begin{itemize}
 
 \item Turbulent processes transfer heat through latent and sensible
@@ -733,7 +765,7 @@ fluxes.
   surface through the transfer of water mass across the interface.
 
 \end{itemize}
-  We further detail these fluxes in the following. 
+  We further detail these processes in the following. 
 
 
 \subsection{Scalar budgets for a surface ocean model grid cell}
@@ -771,7 +803,7 @@ thickness weighting of scalar tracer fields
 
 \item $\Theta$ is the grid cell potential temperature, or more
   accurately it is the conservative temperature of
-  \cite{McDougall2003}.
+  \cite{McDougall2003} (see \cite{TEOS2010}).  
 
  \item $S$ is the grid cell salinity.
 
@@ -781,17 +813,19 @@ thickness weighting of scalar tracer fields
    consider $\Qm > 0$ for water entering the ocean (as when
    precipitation plus runoff exceeds evaporation).
 
-\item $\Thetam$ is the temperature of water crossing the ocean
-  surface, and $C_{\mbox{\tiny p}}^{o} \, \Qm \, \Thetam$ is the associated heat flux
-  ($\mbox{W} \, \mbox{m}^{-2})$.  We further discuss this heat flux in
-  Section \ref{subsection:advective-buoyancy-fluxes}.
+ \item $\Thetam$ is the temperature of water crossing the ocean
+   surface, and $C_{\mbox{\tiny p}}^{o} \, \Qm \, \Thetam$ is the
+   associated enthalpy flux ($\mbox{W} \, \mbox{m}^{-2})$.  We further
+   discuss this flux in Section
+   \ref{subsection:advective-buoyancy-fluxes}.
 
-\item $\Sm$ is the salinity of water crossing the ocean surface, and
-  $\Qm \, \Sm$ is the associated mass flux.  Note that $\Sm$ is
-  typically taken to be zero, as for precipitation and evaporation.
-  However, rivers can contain a nonzero salt concentration, so we keep
-  $\Sm$ for the following formulation.  We further discuss this salt
-  flux in Section \ref{subsection:advective-buoyancy-fluxes}.
+ \item $\Sm$ is the salinity of water crossing the ocean surface, and
+   $\Qm \, \Sm$ is the associated mass flux of salt.  Note that $\Sm$
+   is typically taken to be zero, as for precipitation and
+   evaporation.  However, rivers can contain a nonzero salt
+   concentration, so we keep $\Sm$ for the following formulation.  We
+   further discuss this salt flux in Section
+   \ref{subsection:advective-buoyancy-fluxes}.
 
 \item \label{heat_capacity} $C_{\mbox{\tiny p}}^{o}$ is the seawater heat capacity at
   constant pressure ($\mbox{J} \, \mbox{kg}^{-1} \,
@@ -831,9 +865,9 @@ thickness weighting of scalar tracer fields
 \label{subsection:sea-ice-buoyancy-fluxes}
 
 The mass flux of salt $Q_{S}$ ($\mbox{kg} \; \mbox{m}^{-2} \,
-\mbox{sec}^{-1})$ is positive for salt entering the ocean surface.
-There is transport of salt across the ocean surface when sea ice forms
-and melts, due to the nonzero salt content in sea ice.  Otherwise, the
+\mbox{sec}^{-1})$ is positive for salt entering the ocean.  There is
+transport of salt across the ocean surface when sea ice forms and
+melts, due to the nonzero salt content in sea ice.  Otherwise, the
 surface salt flux is generally zero for the large scale ocean. For
 ocean models, however, the salt flux can be nonzero when formulating
 the surface boundary in terms of virtual salt fluxes rather than real
@@ -960,10 +994,11 @@ latent heating extracts heat from the ocean.
 \subsubsection{Sensible heat fluxes}
 
 $Q_{\mbox{\tiny sens}}$ is the sensible heat transfer proportional to
-the difference between atmosphere and ocean temperatures. Sensible
-heating generally acts to cool the ocean ($Q_{\mbox{\tiny sens}} <
-0$), particularly near western boundary currents such as the Gulf
-Stream, Kuroshio, and Agulhas.
+the difference between the ocean temperature and that of the
+atmosphere, sea ice, or land ice. Sensible heating generally acts to
+cool the ocean ($Q_{\mbox{\tiny sens}} < 0$), particularly near
+western boundary currents such as the Gulf Stream, Kuroshio, and
+Agulhas.
 
 
 \subsection{The case of frazil}
@@ -1020,8 +1055,8 @@ should be run to consider sensitivity to the choice.
 \subsection{Penetrative shortwave radiation} 
 \label{subsection:pen-buoyancy-fluxes}
 
-The penetrative shortwave radiative heat flux $C_{\mbox{\tiny p}}^{o} \,
-Q_{\theta}^{\mbox{\tiny pen}} > 0$ arises from the net shortwave
+The penetrative shortwave radiative heat flux $C_{\mbox{\tiny p}}^{o}
+\, Q_{\theta}^{\mbox{\tiny pen}} > 0$ arises from the net shortwave
 radiation entering through the ocean surface and absorbed by seawater.
 This heat flux does {\it not} arise from turbulent or advective
 processes, which makes it distinct from other heat and salt fluxes
@@ -1029,11 +1064,11 @@ impacting the ocean through its upper boundary.  This radiation is not
 generally deposited entirely within the ocean surface layer or the top
 ocean model grid cell. Instead, a fraction of this radiation can
 penetrate to beneath the surface ocean grid cell, with the fraction
-depending on the optical properties of seawater.  Hence, we subtract a
-heat flux $C_{\mbox{\tiny p}}^{o} \, Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z)$, which
-represents the radiative shortwave heat flux passing through the
-bottom of the surface ocean cell at $z=-\Delta z$.  It is the
-difference,
+depending on the optical properties of seawater and thickness of the
+gric cell.  Hence, we subtract a heat flux $C_{\mbox{\tiny p}}^{o} \,
+Q_{\theta}^{\mbox{\tiny pen}}(z=-\Delta z)$, which represents the
+radiative shortwave heat flux passing through the bottom of the
+surface ocean cell at $z=-\Delta z$.  It is the difference,
 \begin{equation}
    \mbox{net shortwave heating of surface grid cell} = 
   C_{\mbox{\tiny p}}^{o} \, \left( Q_{\theta}^{\mbox{\tiny pen}}(z=\eta) 
@@ -1155,8 +1190,7 @@ they are typically treated in climate models.
    \Theta^{\mbox{\tiny evap}} = \Theta_{k=1} \qquad \mbox{climate models},
 \end{equation}
 in which case there is no change to ocean temperature upon transfer of
-evaporating water across the ocean surface.  This is the approach
-taken by all ocean climate models.
+evaporating water across the ocean surface. 
 
 \item Precipitating liquid water need not fall on the ocean at the sea
   surface temperature, so that
@@ -1191,6 +1225,24 @@ enters the ocean.
 
 \end{itemize}
 
+
+\subsubsection{Penetrative radiation}
+
+Shortwave radiation is absorbed by seawater as it penetrates from the
+surface into the upper ocean. Hence, $\delta_{k} \,
+Q_{\theta}^{\mbox{\tiny pen}} > 0$ so that radiation increases the
+grid cell buoyancy if $\alpha > 0$, but decreases the buoyancy if
+$\alpha < 0$.
+
+
+\subsubsection{Non-penetrative heating}
+
+Longwave, latent, and sensible heating generally cool the upper ocean,
+and so lead to a decrease in ocean buoyancy for regions where the
+thermal expansion coefficient, $\alpha$, is positive.  In those few
+regions where $\alpha < 0$, such as the Baltic, non-penetrative
+cooling stabilizes the ocean. 
+
 \subsubsection{Salt carried by water transport}
 
 The haline contraction coefficient, $\beta$, is generally positive.
@@ -1209,24 +1261,6 @@ precipitation
 \begin{equation}
  S^{\mbox{\tiny liquid runoff}} \ne 0. 
 \end{equation}
-
-
-\subsubsection{Penetrative radiation}
-
-Shortwave radiation is absorbed by seawater as it penetrates from the
-surface into the upper ocean. Hence, $\delta_{k} \,
-Q_{\theta}^{\mbox{\tiny pen}} > 0$ so that radiation increases the
-grid cell buoyancy if $\alpha > 0$, but decreases the buoyancy if
-$\alpha < 0$.
-
-
-\subsubsection{Non-penetrative heating}
-
-Longwave, latent, and sensible heating generally cool the upper ocean,
-and so lead to a decrease in ocean buoyancy for regions where the
-thermal expansion coefficient, $\alpha$, is positive.  In those few
-regions where $\alpha < 0$, such as the Baltic, non-penetrative
-cooling stabilizes the ocean. 
 
 
 \subsubsection{Salt fluxes due to sea ice melt or formation}
@@ -1401,7 +1435,7 @@ the ocean surface boundary layer.
 
 Monin-Obukhov similarity theory assumes that the turbulent surface
 layer is a constant flux layer that starts just beneath any roughness
-elements, and certainly beneath the the molecular sublayer.  In the
+elements, and certainly beneath the molecular sublayer.  In the
 absence of breaking surface waves, roughness elements arise from
 capillary waves that allow the wind to affect the otherwise smooth
 ocean surface, in which case the roughness length is on the order of
@@ -1532,10 +1566,16 @@ In this expression,
 is the von Karman constant, $\phi_{\Lambda}(\zeta)$ is a dimensionless
 {\it similarity function} or flux profile that is dependent only on
 the scaled distance
-\begin{equation}
-  \zeta \equiv \frac{d}{L},
+\begin{subequations}
+\begin{align}
+  \zeta &\equiv \frac{d}{L}
+ \\
+ &= \frac{d}{h} \, \frac{h}{L}
+ \\
+ &= \sigma \, \frac{h}{L} 
 \label{eq:zeta-scaled-distance-defined}
-\end{equation}
+\end{align}
+\end{subequations}
  and 
 \begin{equation}
   L = \frac{u_{*}^{2}}{\kappa \, B_{*}} = \frac{u_{*}^{3}}{\kappa \, B_{f}} 
@@ -1788,10 +1828,11 @@ the turbulent velocity scale within the surface layer
 \end{equation}
 \cite{Troen_Mahrt1986} assume this expression is valid throughout the
 stably forced boundary layer for $0 < \sigma < 1$, and \cite{LargeKPP}
-also make that assumption.
+also make that assumption. 
 
 
 \subsubsection{Velocity scale $w_{\lambda}$ with unstable buoyancy forcing}
+\label{subsubsection:velocity-scale-unstable-bf}
 
 For unstable buoyancy forcing conditions, $B_{f} < 0$, the turbulent
 velocity scales within the surface layer are assumed to be the same as
@@ -1810,6 +1851,10 @@ velocity scale is given by
  \begin{array}{llll}
    \phi^{-1}_{\Lambda}(\sigma \, h / L)   
   &\mbox{stable forcing $B_{f} > 0$} & \mbox{OBL}
+  &\mbox{$0 < \sigma < 1$}
+\\
+   1 
+  &\mbox{neutral forcing $B_{f} = 0$} & \mbox{OBL}
   &\mbox{$0 < \sigma < 1$}
 \\
   \phi^{-1}_{\Lambda}(\sigma \, h / L)   
@@ -1880,16 +1925,19 @@ $\phi_{\Lambda}$ must have the form
   \phi_{\Lambda} = (a_{\lambda} - c_{\lambda} \, \zeta)^{-1/3}  \qquad \mbox{convective conditions with $u_{*} \rightarrow 0$,}
 \label{eq:phi-under-convective-forcing}
 \end{equation}
-where $\zeta = d/L << 0$, and the constants $a_{\lambda}$ and
-$c_{\lambda}$ are chosen to match the convective form
-(\ref{eq:phi-under-convective-forcing}) to less unstable forms.  
+where $\zeta = d/L = \sigma \, h/L << 0$, and the constants
+$a_{\lambda}$ and $c_{\lambda}$ are chosen to match the convective
+form (\ref{eq:phi-under-convective-forcing}) to less unstable forms.
 
 We now use the expression (\ref{eq:phi-under-convective-forcing})
 within the unstable surface layer ($\sigma < \epsilon$) form in
 (\ref{eq:wlambda-general}) to render
 \begin{subequations}
 \begin{align}
-w_{\lambda} &= \kappa \, (a_{\lambda} \, u_{*}^{3} - c_{\lambda} \, u_{*}^{3} \, \zeta)^{1/3}
+w_{\lambda} 
+ &= \kappa \, u_{*} \, (a_{\lambda}  - c_{\lambda} \, \zeta)^{1/3}
+\\
+ &= \kappa \, (a_{\lambda} \, u_{*}^{3} - c_{\lambda} \, u_{*}^{3} \, \zeta)^{1/3}
  \\
  &= \kappa \, [a_{\lambda} \, u_{*}^{3} - c_{\lambda} \, u_{*}^{3} \, (h\, \sigma/L) ]^{1/3}
  \\
@@ -1903,7 +1951,7 @@ w_{\lambda} &= \kappa \, (a_{\lambda} \, u_{*}^{3} - c_{\lambda} \, u_{*}^{3} \,
 \end{subequations}
 where the final limit case is for the convective limit with $u_{*}
 \rightarrow 0$.  Likewise, outside the surface layer ($\epsilon <
-\sigma < 1$) we have
+\sigma < 1$) we have from equation (\ref{eq:wlambda-general})
 \begin{equation}
 w_{\lambda} = \kappa \, (a_{\lambda} \, u_{*}^{3} + c_{\lambda} \, \epsilon \, \kappa \, w_{*}^{3} )^{1/3}
   \rightarrow 
@@ -1931,7 +1979,7 @@ constant for all species and is given by
  w_{\lambda} = \kappa \, u^{*}  \qquad B_{f} = 0.
 \end{equation}
 We gave an example above in which $|\bftau| =
-0.2~\mbox{N}~\mbox{m}^{-2}$ gave $w_{\lambda} = \kappa \, u^{*} =
+0.2~\mbox{N}~\mbox{m}^{-2}$ yields $w_{\lambda} = \kappa \, u^{*} =
 0.0056~\mbox{m}~\mbox{s}^{-1}$.
 
 The second test case is the convective limit with $u_{*}=0$ and $B_{f}
@@ -1993,10 +2041,10 @@ The vertical turbulent velocity scale for scalars is then given by
   Figure 2 from \cite{LargeKPP}.  The vertical axis is the
   dimensionless vertical coordinate $\sigma = d/h$ within the KPP
   boundary layer $0 \le \sigma \le 1$.  The left panel shows the
-  vertical profile of the shape or shape function,
-  $G_{\lambda}(\sigma)$, used to scale the vertical diffusivity via
-  equation (\ref{eq:kpp-diffusivity-again}).  The analytic form shown
-  here is given by the universal form (equation
+  vertical profile of the shape function, $G_{\lambda}(\sigma)$, used
+  to scale the vertical diffusivity via equation
+  (\ref{eq:kpp-diffusivity-again}).  The analytic form shown here is
+  given by the universal form (equation
   (\ref{eq:universal-non-local-structure})) $G_{\mbox{\tiny
       universal}}(\sigma) = \sigma \, (1-\sigma)^{2}$ which
   corresponds to the \cite{Troen_Mahrt1986} form and which is
@@ -2016,7 +2064,11 @@ The vertical turbulent velocity scale for scalars is then given by
   (solid lines).  For stable forcing, $L>0$, and both scalar and
   momentum have the same turbulent velocity scales, $w_{s} = w_{m}$.
   In general, the turbulent velocity scale is enhanced with unstable
-  surface buoyancy forcing, and reduced with stable buoyancy forcing.}
+  surface buoyancy forcing, and reduced with stable buoyancy forcing.
+  Note how in the unstable forcing regime, with $L<0$, the turbulent
+  velocity scales are capped at their $\sigma = \epsilon$ values
+  according to the discussion in Section
+  \ref{subsubsection:velocity-scale-unstable-bf}.  }
 \label{fig:kpp-figure2-reproduced}
 \end{center}
 \rule{\textwidth}{0.005in}
@@ -2146,7 +2198,7 @@ number.  As discussed in the figure caption, a viable means for
 simplifying the turbulent functions, without compromising much on the
 values used in \cite{LargeKPP}, is to maintain original 3-region
 $\phi_{s}$ form, but to simplify $\phi_{m}$ to 2-regions according to
-equation (\ref{eq:phim-alternative}).
+equation (\ref{eq:phim-alternative}).  
 
 The simplified forms for the similarity functions $\phi_{s}$ and
 $\phi_{m}$ have {\it not} been implemented in CVMix.  More testing is
@@ -2214,8 +2266,9 @@ that the interior diffusivities can differ between tracers.  We
 question this matching method in Section
 \ref{subsection:kpp-shape-function-cvmix}, where we propose to use the
 universal shape function given by equation
-(\ref{eq:universal-non-local-structure}).
-
+(\ref{eq:universal-non-local-structure}), and as used in the
+atmosphere by \cite{Troen_Mahrt1986} (see Figure .
+\ref{fig:kpp-figure2-reproduced}).
 
 
 \subsubsection{Constraints arising from the surface boundary condition
@@ -2289,7 +2342,7 @@ transported.  In practice, satisfying these matching conditions is not
 straightforward in an ocean model given the difficulties of estimating
 vertical derivatives of diffusivities.  We also note that matching to
 nonzero interior diffusivities means that the non-local transport term
-does not smoothing go to zero at the base of the mixed layer.  We
+does not smoothly go to zero at the base of the mixed layer.  We
 return to these points in Section
 \ref{subsection:kpp-shape-function-cvmix}. For the meantime, we
 continue to present the prescription as proposed by \cite{LargeKPP},
@@ -2304,7 +2357,7 @@ conditions at $\sigma=1$, then the KPP calculation should be called
 reflected in the CVMix flow diagram in Figure
 \ref{fig:vertical_mix_flow_cvmix}.  The alternative approach
 recommended in Section \ref{subsection:kpp-shape-function-cvmix}
-allows for arbitrary ordering of the diffusivity calculation.
+allows for arbitrary ordering.
 
 
 \subsubsection{Vanishing derivative at $\sigma=1$}
@@ -2385,7 +2438,7 @@ Section \ref{subsection:kpp-nonlocal-transport-outline}.
 
 \item \cite{Smyth_etal2002} consider a non-local term for momentum.
   Until their ideas have been fully tested in climate models, we
-  follow recommendations from \citep{LargeKPP}, who set the non-local
+  follow recommendations from \cite{LargeKPP}, who set the non-local
   momentum term to zero:
 \begin{equation}
  \gamma_{\lambda} \; \; = \; \; 
@@ -2449,16 +2502,14 @@ with
 \label{eq:cstar-value-specified}
 \end{equation}
 and $Q_{R}$ is the heat flux from penetrative radiation given by
-equation (\ref{eq:penetrative-heating-kpp}).  We have more to say in
-Section \ref{subsection:penetrative-radiation-and-kpp-nonlocal}
-regarding the shortwave flux, $Q_{R}$, and the non-local term.  We
-argue in that section that the shortwave flux should {\it not} be part
-of the non-local term.  However, for the meantime we continue
-following the approach of \cite{LargeKPP}, in which they include
-shortwave radiation as part of the non-local term (e.g., see equation
-(20) in \cite{LargeKPP}).  Note that equation
-(\ref{eq:non-local-temp-kpp}) uses $c_{s}$ regardless of the scalar
-tracer field considered.
+equation (\ref{eq:penetrative-heating-kpp}).  We follow here the
+approach of \cite{LargeKPP}, in which they include shortwave flux,
+$Q_{R}$, as part of the non-local term (e.g., see equation (20) in
+\cite{LargeKPP}).  Note that equation (\ref{eq:non-local-temp-kpp})
+uses $c_{s}$ regardless of the scalar tracer field considered.  We
+have more to say in Section
+\ref{subsection:penetrative-radiation-and-kpp-nonlocal} regarding the
+shortwave flux and the non-local term.
 
 \end{itemize}
 
@@ -2480,13 +2531,22 @@ the non-local flux parameterization in the form
 \end{align}
 Notice how explicit dependence on both the turbulent velocity scale,
 $w_{\lambda}$, and boundary layer depth, $h$, drop out from the
-parameterization of the non-local flux.  The expressions
-(\ref{eq:non-local-flux-kpp-param-temp}) and
-(\ref{eq:non-local-flux-kpp-param-scalar}) exhibit clearly how the
-non-local transport provides a redistribution of the surface boundary
-flux into the boundary layer. This redistribution is analogous to the
-penetrative radiation associated with shortwave. 
+parameterization of the non-local flux.  
 
+The expressions (\ref{eq:non-local-flux-kpp-param-temp}) and
+(\ref{eq:non-local-flux-kpp-param-scalar}) exhibit how the non-local
+transport provides a redistribution of the surface boundary flux into
+the boundary layer.  This formulation of the KPP non-local transport
+is key to understanding its role in the boundary layer
+parameterization.  The redistribution of surface fluxes by KPP is
+analogous to the way surface shortwave radiation is distributed
+through the upper ocean via penetrative radiation.  The key difference
+is that shortwave penetration is a function of ocean optics, whereas
+the KPP non-local redistribution is a function of the boundary layer
+turbulence.  Furthermore, the shortwave penetration occurs via an
+exponential attenuation function (such as those described by
+\cite{Manizza_etal2005}), rather than an algebraic function used in
+KPP.
 
 
 \subsubsection{Summary of the non-local transport parameterization} 
@@ -2784,7 +2844,7 @@ $K^{\mbox{\tiny other processes}}_{\lambda}$ are spectrally localized
 away from the processes parameterized by KPP.  Again, this approach is
 simpler than the original \cite{LargeKPP} approach, which incorporated
 the effects from interior mixing by matching boundary layer and
-interior diffusivities at the base of the boundary layer layer.  That
+interior diffusivities at the base of the boundary layer.  That
 approach has serious problems in practice due to the reasons noted
 earlier.  It also has no more fundamental physical basis than the
 summed diffusivities (\ref{eq:sum-of-diffusivities}) proposed for
@@ -3004,7 +3064,7 @@ Excessive heating now occurs only for those cases where
 \end{equation}
 
 The second modification completely removes the shortwave heat flux
-from the KPP non-local redistribution.  In this case, case the heat
+from the KPP non-local redistribution.  In this case, the heat
 equation (\ref{eq:surface-temperature-equation-shortwave-argument-C})
 takes the form
 \begin{equation}
@@ -3081,7 +3141,7 @@ expose the physics of the bulk Richardson number.
 \item {\sc Surface eddy has negative relative buoyancy}: If the
   density $\rho[\Theta_{r}, S_{r}, p(d)]$ is greater than the {\it in
     situ} density, $\rho[\Theta(d), S(d), p(d)]$, then a surface layer
-  parcel can move downwards and the boundary layer based has yet to be
+  parcel can move downwards and the boundary layer base has yet to be
   reached.  That is, the surface layer parcel has negative buoyancy
   relative to the ambient fluid.  This situation leads to a negative
   bulk Richardson number, in which case the criteria $\mbox{Ri}_{b}(d)
@@ -3089,12 +3149,12 @@ expose the physics of the bulk Richardson number.
 
 \item {\sc Surface eddy has positive relative buoyancy and ambient
     fluid has strong shears}: If the density $\rho[\Theta_{r}, S_{r},
-  p(d)]$ is less than the {\it in situ} density, a surface layer eddy
-  has positive buoyancy relative to the ambient fluid.  However, if
-  the vertical shear is large, then the bulk Richardson number can
-  still be less than the critical value, in which case mechanically
-  induced mixing is still large and the boundary layer base has yet to
-  be reached.
+  p(d)]$ is less than the {\it in situ} density, $\rho[\Theta(d),
+  S(d), p(d)]$ , a surface layer eddy has positive buoyancy relative
+  to the ambient fluid.  However, if the vertical shear is large, then
+  the bulk Richardson number can still be less than the critical
+  value, in which case mechanically induced mixing is still large and
+  the boundary layer base has yet to be reached.
 
 \item {\sc Surface eddy has positive relative buoyancy and ambient
     fluid has weak shears}: Finally, if a surface eddy has positive
@@ -3107,6 +3167,7 @@ expose the physics of the bulk Richardson number.
 
 
 \subsubsection{Averaging properties over the surface layer}
+\label{subsubsection:averaging-over-surface-layer}
 
 As mentioned above, it is necessary to determine the averaged
 temperature, salinity, and velocity within the surface layer $0 \le d
@@ -3160,7 +3221,8 @@ $h^{(1)}$ then replaces $h^{(0)}$ for use in an updated calculation of
 the surface averaged properties, $\Phi^{(1)}_{r}$, then allowing
 calculation of a new bulk Richardson number, and finally a new
 boundary layer depth $h^{(2)}$.  We are presently testing the needs to
-further iterate beyon $h^{(2)}$.
+further iterate beyond $h^{(2)}$.\footnote{\color{red} Need to
+  summarize MOM6 practice here. \color{black}}
 
 
 
@@ -3223,7 +3285,8 @@ notation from Figure  \ref{fig:cvmix_stability_nonlocal}
 where the surface layer values $\Theta_{r}, S_{r}$ are typically
 approximated by the values as {\tt kt =1}.  This approximation breaks
 down for stable boundary layers with vertical grid spacing finer than
-roughly 2~m, in which case an averaging is required.
+roughly 2~m, in which case an averaging is required as in Section
+\ref{subsubsection:averaging-over-surface-layer}.
 
 There is an alternative method to approximate $\delta\rho[{\tt kt},r]$
 based on linear truncations of Taylor series expansions.  The
@@ -3460,8 +3523,6 @@ depth, we proceed as follows for each horizontal grid point.
 
 \subsubsection{Minimum value for the unresolved velocity scale $U_{t}$}
 
-\color{red} This discussion needs some refinement.  \color{black} 
-
 In the testing of the CVMix implementation of KPP in MOM6, we
 considered a trivial one-dimensional situation of neutral forcing
 ($B_{f} = 0$) and initially uniform temperature and salinity.  We also
@@ -3509,10 +3570,10 @@ the simulation proceeds.
 
 \subsubsection{Restrictions on $h$ under stable buoyancy forcing}
 
-\cite{LargeKPP} suggest on page 372 that for stable buoyancy forcing,
-$B_{f} > 0$, the boundary layer thickness, $h$, should be no larger
-than either the Monin-Obukhov length scale, $L$, or the Ekman
-length scale, 
+\cite{LargeKPP} suggest (see their page 372) that for stable buoyancy
+forcing, $B_{f} > 0$, the boundary layer thickness, $h$, should be no
+larger than either the Monin-Obukhov length scale, $L$, or the Ekman
+length scale,
 \begin{equation}
  h_{E} = 0.7 \; u_{*} /|f|,
 \label{eq:ekman-thickness}
@@ -3670,7 +3731,7 @@ momentum.
   regions of negative buoyancy flux $B_{f} < 0$.  It is proportional
   to $\kappa \, u^{*}$, where $\kappa = 0.4$ is the von Karman
   constant and $u^{*} = \sqrt{|\bftau|/\rho_{o}}$ is the friction
-  velocity.  The proportionality is determined by dimensionaless
+  velocity scale.  The proportionality is determined by dimensionaless
   similarity functions (Sections
   \ref{subsection:m-o-similarity-functions} and
   \ref{subsection:similarity-functions}).  These similarity functions
@@ -4272,7 +4333,7 @@ Monin-Obukhov similarity scalings (see \cite{Terray_etal1996} for the
 case of breaking waves, and Section 2.2 of
 \cite{SullivanMcWilliams2010} for wave-driven winds).  In the presence
 of waves, the ocean surface contains both breaking waves to enhance
-upper ocean mixing and dissipation; swell, which can modify the the
+upper ocean mixing and dissipation; swell, which can modify the
 atmospheric planetary boundary layer by providing momentum to lower
 atmospheric winds; and the coupling of Stokes drift to currents to
 produce Langmuir cells and associated turbulence

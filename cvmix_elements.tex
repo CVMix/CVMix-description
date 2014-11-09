@@ -71,12 +71,10 @@ does not need to be given the sea level field.
 \item {\sc tracer cell arrays}: Tracer cell arrays are labelled with
   the discrete index {\tt kt}, and have dimensions {\tt nlevs}.  The
   index {\tt kt} increases downward starting from {\tt kt} =1 for the
-  top model grid cell.  The number of levels, {\tt nlevs}, is a
-  function of the column, with only wet points included in a CVMix
-  column.\footnote{\color{red} Is this still true for the code?}
-  Examples of tracer cell arrays include temperature, salinity,
-  pressure, density, thermal expansion coefficient, and haline
-  contraction coefficient.
+  top model grid cell.  The number of wet points, {\tt nlevs}, is a
+  function of the column.  Examples of tracer cell arrays include
+  temperature, salinity, pressure, density, thermal expansion
+  coefficient, and haline contraction coefficient.
 
 \item {\sc w-cell or interface arrays}: W-cell or interface arrays are
   labelled with the discrete index {\tt kw}, and have dimensions {\tt
@@ -207,18 +205,20 @@ to the reference density by
 \end{equation}
 Using the leading order term in a Taylor series expansion, the density
 increment can be approximated by
-\begin{equation}
-\begin{split}
-\mathrm{d}\rho &=  \mathrm{d}{\bf x} \cdot \nabla \rho
+\begin{subequations}
+\begin{align}
+\mathrm{d}\rho &=  \rho({\bf x} + \mathrm{d} \, {\bf x}) - \rho({\bf x})
+ \\
+ &\approx \mathrm{d}{\bf x} \cdot \nabla \rho
  \\
  &= \rho \, \mathrm{d}{\bf x} \cdot \rho^{-1} \, \nabla \rho
 \\
 &= 
 \rho \, \mathrm{d}{\bf x} \cdot 
  \left( -\alpha \, \nabla \Theta + \beta \, \nabla  S  + \frac{\nabla p}{\rho \, c_{\mbox{\tiny sound}}^{2}  } \right),
-\end{split}
+\end{align}
 \label{eq:full-density-increment-displacement}
-\end{equation}
+\end{subequations}
 where all terms on the right hand side are evaluated at the reference
 point ${\bf x}$.  To reach this expression, we introduced the thermal
 expansion coefficient
@@ -256,8 +256,10 @@ to know if through buoyancy forces alone, a particular parcel
 displacement is favored, resisted, or neutral.  For this purpose, we
 introduce the notion of a displacment restricted to adiabatic and
 isohaline conditions (i.e., no heat or salt exchanged during the
-parcel displacement).  Such fictitious displacements occur in the
-absence of mechanical energy needed for mixing.
+parcel displacement).  Such displacements occur in the absence of
+mechanical energy needed for mixing.  Our goal is thus to determine
+{\it neutral} directions, whereby non-dissipative motion occurs in the
+absence of buoyancy forces.
 
 The density change associated with an adiabatic and isohaline
 displacement is determined just by pressure changes arising from the
@@ -283,23 +285,24 @@ The difference in density between a parcel undergoing an adiabatic and
 isohaline displacement, $\rho({\bf x} + \mathrm{d} {\bf x})_{\mbox{\tiny
     adiabatic/isohaline}}$, and the density of the ambient environment,
 $\rho({\bf x} + \mathrm{d} {\bf x})$, is thus given by
-\begin{equation}
-\begin{split}
+\begin{subequations}
+\begin{align}
 \rho({\bf x} + \mathrm{d} {\bf x})  - \rho({\bf x} + \mathrm{d} {\bf x})_{\mbox{\tiny  adiabatic/isohaline}} 
 &=
 \rho[ \Theta({\bf x} + \mathrm{d} {\bf x}), S({\bf x} + \mathrm{d} {\bf x}), p({\bf x} + \mathrm{d} {\bf x})]
 -
 \rho[ \Theta({\bf x} ), S({\bf x}), p({\bf x} + \mathrm{d} {\bf x})]
 \\
-&= 
+&=
   \rho \, \mathrm{d}{\bf x} \cdot 
-  \left( -\alpha \, \nabla \Theta + \beta \, \nabla  S \right).
-\end{split}
+  \left( -\alpha \, \nabla \Theta + \beta \, \nabla  S \right),
+\end{align}
 \label{eq:neutral-directions-motivated}
-\end{equation}
-If a parcel makes an adiabatic and isohaline excursion and finds
-itself in a region where the ambient density is unchanged, then there
-are no buoyancy forces to resist that displacement.  Directions
+\end{subequations}
+where the final equality ignores higher order terms in the Taylor
+series.  If a parcel makes an adiabatic and isohaline excursion and
+finds itself in a region where the ambient density is unchanged, then
+there are no buoyancy forces to resist that displacement.  Directions
 defined by such displacements are termed {\it neutral directions}
 \citep{McDougall1987a}.  By definition, neutral directions are
 orthogonal to the local dia-neutral unit vector
@@ -380,7 +383,8 @@ frequency
 \begin{equation}
 \begin{split}
  N^{2}_{\mbox{\scriptsize full}}(z \rightarrow z+\mathrm{d}z) &\equiv 
- -\left( \frac{g \, [ \rho(z+\mathrm{d} z)  - \rho(z+\mathrm{d} z)_{\mbox{\tiny adiabatic/isohaline}} ] } {\rho(z) \, \mathrm{d}z} \right)
+ -\left( \frac{g}{\mathrm{d}z} \right) 
+   \left( \frac{\rho(z+\mathrm{d} z)  - \rho(z+\mathrm{d} z)_{\mbox{\tiny adiabatic/isohaline}} } {\rho(z) } \right)
 \end{split}
 \label{eq:infinitesimal-delta-rho-elements-upwards-B}
 \end{equation}
@@ -398,7 +402,10 @@ calculation, consider two vertical stratifications.
   more than the ambient density: $\rho(z+\mathrm{d} z) -
   \rho(z+\mathrm{d} z)_{\mbox{\tiny adiabatic/isohaline}} <0$. This
   particular adiabatic and isohaline displacement is resisted by
-  buoyancy forces.  The vertical density profile is thus
+  buoyancy forces.  A displaced parcel will exhibit oscillatory motion
+  with squared frequency $N^{2}_{\mbox{\scriptsize full}}(z
+  \rightarrow z+\mathrm{d}z)$ (see Section 2.9.1 of
+  \cite{Vallis2006}).  The vertical density profile is thus
   gravitationally stable.
 
 \item {\sc gravitationally unstable stratification:
@@ -469,7 +476,8 @@ full squared buoyancy frequency
 \begin{equation}
 \begin{split}
  N^{2}_{\mbox{\scriptsize full}}(z +\mathrm{d}z \rightarrow z) &\equiv 
- \left( \frac{g \, [ \rho(z)  - \rho(z)_{\mbox{\tiny adiabatic/isohaline}} ] } {\rho(z+\mathrm{d}z) \, \mathrm{d}z} \right).
+ \left( \frac{g}{\mathrm{d}z} \right) 
+ \left( \frac{\rho(z)  - \rho(z)_{\mbox{\tiny adiabatic/isohaline}} } {\rho(z+\mathrm{d}z) } \right).
 \end{split}
 \label{eq:infinitesimal-delta-rho-elements-downwards}
 \end{equation}
@@ -489,14 +497,14 @@ frequency at the reference point $z$
 \begin{split}
  N^{2}_{\mbox{\scriptsize full}}(z \rightarrow z + \mathrm{d}z)
  &=
- -\left(  \frac{g \, [\rho(z+\mathrm{d} z)  - \rho(z+\mathrm{d} z)_{\mbox{\tiny adiabatic/isohaline}} ]}{\rho(z)   \, \mathrm{d}z } \right)
+ -\left( \frac{g}{\mathrm{d}z} \right)
+  \left(  \frac{\rho(z+\mathrm{d} z)  - \rho(z+\mathrm{d} z)_{\mbox{\tiny adiabatic/isohaline}} }{\rho(z) } \right)
 \\
 &=
- -\frac{g}{\rho(z)}  \left( 
+ -\left( \frac{g}{\mathrm{d}z } \right)  \left( 
  \frac{\rho[ \Theta(z + \mathrm{d} z), S(z + \mathrm{d} z), p(z + \mathrm{d} z)]
 -
-\rho[ \Theta(z), S(z), p(z + \mathrm{d}z)]
-}{\mathrm{d}z}
+\rho[ \Theta(z), S(z), p(z + \mathrm{d}z)] }{\rho(z)}
 \right).
 \end{split}
 \label{eq:infinitesimal-delta-rho-elements-upwards-summary}
@@ -509,13 +517,13 @@ $z+\mathrm{d}z$
 \begin{split}
  N^{2}_{\mbox{\scriptsize full}}(z + \mathrm{d}z \rightarrow z)
  &=
- \left(  \frac{g \, [\rho(z)  - \rho(z)_{\mbox{\tiny adiabatic/isohaline}}  ]}{\rho(z+\mathrm{d}z)   \, \mathrm{d}z } \right)  
+ \left( \frac{g}{\mathrm{d}z} \right)
+ \left(  \frac{ \rho(z)  - \rho(z)_{\mbox{\tiny adiabatic/isohaline}}  }{\rho(z+\mathrm{d}z)  } \right)  
  \\
  &=
- \frac{g}{\rho(z+\mathrm{d}z)}  \left( 
- \frac{ \rho[ \Theta(z), S(z), p(z)]-
- \rho[ \Theta(z+\mathrm{d}z), S(z+\mathrm{d}z), p(z)]
-  }{\mathrm{d}z}
+ \left( \frac{g}{\mathrm{d}z } \right) 
+ \left( \frac{ \rho[ \Theta(z), S(z), p(z)]- \rho[ \Theta(z+\mathrm{d}z), S(z+\mathrm{d}z), p(z)]
+  }{\rho(z+\mathrm{d}z)}  
 \right).
 \end{split}
 \label{eq:infinitesimal-delta-rho-elements-downward-summary}
@@ -528,35 +536,33 @@ For this purpose, we take the average to yield an expression in terms
 of density differences \small
 \begin{equation}
 \begin{split}
-N^{2}_{\mbox{\scriptsize full}}(z+\mathrm{d}z/2) 
- &\equiv 
+&N^{2}_{\mbox{\scriptsize full}}(z+\mathrm{d}z/2) 
+ \equiv 
  \frac{N^{2}_{\mbox{\scriptsize full}}(z \rightarrow z + \mathrm{d}z) + N^{2}_{\mbox{\scriptsize full}}(z + \mathrm{d}z \rightarrow z)}{2}
 \\
-&= \frac{g}{2} 
+&= -\frac{g}{2 \, \mathrm{d}z} 
   \left( 
- -\frac{
+ \frac{
     \rho[ \Theta(z + \mathrm{d} z), S(z + \mathrm{d} z), p(z + \mathrm{d} z)]
   -\rho[ \Theta(z), S(z), p(z + \mathrm{d}z)]
-  }{\rho(z) \, \mathrm{d}z}
- \; + \; 
+  }{\rho(z) }
+ \; - \; 
  \frac{ \rho[ \Theta(z), S(z), p(z)]-
  \rho[ \Theta(z+\mathrm{d}z), S(z+\mathrm{d}z), p(z)]
-  }{\rho(z+\mathrm{d}z) \, \mathrm{d}z}
+  }{\rho(z+\mathrm{d}z) }
  \right).
 \end{split}
 \label{eq:n2-in-terms-of-density-differences}
 \end{equation}
 \normalsize As a sanity check, note that if the density is independent
 of pressure, and we replace densities in the denominator with the
-constant reference density $\rho_{o}$, we have the familiar simplified
-result
+constant reference density $\rho_{o}$ as commonly done for the
+Boussinesq approximation (see Section 2 of \cite{Roquet_etal2014}), we
+have the familiar simplified result
 \begin{equation}
-N^{2}(z+\mathrm{d}z/2) = -\frac{g}{\rho_{o}} 
+N^{2}(z+\mathrm{d}z/2) = -\frac{g}{\mathrm{d}z} 
   \left( 
- \frac{
-    \rho[ \Theta(z + \mathrm{d} z), S(z + \mathrm{d} z)]
-  -\rho[ \Theta(z), S(z)]
-  }{\mathrm{d}z}
+ \frac{ \rho[ \Theta(z + \mathrm{d} z), S(z + \mathrm{d} z)]  -\rho[ \Theta(z), S(z)]  }{\rho_{o}}
  \right)    \qquad   \mbox{density independent of pressure}.
 \end{equation}
 
@@ -590,13 +596,14 @@ equation (\ref{eq:n2-in-terms-of-density-differences}), the expression
 calculations of the equation of state.  What it does require is
 calculation of the thermal expansion coefficients, with that
 calculation also used for neutral physics.  So the expression
-(\ref{eq:n2-in-terms-of-tracers}) may be somewhat more efficient.
-Nonetheless, when used as a measure of gravitational stability, the
-expression (\ref{eq:n2-in-terms-of-density-differences}) makes less
-assumptions about our ability to truncate the Taylor series at the
-leading order.  This truncation may become problematic particularly in
-high latitudes where the equation of state can become quite nonlinear.
-Hence, we generally do not recommend use of the expression
+(\ref{eq:n2-in-terms-of-tracers}) may be somewhat more computationally
+efficient.  Nonetheless, when used as a measure of gravitational
+stability, the expression
+(\ref{eq:n2-in-terms-of-density-differences}) makes less assumptions
+about our ability to truncate the Taylor series at the leading order.
+This truncation may become problematic particularly in high latitudes
+where the equation of state can become quite nonlinear.  Hence, we
+generally do not recommend use of the linear expression
 (\ref{eq:n2-in-terms-of-tracers}) for the calculation of water column
 stability.
 
@@ -618,20 +625,20 @@ the following choice made:
 We now write the buoyancy frequency expression
 (\ref{eq:n2-in-terms-of-density-differences}) in terms of discrete
 indices for ready incorporation into a numerical model, in which we have 
-\small
+\scriptsize
 \begin{mdframed}[backgroundcolor=lightgray!50]
 \begin{equation}
 N^{2}({\tt kw}) = 
- \frac{g}{2} 
+ -\left( \frac{g}{2 \,  {\tt dzw(kw)} } \right) 
   \left( 
- -\frac{
+ \frac{
     \rho[ \Theta( {\tt kt}), S( {\tt kt}), p( {\tt kt})]
   -\rho[ \Theta( {\tt kt+1} ), S({\tt kt +1} ), p( {\tt kt} )]
-  }{\rho({\tt kt+1} ) \,  {\tt dzw(kw)} }
- \; +  \; 
+  }{\rho({\tt kt+1} ) }
+ \; -  \; 
  \frac{ \rho[ \Theta({\tt kt+1}), S({\tt kt+1}), p({\tt kt+1})]-
  \rho[ \Theta({\tt kt} ), S( {\tt kt}), p({\tt kt+1})]
-  }{\rho( {\tt kt}) \, {\tt dzw(kw)}  }
+  }{\rho( {\tt kt}) }
  \right).
 \label{eq:n2-in-terms-of-density-differences-discrete}
 \end{equation}
@@ -666,9 +673,10 @@ instabilities.\footnote{The critical Richardson number, below which
   instabilities are enabled, may need to be artificially set larger
   than the canonical 1/4 when considering discrete approximations to
   the velocity shear.  The reason is that we are unable to precisely
-  compute the vertical shear on a finite grid.}  Consequently, many
-vertical mixing schemes make use of the Richardson number, such as the
-shear mixing schemes presented in Chapter \ref{chapter:cvmix_shear}.
+  compute the vertical shear on a finite grid.  See Section 4b of
+  \cite{Jacksonetal2008} for discussion.}  Consequently, many vertical
+mixing schemes make use of the Richardson number, such as the shear
+mixing schemes presented in Chapter \ref{chapter:cvmix_shear}.
 Additionally, the KPP boundary layer scheme (Chapter
 \ref{chapter:cvmix_kpp}) makes use of a bulk Richardson number used to
 define properties of the surface planetary boundary layer (Section
@@ -887,10 +895,4 @@ so that
 
 
 \end{itemize}
-
-
-\subsection{Considerations for unstructured grids used by MPAS-ocean}
-\label{subsection:mpas-grid-richardson-number}
-
-To be completed.  
 

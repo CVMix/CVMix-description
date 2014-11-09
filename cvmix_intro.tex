@@ -13,16 +13,16 @@ parameterizations available with CVMix.
 
 The CVMix Project aims to address the needs of various ocean modeling
 groups to code, test, tune, and document parameterizations of oceanic
-vertical mixing for numerical ocean simulations.  The project focuses
-on first-order turbulence closures for vertical mixing
-processes.\footnote{Those interested in higher order turbulence
-  closure schemes for ocean modeling may wish to consider using the
-  General Ocean Turbulence Model (GOTM) from \cite{GOTM}.}  CVMix does
-{\it not} determine time stepping for the model prognostic fields.
-Instead, time stepping is the responsibility of the calling model
-code.  The following schemes are included in the CVMix
-parameterizations during phase I of the development.
+vertical mixing for numerical ocean simulations.  Phase I of the
+project has focused on first-order turbulence closures for vertical
+mixing processes.  Future development may consider higher order
+schemes, motivated by developments with the General Ocean Turbulence
+Model (GOTM) from \cite{GOTM}.  Notably, CVMix does {\it not}
+determine time stepping for the model prognostic fields.  Instead,
+time stepping is the responsibility of the calling model code.  
 
+The following schemes are included in the CVMix parameterizations
+during Phase I of the development.
 \begin{itemize}
 
 \item {\sc Static background mixing} (Chapter
@@ -164,6 +164,7 @@ directly associated with local vertical gradients of $\lambda$, in
 which we have
 \begin{equation}
 \overline{w' \, \lambda'}^{\, \mbox{\scriptsize non-local}} = K^{\mbox{\tiny non-local}}_{\lambda}  \; \gamma_{\lambda}.
+\label{eq:non-local-transport-intro}
 \end{equation}
 KPP is the only scheme available with CVMix that prescribes a nonzero
 value for $\gamma_{\lambda}$.  In the original implementation from
@@ -235,14 +236,14 @@ with this approach.
 
 The above concerns with the \cite{LargeKPP} implementation of KPP are
 eliminated {\it if} one does not match the boundary layer diffusivity
-the interior diffusivity.  In this case, the KPP scheme and all other
-schemes can be called in any order, with the resulting net diffusivity
-used after all of the physical processes contribute to the mixing
-coefficients.  This alternative simplified approach to the KPP scheme
-is discussed in Section \ref{subsection:kpp-shape-function}.  We
-recommend using the simpler approach, unless aiming to reproduce older
-results from KPP, which were generally formulated using the
-\cite{LargeKPP} matching conditions.
+to the interior diffusivity.  In this case, the KPP scheme and all
+other schemes can be called in any order, with the resulting net
+diffusivity used after all of the physical processes contribute to the
+mixing coefficients.  This alternative simplified approach to the KPP
+scheme is discussed in Section \ref{subsection:kpp-shape-function}.
+We recommend using the simpler approach, unless aiming to reproduce
+older results from KPP formulated using the \cite{LargeKPP} matching
+conditions.
 
 These considerations lead to the flow diagram shown in Figure
 \ref{fig:vertical_mix_flow_cvmix} for use of CVMix schemes.
@@ -266,10 +267,10 @@ These considerations lead to the flow diagram shown in Figure
   made to chosen interior non-convective mixing schemes, such as shear
   mixing, tide mixing, and double diffusion.  Thereafter, the surface
   boundary layer scheme is called, with KPP the scheme targetted for
-  CVMix.  If implementing the KPP scheme according to \cite{LargeKPP},
-  then the boundary layer calculation must come after the interior
-  non-convective portion, and before the convective portion (see
-  discussion in Section
+  Phase I of CVMix.  If implementing the KPP scheme according to
+  \cite{LargeKPP}, then the boundary layer calculation {\it must} come
+  after the interior non-convective portion, and before the convective
+  portion (see discussion in Section
   \ref{section:vert_mix_schemes_ordering_cvmix}).  If instead using
   the simpler approach detailed in Section
   \ref{subsection:kpp-shape-function}, then KPP can be called in any
@@ -279,9 +280,10 @@ These considerations lead to the flow diagram shown in Figure
   for the surface boundary layer, parameterized convective mixing is
   generally performed only beneath the KPP boundary layer.  The final
   step returns the diffusivity $K_{\lambda}$, viscosity, and non-local
-  transport $\gamma_{\lambda}$, arrays to the calling ocean model
-  code.  A new time step starts by reinitializing the diffusivities to
-  their static background values.}
+  transport $K^{\mbox{\tiny non-local}}_{\lambda} \; \gamma_{\lambda}$
+  (equation (\ref{eq:non-local-transport-intro})), arrays to the
+  calling ocean model code.  A new time step starts by reinitializing
+  the diffusivities to their static background values.}
 \label{fig:vertical_mix_flow_cvmix}
 \end{center}
 \rule{\textwidth}{0.005in}

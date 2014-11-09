@@ -26,19 +26,12 @@ gradient Richardson number discussed in Section
  \mbox{Ri} = \frac{N^{2}}{|\partial_{z} \, {\bf u}|^{2} }.
 \label{eq:richardson-number}
 \end{equation}
-In this expression, $N^{2}$ is the squared buoyancy frequency (Section
-\ref{section:buoyancy-frequency-elements}), with a linear
-approximation given by
-\begin{equation}
- N^{2}_{\mbox{\scriptsize linear}} 
- = g \, \left( \alpha \, \frac{\partial \Theta}{\partial z} 
-                         - \beta  \, \frac{\partial S}{\partial z} \right).
-\label{eq:buoyancy-frequency-shear}
-\end{equation}
-We assume throughout that the water is stably stratified, so that
-$N^{2} > 0$.  With $N^{2} < 0$, one should set the diffusivity and
-viscosity to a large value to parameterize mixing associated with the
-gravitational instability.
+In this expression, $N^{2}$ is the squared buoyancy frequency detailed
+in Section \ref{section:buoyancy-frequency-elements}.  We assume
+throughout that the water is stably stratified, so that $N^{2} > 0$.
+With $N^{2} < 0$, one should set the diffusivity and viscosity to a
+large value to parameterize mixing associated with the gravitational
+instability.
 
 The denominator in the Richardson number in equation
 (\ref{eq:richardson-number}) is the squared vertical shear of the
@@ -47,7 +40,7 @@ horizontal velocity vector resolved by the model grid
  |\partial_{z} \, {\bf u}|^{2}  =
   \left( \frac{\partial u}{\partial z} \right)^{2} 
  +
- \left( \frac{\partial V}{\partial z} \right)^{2}. 
+ \left( \frac{\partial v}{\partial z} \right)^{2}. 
 \end{equation}
 When the Richardson number is below a critical value, $\mbox{Ri} <
 \mbox{Ri}_{c}$, shear instabilities can grow to initiate turbulence,
@@ -64,8 +57,6 @@ are many reasons that 1/4 is not always the optimal value to use in
 numerical simulations.  Thus, most schemes choose noticeably larger
 values, which allows for shear-induced mixing to be intiated in less
 unstable regions of the model's resolved flow.
-
-
 
 
 \section{Pacanowski and Philander mixing}
@@ -91,6 +82,10 @@ number is not constant using this prescription
  &= 1 + a  \, \mbox{Ri}.
 \end{align}
 \end{subequations}
+For gravitationally unstable profiles, the mixing coefficients are set
+to a large value, as in the shear mixing from \cite{LargeKPP}
+discussed in Section
+\ref{section:shear-instability-parameterized-kpp}.
 
 
 \section{Richardson number mixing from \cite{LargeKPP}}
@@ -101,6 +96,7 @@ For regions beneath the KPP boundary layer (see Figure
 \cite{Large_Gent1999} parameterized shear induced mixing using the
 following diffusivities
 \begin{equation}
+\begin{split}
   \kappa_{\mbox{\tiny kpp shear}}= \left\{
 \begin{array}{llll}
 &\kappa_{0}  &\mbox{Ri} < 0  &\mbox{gravitational instability regime} 
@@ -112,6 +108,7 @@ following diffusivities
 \end{array}
  \right.
 \label{eq:kappa-shear-kpp}
+\end{split}
 \end{equation}
 The form in the shear instability regime falls most rapidly near
 $\mbox{Ri} = 0.4 \, \mbox{Ri}_{0}$, which aims to parameterize the
