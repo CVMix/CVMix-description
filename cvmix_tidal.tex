@@ -344,7 +344,12 @@ number chosen for the tide mixing parameterizations.
 \item The earth system models of \cite{Dunne_etal_part1_2012} assume a
   unit Prandtl number for mixing related to tide mixing.
 
-\item What about \cite{Jayne2009}?  
+\item \cite{Jayne2009}, as well as the released version of CESM, chose
+  a Prandtl number of 10 for the tidal mixing scheme (see page 1759 of
+  \cite{Jayne2009}).  The only exception is when vertical
+  stratification goes to zero, in which case the Prandtl number is set
+  to unity, consistent with the KPP implementation (in CESM) of
+  convective mixing.
 
 \end{itemize}
 
