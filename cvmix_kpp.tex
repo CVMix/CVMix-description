@@ -3169,32 +3169,18 @@ expose the physics of the bulk Richardson number.
 \subsubsection{Averaging properties over the surface layer}
 \label{subsubsection:averaging-over-surface-layer}
 
-As mentioned above, it is necessary to determine the averaged
-temperature, salinity, and velocity within the surface layer $0 \le d
-\le \epsilon \, h$ in order to compute the bulk Richardson number
-(\ref{eq:bulk-ri-large-kpp}).  The surface layer will generally
-penetrate many grid cells in the vertical where the boundary deepens
-due to negative buoyancy forcing and/or in models with refined
-vertical grid spacing.  In order to reduce sensitivity to vertical
-grid spacing, it is necessary to average properties over the surface
-layer prior to computing the bulk Richardson number.
+It is necessary to determine the averaged temperature, salinity, and
+velocity within the surface layer $0 \le d \le \epsilon \, h$ in order
+to compute the bulk Richardson number (\ref{eq:bulk-ri-large-kpp}).
+The surface layer will generally penetrate many grid cells in the
+vertical where the boundary deepens due to negative buoyancy forcing
+and/or in models with refined vertical grid spacing.  In order to
+reduce sensitivity to vertical grid spacing, it is necessary to
+average properties over the surface layer prior to computing the bulk
+Richardson number.
 
-However, the bulk Richardson number (equation
-(\ref{eq:bulk-ri-large-kpp})) is itself needed to compute the boundary
-layer depth $h$.  So we have a circular situation in which to compute
-$\mbox{Ri}_{b}$ we need the boundary layer depth $h$, but to compute
-$h$ we need $\mbox{Ri}_{b}$.  We can resolve this circularity by
-considering an iterative process.  There are additional subtleties
-when averaging temperature and salinity over the surface layer.  Each
-of these considerations must be handled by the model calling CVMix,
-since the density difference $\rho[\Theta(d), S(d), p(d)] -
-\rho[\Theta_{r}, S_{r}, p(d)]$ and velocity difference $|{\bf U}_{r} -
-{\bf U}(d)|$ are inputs to the CVMix scheme.  We outline here the
-method used for the MOM6 implementation of CVMix.
-
-On the initial iteration, we assume a boundary layer depth, $h^{(0)}$,
-(e.g., $h^{(0)} = 100~\mbox{m}$) and compute the surface layer
-averaged tracer and velocity according to the expression
+The surface layer averaged tracer and velocity should be computed
+according to the expression
 \begin{equation}
    \Phi^{(0)}_{r}(d) = \frac{1}{\min(\epsilon \, h^{(0)}, d)} \, \int\limits^{0}_{-\min(\epsilon \, h^{(0)}, d)} \Phi(z) \, \mathrm{d}z.
 \label{eq:surface-averaging}
@@ -3213,16 +3199,61 @@ spuriously stabilizing or destabilizing these points, which could
 occur if computing an average that includes deeper points within the
 surface layer.
 
-After determining the initial surface averaged properties
-$\Phi^{(0)}_{r}$, using an initial guess for $h^{(0)}$, then the bulk
-Richardson number is used to determine the first nontrivial estimate
-of the boundary layer depth, $h^{(1)}$.  The boundary layer depth
-$h^{(1)}$ then replaces $h^{(0)}$ for use in an updated calculation of
-the surface averaged properties, $\Phi^{(1)}_{r}$, then allowing
-calculation of a new bulk Richardson number, and finally a new
-boundary layer depth $h^{(2)}$.  We are presently testing the needs to
-further iterate beyond $h^{(2)}$.\footnote{\color{red} Need to
-  summarize MOM6 practice here. \color{black}}
+
+\subsubsection{Algorithm for computing boundary layer depth}
+\label{subsubsection:obldepth-algorithm}
+
+It is necessary to determine the averaged temperature, salinity, and
+velocity within the surface layer $0 \le d \le \epsilon \, h$ in order
+to compute the bulk Richardson number (\ref{eq:bulk-ri-large-kpp}).
+Conversely, the bulk Richardson number is needed to compute the
+boundary layer depth $h$.  We thus have a circular situation in which
+to compute $\mbox{Ri}_{b}$ we need the boundary layer depth $h$, but
+to compute $h$ we need $\mbox{Ri}_{b}$.  We have developed two methods
+to resolve this circularity.  We detail here both methods for
+completeness, even though the older method has proven to be superior.
+These considerations must be handled by the model calling CVMix, since
+the density difference $\rho[\Theta(d), S(d), p(d)] - \rho[\Theta_{r},
+S_{r}, p(d)]$ and velocity difference $|{\bf U}_{r} - {\bf U}(d)|$ are
+inputs to the CVMix scheme.
+
+\begin{itemize}
+
+\item {\sc Column sampling method:} The second method is based on the
+  original implementation in POP and MOM5.  It has been tested in MOM6
+  and found to be simpler than the iterative method, and to produce
+  robust answers with just a single iteration.  The method computes a
+  bulk Richardson number for each grid cell in a vertical column.  In
+  computing surface layer averaged properties according to equation
+  (\ref{eq:surface-averaging}), we assume the boundary layer depth
+  equals to the depth of the present grid cell.  The resulting vector
+  bulk Richardson number for the full column is passed to a CVMix
+  routine to determine where in the column the bulk Richardson number
+  becomes larger than the critical value.  Interpolation then
+  determines the boundary layer depth.  This approach is quite
+  straightforward and has been used for years in MOM and POP.  It is
+  recommended for those implementing CVMix/KPP in their model.
+
+\item {\sc Iterative method:} The following iterative method was coded
+  in MOM6.  The first iteration assumes a boundary layer depth,
+  $h^{(0)}$, (e.g., $h^{(0)} = 100~\mbox{m}$) and then computes the
+  surface layer average properties according to
+  (\ref{eq:surface-averaging}).  After determining the initial surface
+  averaged properties $\Phi^{(0)}_{r}$, using the initial guess for
+  $h^{(0)}$, then the bulk Richardson number is used to determine an
+  updated estimate of the boundary layer depth, $h^{(1)}$.  The
+  boundary layer depth $h^{(1)}$ then replaces $h^{(0)}$ for use in an
+  updated calculation of the surface averaged properties,
+  $\Phi^{(1)}_{r}$, then allowing calculation of a new bulk Richardson
+  number, and finally a new boundary layer depth $h^{(2)}$.  In
+  practice, $h^{(2)}$ has been found to be sufficiently robust, thus
+  requiring no further iterations.  This method produces answers quite
+  close to the column sampling method.  However, it is somewhat more
+  complicated, prompting us to prefer the older column sampling
+  method.  
+
+
+\end{itemize}
 
 
 
