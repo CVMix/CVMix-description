@@ -156,18 +156,19 @@ does not need to be given the sea level field.
     dzw(nlevs+1)}.  The array element {\tt dzw(kw=1)} measures the
   distance from the top of the top tracer cell to the tracer point
   {\tt T(kt=1)}, and array element {\tt zw(kw=nlevs+1)} measures the
-  distance from the bottom tracer point {\tt T(kt=nlevs)} to the bottom
-  of the bottom tracer cell.  Intermediate elements of {\tt dzw}
-  measure the distance between tracer points, or equivalently the
-  thickness of w-cells.  The distance from the ocean surface to a
+  distance from the bottom tracer point {\tt T(kt=nlevs)} to the
+  bottom of the bottom tracer cell.  Intermediate elements of {\tt
+    dzw} measure the distance between tracer points, or equivalently
+  the thickness of w-cells.  The distance from the ocean surface to a
   tracer point is measured by the array element {\tt zt(kt)}, and the
   distance to the interface is measured by {\tt zw(kw)}.  The total
   thickness of a column is {\tt zw(nlevs+1)}, and it is generally time
   dependent, as are all of the grid distances {\tt dzt} and {\tt dzw}.
   Arrays that are defined at the interface, such as buoyancy
-  frequency, Richardson number, diffusivity, viscosity, have vertical
-  indices {\tt kw}.  Arrays defined at the tracer cell point, such as
-  temperature, salinity, and density, have vertical indices {\tt kt}.}
+  frequency, local Richardson number, diffusivity, viscosity, have
+  vertical indices {\tt kw}.  Arrays defined at the tracer cell point,
+  such as temperature, salinity, density, and bulk Richardson number,
+  have vertical indices {\tt kt}.}
 \label{fig:cvmix_discrete_vertical}
 \end{center}
 \rule{\textwidth}{0.005in}

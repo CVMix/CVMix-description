@@ -728,7 +728,7 @@ formulating how boundary fluxes impact the ocean.
 The buoyancy of a fluid is commonly defined as (e.g., page 83 of
 \cite{LargeKPP_lectures})
 \begin{equation}
- B = g \, \left( \frac{ \rho_{o} - \rho}{\rho_{o}} \right), 
+ B = -g \, \left( \frac{ \rho - \rho_{o}}{\rho_{o}} \right), 
 \label{eq:buoyancy-kpp}
 \end{equation}
 where $g$ is the constant gravitational acceleration, and $\rho_{o}$
@@ -3080,7 +3080,7 @@ approach is counter to the idea that some of the absorbed shortwave
 indeed is carried by the turbulent eddies.
 
 
-\subsection{Bulk Richardson number and the OBL thickness}
+\subsection{Bulk Richardson number and the boundary layer thickness}
 \label{subsection:kpp-obl-thickness}
 
 \cite{LargeKPP} define the KPP boundary layer depth to be an
@@ -3111,7 +3111,7 @@ layer.
 Using the notation from \cite{LargeKPP}, we may write the bulk
 Richardson number at a distance $d$ from the ocean surface in the form
 \begin{equation}
-  \mbox{Ri}_{b} (d) = \frac{d \, [B_{r} - B(d) ]}{ |{\bf U}_{r} - {\bf U}(d)|^{2} + U_{t}^{2}}. 
+  \mbox{Ri}_{b} (d) = \frac{(d-d_{r}) \, [B_{r} - B(d) ]}{ |{\bf U}_{r} - {\bf U}(d)|^{2} + U_{t}^{2}}. 
 \label{eq:bulk-ri-large-kpp-large-etal-form}
 \end{equation}
 This calculation makes use of the surface layer averaged buoyancy,
@@ -3119,13 +3119,29 @@ $B_{r}$, and surface layer averaged horizontal velocity, ${\bf
   U}_{r}$, where the surface layer is defined by $0 \le \sigma \le
 \epsilon$ (Figure \ref{fig:boundary-layer-schematic-kpp}). The term
 $U_{t}^{2}$ is associated with parameterized unresolved vertical
-shears that may act to further reduce the bulk Richardson number.
+shears that may act to further reduce the bulk Richardson number.  
+
+A depth difference, $d-d_{r}$, appears in equation
+(\ref{eq:bulk-ri-large-kpp-large-etal-form}).  It measures the
+distance between the buoyancy diagnosed at depth $d$ and the depth at
+the center of the surface layer, $d_{r}$.  It is the distance
+$d-d_{r}$ that is used to measure the non-local vertical shear $|{\bf
+  U}_{r} - {\bf U}(d)|/(d-d_{r})$, and the non-local buoyancy
+frequency.  Use of $d-d_{r}$ acts to systematically reduce the
+diagnosed bulk Richardson number, and so in general will produce a
+slightly deeper boundary layer depth.  Notably, \cite{LargeKPP} use
+$d$ rather than $d-d_{r}$ in their bulk Richardson number.  However,
+the POP implementation of KPP has made use of $d-d_{r}$ for years, and
+we recommend its use for CVMix/KPP.  Importantly, by making use of the
+recommended boundary layer depth algorithm discussed in Section
+\ref{subsubsection:obldepth-algorithm}, we are ensured that $d-d_{r}$
+is always positive.
 
 Using notation introduced in the local gravitational stability
 calculation from Section \ref{section:buoyancy-frequency-elements}, we
 write the bulk Richardson number in the form
 \begin{equation}
-  \mbox{Ri}_{b}(d) = \left( \frac{d \, g}{\rho_{o}} \right) 
+  \mbox{Ri}_{b}(d) = \left( \frac{(d-d_{r})  \, g}{\rho_{o}} \right) 
    \left( 
    \frac{\rho[\Theta(d), S(d), p(d)]   - \rho[\Theta_{r}, S_{r}, p(d)]}{ |{\bf U}_{r} - {\bf U}(d)|^{2} + U_{t}^{2}}
   \right). 
@@ -3166,24 +3182,42 @@ expose the physics of the bulk Richardson number.
 \end{itemize}
 
 
-\subsubsection{Averaging properties over the surface layer}
-\label{subsubsection:averaging-over-surface-layer}
+\subsubsection{Algorithm for computing boundary layer depth}
+\label{subsubsection:obldepth-algorithm}
 
 It is necessary to determine the averaged temperature, salinity, and
 velocity within the surface layer $0 \le d \le \epsilon \, h$ in order
 to compute the bulk Richardson number (\ref{eq:bulk-ri-large-kpp}).
-The surface layer will generally penetrate many grid cells in the
-vertical where the boundary deepens due to negative buoyancy forcing
-and/or in models with refined vertical grid spacing.  In order to
-reduce sensitivity to vertical grid spacing, it is necessary to
-average properties over the surface layer prior to computing the bulk
-Richardson number.
+Conversely, the bulk Richardson number is needed to compute the
+boundary layer depth $h$, which is needed to know the surface layer
+thickness, $\epsilon \, h$.  We thus have a circular situation in
+which to compute $\mbox{Ri}_{b}$ requires the boundary layer depth
+$h$, but to compute $h$ we need $\mbox{Ri}_{b}$.  We have developed
+two methods to resolve this circularity.  We detail here both methods
+for completeness.  After much testing, we recommend the original
+method coded in POP and MOM5.  Notably, these considerations must be
+handled by the model calling CVMix, since the density difference
+$\rho[\Theta(d), S(d), p(d)] - \rho[\Theta_{r}, S_{r}, p(d)]$ and
+velocity difference $|{\bf U}_{r} - {\bf U}(d)|$ are inputs to the
+CVMix scheme.
 
-The surface layer averaged tracer and velocity should be computed
+
+\paragraph{Iterative approach (not recommended):}
+During development of KPP for MOM6 and MPAS, we considered the
+following iterative approach. The first iteration assumes a boundary
+layer depth, $h^{(0)}$, (e.g., $h^{(0)} = 100~\mbox{m}$) and then
+computes the surface layer average properties.  The surface layer will
+generally penetrate many grid cells in the vertical where the boundary
+deepens due to negative buoyancy forcing and/or in models with refined
+vertical grid spacing.  In order to reduce sensitivity to vertical
+grid spacing, it is necessary to average properties over the surface
+layer prior to computing the bulk Richardson number.
+
+The surface layer averaged tracer and velocity can be computed
 according to the expression
 \begin{equation}
-   \Phi^{(0)}_{r}(d) = \frac{1}{\min(\epsilon \, h^{(0)}, d)} \, \int\limits^{0}_{-\min(\epsilon \, h^{(0)}, d)} \Phi(z) \, \mathrm{d}z.
-\label{eq:surface-averaging}
+   \Phi^{(0)}_{r}(d) = \frac{1}{\min(\epsilon \, h^{(0)}, d)} \, \int\limits^{\eta}_{-\min(\epsilon \, h^{(0)}, d)} \Phi(z) \, \mathrm{d}z.
+\label{eq:surface-averaging-iterative}
 \end{equation}
 For depths beneath the surface layer, $d > \epsilon \, h^{(0)}$, the
 surface averaged properties are computed over the full extent of the
@@ -3199,62 +3233,86 @@ spuriously stabilizing or destabilizing these points, which could
 occur if computing an average that includes deeper points within the
 surface layer.
 
+After determining the initial surface averaged properties
+$\Phi^{(0)}_{r}$ according to equation (\ref{eq:surface-averaging}),
+using the initial guess for $h^{(0)}$, then the bulk Richardson number
+is used to determine an updated estimate of the boundary layer depth,
+$h^{(1)}$.  The boundary layer depth $h^{(1)}$ then replaces $h^{(0)}$
+for use in an updated calculation of the surface averaged properties,
+$\Phi^{(1)}_{r}$, then allowing calculation of a new bulk Richardson
+number, and finally a new boundary layer depth $h^{(2)}$.  In
+practice, $h^{(2)}$ has been found to be sufficiently robust, thus
+requiring no further iterations.  
 
-\subsubsection{Algorithm for computing boundary layer depth}
-\label{subsubsection:obldepth-algorithm}
-
-It is necessary to determine the averaged temperature, salinity, and
-velocity within the surface layer $0 \le d \le \epsilon \, h$ in order
-to compute the bulk Richardson number (\ref{eq:bulk-ri-large-kpp}).
-Conversely, the bulk Richardson number is needed to compute the
-boundary layer depth $h$.  We thus have a circular situation in which
-to compute $\mbox{Ri}_{b}$ we need the boundary layer depth $h$, but
-to compute $h$ we need $\mbox{Ri}_{b}$.  We have developed two methods
-to resolve this circularity.  We detail here both methods for
-completeness, even though the older method has proven to be superior.
-These considerations must be handled by the model calling CVMix, since
-the density difference $\rho[\Theta(d), S(d), p(d)] - \rho[\Theta_{r},
-S_{r}, p(d)]$ and velocity difference $|{\bf U}_{r} - {\bf U}(d)|$ are
-inputs to the CVMix scheme.
-
-\begin{itemize}
-
-\item {\sc Column sampling method:} The second method is based on the
-  original implementation in POP and MOM5.  It has been tested in MOM6
-  and found to be simpler than the iterative method, and to produce
-  robust answers with just a single iteration.  The method computes a
-  bulk Richardson number for each grid cell in a vertical column.  In
-  computing surface layer averaged properties according to equation
-  (\ref{eq:surface-averaging}), we assume the boundary layer depth
-  equals to the depth of the present grid cell.  The resulting vector
-  bulk Richardson number for the full column is passed to a CVMix
-  routine to determine where in the column the bulk Richardson number
-  becomes larger than the critical value.  Interpolation then
-  determines the boundary layer depth.  This approach is quite
-  straightforward and has been used for years in MOM and POP.  It is
-  recommended for those implementing CVMix/KPP in their model.
-
-\item {\sc Iterative method:} The following iterative method was coded
-  in MOM6.  The first iteration assumes a boundary layer depth,
-  $h^{(0)}$, (e.g., $h^{(0)} = 100~\mbox{m}$) and then computes the
-  surface layer average properties according to
-  (\ref{eq:surface-averaging}).  After determining the initial surface
-  averaged properties $\Phi^{(0)}_{r}$, using the initial guess for
-  $h^{(0)}$, then the bulk Richardson number is used to determine an
-  updated estimate of the boundary layer depth, $h^{(1)}$.  The
-  boundary layer depth $h^{(1)}$ then replaces $h^{(0)}$ for use in an
-  updated calculation of the surface averaged properties,
-  $\Phi^{(1)}_{r}$, then allowing calculation of a new bulk Richardson
-  number, and finally a new boundary layer depth $h^{(2)}$.  In
-  practice, $h^{(2)}$ has been found to be sufficiently robust, thus
-  requiring no further iterations.  This method produces answers quite
-  close to the column sampling method.  However, it is somewhat more
-  complicated, prompting us to prefer the older column sampling
-  method.  
+This method produces answers quite close to the column sampling
+method.  However, it is somewhat more complicated.  We therefore
+prefer the older column sampling method discussed next. 
 
 
-\end{itemize}
+\paragraph{Column sampling method (recommended):} 
+The second method is based on the original implementation in POP and
+MOM5.  It has been tested in MOM6 and found to be simpler than the
+iterative method, and to produce robust answers.
 
+The method computes a bulk Richardson number for each grid cell in a
+vertical column.  In computing surface layer averaged properties, we
+assume the boundary layer depth equals to the depth of the present
+grid cell.  This assumption allows for the surface averaging operation
+(\ref{eq:surface-averaging}) required for the iterative method to be
+simplified here to the form
+\begin{equation}
+   \Phi_{r}(d) = \frac{1}{\epsilon \, d} \, \int\limits^{\eta}_{-\epsilon \, d} \Phi(z) \, \mathrm{d}z.
+\label{eq:surface-averaging}
+\end{equation}
+The resulting vector bulk Richardson number, computed now for each
+grid cell within a vertical column, is passed to a CVMix routine to
+determine where in the column the bulk Richardson number becomes
+larger than the critical value.  Interpolation then determines the
+boundary layer depth.  This approach is more straightforward than the
+iterative approach, and it has been used for years in MOM and POP.  It
+is recommended for those implementing CVMix/KPP in their model.
+
+
+
+\subsubsection{Vertical placement of terms in the bulk Richardson number}
+\label{subsubsection:rib-terms-vertical-placement}
+
+When passing terms to the CVMix routine to compute the bulk Richardson
+number, it is important to make note of the vertical positioning of
+the terms.  We here propose a positioning based on grid cell position
+(nominally the grid cell center).  The cell center appears natural for
+the bulk Richardson number (\ref{eq:bulk-ri-large-kpp}), given that
+the numerator contains the {\it in situ} density $\rho[\Theta(d),
+S(d), p(d)]$, which is computed at the cell center.  With this
+convention, we interpret the depth $d$ to be the depth to the center
+of the grid cell.  
+
+Using notation defined in Figure \ref{fig:cvmix_discrete_vertical}, we
+have
+\begin{equation}
+   d = {\tt zt(kt)},
+\end{equation}
+so that 
+\begin{equation}
+ \rho[\Theta(d), S(d), p(d)] = \rho[\Theta({\tt kt}), S({\tt kt}), p({\tt kt})].
+\end{equation}
+Given the surface layer averaging via equation
+(\ref{eq:surface-averaging}), the numerator of the bulk Richardson
+number is now fully specified.  Likewise, the resolved shear in the
+denominator is computed in a similar manner as the numerator.  The
+only distinction is the need to perform a horizontal averaging as
+discussed in Sections \ref{subsection:b-grid-richardson-number} and
+\ref{subsection:c-grid-richardson-number}.
+
+The final term appearing in the bulk Richardson number is the
+unresolved velocity squared, $U_{t}^{2}$.  This term is detailed in
+Section \ref{subsubsection:unresolved-shear}. According to equation
+(\ref{eq:unresolved-shear-kpp}), this squared velocity is proportional
+to the local buoyancy frequency, $N$.  As discussed in Section
+\ref{subsection:buoyancy-frequency-and-stability}, the local buoyancy
+frequency is naturally positioned at the vertical cell interface.
+Hence, a vertical average operation is needed to bring this frequency
+to the cell center, which then ensures that  $U_{t}^{2}$ is cell centered. 
 
 
 \subsubsection{Non-local gravitational stability}
@@ -3287,9 +3345,11 @@ towards the surface.
   (\ref{eq:bulk-ri-large-kpp}).  The reference temperature and
   salinity of this displaced parcel is set according to values
   determined in the surface layer, here approximated by the value at
-  the top model grid cell with vertical position {\tt zt(kt=1)}.  The
-  density of this parcel is then computed using the surface layer
-  temperature and salinity and the local {\it in situ} pressure.  This
+  the top model grid cell with vertical position {\tt zt(kt=1)}. More
+  generally, the surface layer properties are determined by equation
+  (\ref{eq:surface-averaging}).  The density of this surface layer
+  parcel is computed using the surface layer temperature, surface
+  layer salinity, and the local {\it in situ} pressure.  This
   displaced parcel's density is then compared to the ambient {\it in
     situ} density using the local temperature, salinity, and pressure.
   We illustrate that process by displacing the parcel to {\tt
@@ -3305,19 +3365,20 @@ towards the surface.
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\paragraph{Recommended fully non-local method:}
 The expression (\ref{eq:bulk-ri-large-kpp}) presents a direct means
 for computing the non-local gravitational stability via the
 computation of the density difference, written here using discrete
 notation from Figure  \ref{fig:cvmix_stability_nonlocal}
 \begin{equation}
- \delta\rho[{\tt kt},r]  = \rho[\Theta({\tt kt}), S({\tt kt}), p({\tt kt} ]  -\rho[\Theta_{r}, S_{r}, p({\tt kt})],
+ \delta\rho[{\tt kt},r]  = \rho[\Theta({\tt kt}), S({\tt kt}), p({\tt kt} ]  -\rho[\Theta_{r}, S_{r}, p({\tt kt})].
 \label{eq:delta-density-for-nonlocal-stability}
 \end{equation}
-where the surface layer values $\Theta_{r}, S_{r}$ are typically
-approximated by the values as {\tt kt =1}.  This approximation breaks
-down for stable boundary layers with vertical grid spacing finer than
-roughly 2~m, in which case an averaging is required as in Section
-\ref{subsubsection:averaging-over-surface-layer}.
+This method is straightforward and general.  It is recommended for use
+with CVMix/KPP.
+
+
+\paragraph{Alternative linear method (not recommended):}
 
 There is an alternative method to approximate $\delta\rho[{\tt kt},r]$
 based on linear truncations of Taylor series expansions.  The
@@ -3403,14 +3464,14 @@ approach, and instead prefer the original approach given by equation
 \subsubsection{Unresolved velocity scale $U_{t}$ used for $\mbox{Ri}_{b}$}
 \label{subsubsection:unresolved-shear}
 
-The shear, $U_{t}/d$, in the bulk Richardson number
+The velocity scale, $U_{t}$, in the bulk Richardson number
 (\ref{eq:bulk-ri-large-kpp}) acknowledges the potential for unresolved
-to impact on the boundary layer depth.  The unresolved shear acts to
-deepen the boundary layer beyond that which would occur with only the
-resolved shears.  \cite{LargeKPP} present an argument on their page
-372 that focuses on an unresolved shear that reduces to a desired form
-for the case of pure convection.  The general result is for the
-velocity scale $U_{t}$ given by
+shears to impact on the boundary layer depth.  The unresolved shear
+acts to deepen the boundary layer beyond that which would occur with
+only the resolved shears.  \cite{LargeKPP} present an argument on
+their page 372 that focuses on an unresolved shear that reduces to a
+desired form for the case of pure convection.  The general result for
+the velocity scale $U_{t}$ is given by
 \begin{subequations}
 \begin{align}
  U_{t}^{2}(d) &= 
@@ -3501,58 +3562,28 @@ topic in Section \ref{section:surface-waves-and-kpp}.
 \end{itemize}
 
 
-\subsubsection{An algorithm to specify the unresolved velocity scale $U_{t}$}
+\paragraph{Algorithm to compute $U_{t}$} 
+
+\mbox{}
+\newline 
 
 The unresolved velocity scale $U_{t}$ (equation
 (\ref{eq:unresolved-shear-kpp})) is needed for the bulk Richardson
-number in equation (\ref{eq:bulk-ri-large-kpp-large-etal-form}), with
-the bulk Richardson number used to compute the boundary layer depth,
-$h$.  Now the unresolved velocity $U_{t}$ requires the scalar
-turbulent velocity scale $w_{s}$ (Section
-\ref{subsection:vertical-velocity-scale}).  Yet the scalar velocity
-scale $w_{s}$ in turn requires the boundary layer depth $h$ since
-$w_{s}$ is a function of the dimensionless boundary layer depth
-$\sigma = d/h$ (equation (\ref{eq:sigma-defined})). 
+number in equation (\ref{eq:bulk-ri-large-kpp}), with the bulk
+Richardson number used to compute the boundary layer depth, $h$.  Now
+the unresolved velocity $U_{t}$ requires the scalar turbulent velocity
+scale $w_{s}$ (Section \ref{subsection:vertical-velocity-scale}).  Yet
+the scalar velocity scale $w_{s}$ in turn requires the boundary layer
+depth $h$ since $w_{s}$ is a function of the dimensionless boundary
+layer depth $\sigma = d/h$ (equation (\ref{eq:sigma-defined})).  We
+resolve this circular situation via the recommended method discussed
+in Section \ref{subsubsection:obldepth-algorithm}.
 
-One method to resolve the above circular argument is to iterate.
-Another means, employed by the KPP code in POP and MOM, is based on
-the following observation.  Namely, to compute the boundary layer
-depth $h$ we determine the depth below which the bulk Richardson
-number is larger than the critical Richardson number (equation
-(\ref{eq:critical-bulk-richardson-number})).  In determining that
-depth, we proceed as follows for each horizontal grid point.
-\begin{itemize}
 
-\item For a grid level $k$, assume the boundary layer depth, $h$,
-  equals to the depth of a tracer grid point, $d$, in which case
-  $\sigma = 1$ and $h = d$.
+\paragraph{Minimum value for the unresolved velocity scale $U_{t}$}
 
-\item Compute the turbulent velocity scale for scalars, $w_{s}$, as a
-  function of the buoyancy forcing and wind forcing (Section
-  \ref{subsection:vertical-velocity-scale}).
-
-\item Compute the unresolved velocity scale $U_{t}$ (equation
-  (\ref{eq:unresolved-shear-kpp})).
-
-\item Compute the bulk Richardson number $\mbox{Ri}_{b}$ (equation
-  (\ref{eq:bulk-ri-large-kpp-large-etal-form})).
-
-\item If $\mbox{Ri}_{b} < \mbox{Ri}_{c}$, then we are still within the
-  surface boundary layer, in which case the algorithm proceeds
-  downward by one grid cell.
-
-\item If $\mbox{Ri}_{b} \ge \mbox{Ri}_{c}$, then we have penetrated
-  below the boundary boundary layer, in which case the algorithm
-  interpolates to determine the actual boundary layer depth $h$.
-
-\item Once the boundary layer depth is known, we compute the turbulent
-  velocity scale $w_{\lambda}$, which is used to compute the KPP
-  boundary layer diffusivity according to equation
-  (\ref{eq:kpp-diffusivity-again}).
-
-\end{itemize}
-
-\subsubsection{Minimum value for the unresolved velocity scale $U_{t}$}
+\mbox{}
+\newline 
 
 In the testing of the CVMix implementation of KPP in MOM6, we
 considered a trivial one-dimensional situation of neutral forcing
@@ -3845,7 +3876,7 @@ parameterized local diffusive flux will cool the top model grid
 cell. For $k > 1$ interior cells, the diffusive flux either cools or
 warms, depending on curvature in the temperature field.
 
-\item {\sc non-local redistibution of surface boundary flux}: The KPP
+\item {\sc non-local redistribution of surface boundary flux}: The KPP
   parameterized non-local tracer flux is non-zero only for cases of
   negative buoyancy forcing.  Assuming such forcing occurs with a
   negative (cooling) surface heat flux, we already showed in Section
