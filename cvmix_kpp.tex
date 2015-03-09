@@ -3631,14 +3631,17 @@ sufficiently large unresolved velocity $U_{t}^{2}$ to overcome
 computational roundoff in the calculation of $N$.  Using double
 precision for the computations, we have found
 \begin{equation}
-  \left( U_{t}^{2} \right)_{\mbox{\tiny minimum}} \approx 10^{-11}~\mbox{m}^{2}~\mbox{s}^{-2}  
+  \left( U_{t}^{2} \right)_{\mbox{\tiny minimum}} \approx 10^{-10}~\mbox{m}^{2}~\mbox{s}^{-2}  
 \end{equation}
 is sufficient to recover physically consistent behaviour for this
-particular test case.  With a nontrivial denominator, the bulk
-Richardson number is small in the upper ocean but large below the
-boundary layer, allowing for enhanced mixing to move the positive
-buoyancy into the interior, further deepening the boundary layer as
-the simulation proceeds.
+particular test case.  This value is the default in the POP
+implementation of KPP.  Hence, the CVMix calculation of the bulk
+Richardson number uses this value for $(U_{t}^{2})_{\mbox{\tiny
+    minimum}}$.  With a nontrivial denominator, the bulk Richardson
+number is small in the upper ocean but large below the boundary layer,
+allowing for enhanced mixing to move the positive buoyancy into the
+interior, further deepening the boundary layer as the simulation
+proceeds.
 
 
 \subsubsection{Restrictions on $h$ under stable buoyancy forcing}
